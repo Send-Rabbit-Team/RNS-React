@@ -67,10 +67,9 @@ const Auth = (props) => {
             <div className="header-body text-center mb-7">
               <Row className="justify-content-center">
                 <Col lg="5" md="6">
-                  <h1 className="text-white">Welcome!</h1>
+                  <h1 className="text-white" style={{fontSize: 30}}>Rabbit Notification Service</h1>
                   <p className="text-lead text-light">
-                    Use these awesome forms to login or create new account in
-                    your project for free.
+                  대용량의 메시지를 안전하고 빠르게 전달해보세요
                   </p>
                 </Col>
               </Row>

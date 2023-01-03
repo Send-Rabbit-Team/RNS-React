@@ -10,21 +10,21 @@ var routes = [
   {
     path: "/register",
     name: "메시지 전송",
-    icon: "ni ni-send text-primary",
+    icon: "ni ni-send text-blue",
     component: Register,
     layout: "/auth"
   },
   {
     path: "/register",
     name: "메시지 관리",
-    icon: "ni ni-email-83 text-primary",
+    icon: "ni ni-email-83 text-green",
     component: Register,
     layout: "/auth"
   },
   {
     path: "/register",
     name: "그룹 관리",
-    icon: "ni ni-circle-08 text-primary",
+    icon: "ni ni-circle-08 text-red",
     component: Register,
     layout: "/auth"
   }
