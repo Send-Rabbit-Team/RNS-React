@@ -64,7 +64,7 @@ const AdminNavbar = () => {
             </div>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <NavLink className="nav-link-icon" to="/" tag={Link}>
+                <NavLink className="nav-link-icon" to="/admin/index" tag={Link}>
                   <i className="ni ni-chart-pie-35" />
                   <span className="nav-link-inner--text">대시보드</span>
                 </NavLink>

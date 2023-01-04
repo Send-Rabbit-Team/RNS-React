@@ -27,6 +27,13 @@ var routes = [
     icon: "ni ni-circle-08 text-red",
     component: Register,
     layout: "/auth"
-  }
+  },
+  {
+    path: "/onboarding",
+    name: "온보딩",
+    icon: "ni ni-send text-blue",
+    component: Register,
+    layout: "/main"
+  },
 ];
 export default routes;

@@ -2,10 +2,9 @@ import React from "react";
 import { useLocation, Route, Switch, Redirect } from "react-router-dom";
 import { Container, Row, Col } from "reactstrap";
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
-import AuthFooter from "components/Footers/AuthFooter.js";
 import routes from "routes.js";
 
-const Auth = (props) => {
+const Onboarding = (props) => {
   const mainContent = React.useRef(null);
   const location = useLocation();
 
@@ -49,7 +48,7 @@ const Auth = (props) => {
                 <Col lg="5" md="6">
                   <h1 className="text-white" style={{fontSize: 30}}>Rabbit Notification Service</h1>
                   <p className="text-lead text-light">
-                  대용량의 메시지를 안전하고 빠르게 전달해보세요 - 로그인 화면
+                  대용량의 메시지를 안전하고 빠르게 전달해보세요 - 온보딩 화면
                   </p>
                 </Col>
               </Row>
@@ -71,18 +70,19 @@ const Auth = (props) => {
             </svg>
           </div>
         </div>
+        {/* 혹시 몰라서 남겨둠, 아래는 로그인 연동 컴포넌트 */}
         {/* Page content */}
-        <Container className="mt--8 pb-5">
+        {/* <Container className="mt--8 pb-5">
           <Row className="justify-content-center">
             <Switch>
               {getRoutes(routes)}
               <Redirect from="*" to="/auth/login" />
             </Switch>
           </Row>
-        </Container>
+        </Container> */}
       </div>
     </>
   );
 };
 
-export default Auth;
+export default Onboarding;
