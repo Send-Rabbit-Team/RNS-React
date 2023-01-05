@@ -16,7 +16,7 @@
 
 */
 import React from "react";
-import ReactDOM from "react-dom/client";
+import ReactDOM from 'react-dom';
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 
 import "assets/plugins/nucleo/css/nucleo.css";
@@ -27,16 +27,19 @@ import AdminLayout from "layouts/Admin.js";
 import AuthLayout from "layouts/Auth.js";
 import OnboardingLayout from "layouts/Onboarding"
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+// const root = ReactDOM.createRoot(document.getElementById("root"));
 
-root.render(
-  <BrowserRouter>
-    <Switch>
-      <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-      <Route path="/auth" render={(props) => <AuthLayout {...props} />} />
-      <Route path="/onboarding" render={(props) => <OnboardingLayout {...props} />} />
-      <Redirect from="/" to="/onboarding/index" />
-      {/* <Redirect from="/" to="/admin/index" /> */}
-    </Switch>
-  </BrowserRouter>
+ReactDOM.render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <Switch>
+        <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
+        <Route path="/auth" render={(props) => <AuthLayout {...props} />} />
+        <Route path="/onboarding" render={(props) => <OnboardingLayout {...props} />} />
+        <Redirect from="/" to="/onboarding/index" />
+        {/* <Redirect from="/" to="/admin/index" /> */}
+      </Switch>
+    </BrowserRouter>
+  </React.StrictMode>,
+  document.getElementById('root')
 );
