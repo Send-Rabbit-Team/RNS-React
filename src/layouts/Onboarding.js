@@ -44,12 +44,12 @@ const Onboarding = (props) => {
     <>
       <div className="main-content" ref={mainContent}>
         <AuthNavbar />
-        <div className="header bg-gradient-info py-7 py-lg-8">
+        <div className="header bg-gradient-info py-7 py-lg-7">
           <Container>
             <div className="header-body mb-7">
               <Row>
                 <Col lg="5" md="6">
-                  <h1 className="text-white" style={{fontSize: 60, paddingTop: 100}} >Rabbit Notification Service</h1>
+                  <h1 className="text-white" style={{fontSize: 60, paddingTop: 75}} >Rabbit Notification Service</h1>
                   <p className="text-lead text-light" style={{fontSize: 23}}>
                     <TextAnimation.Slide  animation={{
                         duration:1000,
@@ -60,17 +60,17 @@ const Onboarding = (props) => {
                     </TextAnimation.Slide>
                   </p>
                 </Col>
-                <Col>
+                <Col style={{marginLeft:30}}>
                   <div>
-                    <img src={sms} style={{paddingTop:30, paddingLeft: 80, width:550, height:460}} alt="sms"/>
+                    <img src={sms} style={{paddingTop:30, paddingLeft: 80, width:550, height:440}} alt="sms"/>
                   </div>
                 </Col>
               </Row>
-              <Row style={{ paddingLeft: 20}}>
-                <Button button style={{ width:190, height: 60, fontSize:30}} color="primary"type="button">
+              <Row style={{paddingLeft:15}}>
+                <Button button style={{ width:180, height: 60, fontSize:25}} color="primary"type="button">
                   시작하기
                 </Button>
-                <Button button style={{ width:190, height: 60, fontSize:30, marginLeft:20}} color="primary"type="button">
+                <Button button style={{ width:180, height: 60, fontSize:25, marginLeft:20}} color="primary"type="button">
                   로그인
                 </Button>
               </Row>
