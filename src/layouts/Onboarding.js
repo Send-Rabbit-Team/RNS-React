@@ -3,6 +3,9 @@ import { useLocation, Route, Switch, Redirect } from "react-router-dom";
 import { Container, Row, Col } from "reactstrap";
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import routes from "routes.js";
+import TextAnimation from "react-text-animations";
+import sms from "../assets/img/brand/bulk-sms.png"
+import { Button } from "reactstrap";
 
 const Onboarding = (props) => {
   const mainContent = React.useRef(null);
@@ -46,11 +49,30 @@ const Onboarding = (props) => {
             <div className="header-body mb-7">
               <Row>
                 <Col lg="5" md="6">
-                  <h1 className="text-white" style={{fontSize: 60, paddingTop: 60}}>Rabbit Notification Service</h1>
+                  <h1 className="text-white" style={{fontSize: 60, paddingTop: 100}} >Rabbit Notification Service</h1>
                   <p className="text-lead text-light" style={{fontSize: 23}}>
-                  대용량의 메시지를 안전하고 빠르게 전달해보세요
+                    <TextAnimation.Slide  animation={{
+                        duration:1000,
+                        delay:2000,
+                        timingFunction:'ease-out',
+                    }} target="안전하게" text={['신속하게', '정확하게', '대량으로']}>
+                        당신의 메시지를 "안전하게" 전달해보세요
+                    </TextAnimation.Slide>
                   </p>
                 </Col>
+                <Col>
+                  <div>
+                    <img src={sms} style={{paddingTop:30, paddingLeft: 80, width:550, height:460}} alt="sms"/>
+                  </div>
+                </Col>
+              </Row>
+              <Row style={{ paddingLeft: 20}}>
+                <Button button style={{ width:190, height: 60, fontSize:30}} color="primary"type="button">
+                  시작하기
+                </Button>
+                <Button button style={{ width:190, height: 60, fontSize:30, marginLeft:20}} color="primary"type="button">
+                  로그인
+                </Button>
               </Row>
             </div>
           </Container>

@@ -61,8 +61,10 @@
     "sass": "1.54.5"
   },
   "devDependencies": {
+    "file-loader": "^6.2.0",
     "gulp": "4.0.2",
-    "gulp-append-prepend": "1.0.9"
+    "gulp-append-prepend": "1.0.9",
+    "url-loader": "^4.1.1"
   },
   "peerDependencies": {
     "react": ">=16.0.0",
