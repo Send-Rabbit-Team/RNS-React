@@ -70,8 +70,8 @@ const Admin = (props) => {
         {...props}
         routes={routes}
         logo={{
-          innerLink: "/admin/index",
-          imgSrc: require("../assets/img/brand/argon-react.png"),
+          innerLink: "/onboarding/index",
+          imgSrc: require("../assets/img/brand/RNS.png"),
           imgAlt: "..."
         }}
       />
@@ -85,7 +85,7 @@ const Admin = (props) => {
           <Redirect from="*" to="/admin/index" />
         </Switch>
         <Container fluid>
-          <AdminFooter />
+          {/* <AdminFooter /> */}
         </Container>
       </div>
     </>
