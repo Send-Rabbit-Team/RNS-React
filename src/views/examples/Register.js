@@ -17,6 +17,8 @@
 */
 
 // reactstrap components
+import React, {useState} from "react";
+import classnames from "classnames";
 import {
   Button,
   Card,
@@ -29,137 +31,120 @@ import {
   InputGroupText,
   InputGroup,
   Row,
-  Col
+  Col,
+  Nav, NavItem, NavLink, TabContent, TabPane
 } from "reactstrap";
+import RegMember from "./RegMember";
+import RegCompany from "./RegCompany";
+import axios from "axios";
 
-const Register = () => {
-  return (
-    <>
-      <Col lg="6" md="8">
-        <Card className="bg-secondary shadow border-0">
-          <CardHeader className="bg-transparent pb-5">
-            <div className="text-muted text-center mt-2 mb-4">
-              <small>Sign up with</small>
-            </div>
-            <div className="text-center">
-              <Button
-                className="btn-neutral btn-icon mr-4"
-                color="default"
-                href="#pablo"
-                onClick={(e) => e.preventDefault()}
-              >
+class Register extends React.Component {
+  state = {
+    tabs: 1
+  };
+  toggleNavs = (e, state, index) => {
+    e.preventDefault();
+    this.setState({
+      [state]: index
+    });
+  };
+  google = async () => {
+    await axios.get("/google")
+        .then((response)=>{
+          window.alert("구글 회원 인증에 성공했습니다")
+        })
+        .catch((error) => {
+          window.alert("구글 회원 인증에 실패했습니다")
+        })
+  }
+  render() {
+    return (
+        <>
+          <Col lg="6" md="8">
+            <Card className="bg-secondary shadow border-0">
+              <CardHeader className="bg-transparent pb-5">
+                <div className="text-muted text-center mt-2 mb-4">
+                  <small>Sign up with</small>
+                </div>
+                <div className="text-center">
+                  <Button
+                      className="btn-neutral btn-icon"
+                      color="default"
+                      onClick={this.google}
+                  >
                 <span className="btn-inner--icon">
                   <img
-                    alt="..."
-                    src={
-                      require("../../assets/img/icons/common/github.svg")
-                        .default
-                    }
+                      alt="..."
+                      src={
+                        require("../../assets/img/icons/common/google.svg")
+                            .default
+                      }
                   />
                 </span>
-                <span className="btn-inner--text">Github</span>
-              </Button>
-              <Button
-                className="btn-neutral btn-icon"
-                color="default"
-                href="#pablo"
-                onClick={(e) => e.preventDefault()}
-              >
-                <span className="btn-inner--icon">
-                  <img
-                    alt="..."
-                    src={
-                      require("../../assets/img/icons/common/google.svg")
-                        .default
-                    }
-                  />
-                </span>
-                <span className="btn-inner--text">Google</span>
-              </Button>
-            </div>
-          </CardHeader>
-          <CardBody className="px-lg-5 py-lg-5">
-            <div className="text-center text-muted mb-4">
-              <small>Or sign up with credentials</small>
-            </div>
-            <Form role="form">
-              <FormGroup>
-                <InputGroup className="input-group-alternative mb-3">
-                  <InputGroupAddon addonType="prepend">
-                    <InputGroupText>
-                      <i className="ni ni-hat-3" />
-                    </InputGroupText>
-                  </InputGroupAddon>
-                  <Input placeholder="Name" type="text" />
-                </InputGroup>
-              </FormGroup>
-              <FormGroup>
-                <InputGroup className="input-group-alternative mb-3">
-                  <InputGroupAddon addonType="prepend">
-                    <InputGroupText>
-                      <i className="ni ni-email-83" />
-                    </InputGroupText>
-                  </InputGroupAddon>
-                  <Input
-                    placeholder="Email"
-                    type="email"
-                    autoComplete="new-email"
-                  />
-                </InputGroup>
-              </FormGroup>
-              <FormGroup>
-                <InputGroup className="input-group-alternative">
-                  <InputGroupAddon addonType="prepend">
-                    <InputGroupText>
-                      <i className="ni ni-lock-circle-open" />
-                    </InputGroupText>
-                  </InputGroupAddon>
-                  <Input
-                    placeholder="Password"
-                    type="password"
-                    autoComplete="new-password"
-                  />
-                </InputGroup>
-              </FormGroup>
-              <div className="text-muted font-italic">
-                <small>
-                  password strength:{" "}
-                  <span className="text-success font-weight-700">strong</span>
-                </small>
-              </div>
-              <Row className="my-4">
-                <Col xs="12">
-                  <div className="custom-control custom-control-alternative custom-checkbox">
-                    <input
-                      className="custom-control-input"
-                      id="customCheckRegister"
-                      type="checkbox"
-                    />
-                    <label
-                      className="custom-control-label"
-                      htmlFor="customCheckRegister"
-                    >
-                      <span className="text-muted">
-                        I agree with the{" "}
-                        <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                          Privacy Policy
-                        </a>
-                      </span>
-                    </label>
-                  </div>
-                </Col>
-              </Row>
-              <div className="text-center">
-                <Button className="mt-4" color="primary" type="button">
-                  Create account
-                </Button>
-              </div>
-            </Form>
-          </CardBody>
-        </Card>
-      </Col>
-    </>
-  );
+                    <span className="btn-inner--text">Google</span>
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardBody className="px-lg-5 py-lg-5">
+                <div className="text-center text-muted mb-4">
+                  <small>Or sign up with credentials</small>
+                </div>
+
+                <div className="nav-wrapper">
+                  <Nav
+                      className="nav-fill flex-column flex-md-row"
+                      id="tabs-icons-text"
+                      pills
+                      role="tablist"
+                  >
+                    <NavItem>
+                      <NavLink
+                          aria-selected={this.state.tabs === 1}
+                          className={classnames("mb-sm-3 mb-md-0", {
+                            active: this.state.tabs === 1
+                          })}
+                          onClick={e => this.toggleNavs(e, "tabs", 1)}
+                          href="#pablo"
+                          role="tab"
+                      >
+                        개인
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                          aria-selected={this.state.tabs === 2}
+                          className={classnames("mb-sm-3 mb-md-0", {
+                            active: this.state.tabs === 2
+                          })}
+                          onClick={e => this.toggleNavs(e, "tabs", 2)}
+                          href="#pablo"
+                          role="tab"
+                      >
+                        기업
+                      </NavLink>
+                    </NavItem>
+                  </Nav>
+                </div>
+                <Card className="shadow">
+                  <CardBody>
+                    <TabContent activeTab={"tabs" + this.state.tabs}>
+                      <TabPane tabId="tabs1">
+                        <RegMember></RegMember>
+                      </TabPane>
+                      <TabPane tabId="tabs2">
+                        <RegCompany></RegCompany>
+                      </TabPane>
+                    </TabContent>
+                  </CardBody>
+                </Card>
+
+
+              </CardBody>
+            </Card>
+          </Col>
+        </>
+    );
+  }
 };
 
 export default Register;
