@@ -9,17 +9,6 @@ const RegMember = () => {
     const [memberName, setMemberName] = useState();
     const [memberPhone, setMemberPhone] = useState();
 
-    const memberRegisterReq = new FormData();
-    memberRegisterReq.append("email", memberEmail);
-    memberRegisterReq.append("password", memberPassword1);
-    memberRegisterReq.append("checkPassword", memberPassword2);
-    memberRegisterReq.append("name", memberName);
-    memberRegisterReq.append("phoneNumber", memberPhone);
-    memberRegisterReq.append("companyName", null);
-    memberRegisterReq.append("bsNum", null);
-    memberRegisterReq.append("memberType", "PERSON");
-    memberRegisterReq.append("loginType", "DEFAULT");
-
     const [memberPasswordCheck, setMemberPasswordCheck] = useState("");
     const [memberPhoneCheck, setMemberPhoneCheck] = useState("");
 
@@ -37,6 +26,18 @@ const RegMember = () => {
     }
 
     const registerMember = async () => {
+        const memberRegisterReq = {
+            "email" : memberEmail,
+            "password" : memberPassword1,
+            "checkPassword" : memberPassword2,
+            "name" : memberName,
+            "phoneNumber" : memberPhone,
+            "companyName" : null,
+            "bsNum" : null,
+            "memberType" : "PERSON",
+            "loginType" : "DEFAULT"
+
+        }
         memberEmail == null ? window.alert("이메일을 입력하세요") :
             memberPassword1 == null ? window.alert("비밀번호를 입력하세요") :
                 // memberPasswordCheck != "has-success" ? window.alert("비밀번호를 확인하세요") :
