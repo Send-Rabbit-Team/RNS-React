@@ -12,8 +12,36 @@ import {
   Row,
   Col
 } from "reactstrap";
+import { useState } from "react";
+import axios from "axios";
+
 
 const Login = () => {
+  const [email, setEmail] =  useState();
+  const [password, setPassword] =  useState();
+
+  const loginInfo = {
+    email: email,
+    password: password
+  }
+
+  const login = async ()=>{
+    await axios.post("/login", loginInfo)
+      .then(response => {
+        if (response.data.isSuccess === true) {
+          window.alert(response.data.message);
+          console.log("로그인 성공 결과: ",response.data)
+          window.location.replace("/admin/index")
+          return response.data.code;
+        } else{
+          window.alert(response.data.message);
+          console.log("로그인 실패 결과: ",response.data)
+        }
+        
+      }
+    )
+  }
+
   return (
     <>
       <Col lg="5" md="7">
@@ -58,6 +86,7 @@ const Login = () => {
                     placeholder="Email"
                     type="email"
                     autoComplete="new-email"
+                    onChange={(e)=>{setEmail(e.target.value)}}
                   />
                 </InputGroup>
               </FormGroup>
@@ -72,6 +101,7 @@ const Login = () => {
                     placeholder="Password"
                     type="password"
                     autoComplete="new-password"
+                    onChange={(e)=>{setPassword(e.target.value)}}
                   />
                 </InputGroup>
               </FormGroup>
@@ -89,7 +119,7 @@ const Login = () => {
                 </label>
               </div>
               <div className="text-center">
-                <Button className="my-4" color="primary" type="button">
+                <Button className="my-4" color="primary" type="button" onClick={login}>
                   Sign in
                 </Button>
               </div>
@@ -122,3 +152,4 @@ const Login = () => {
 };
 
 export default Login;
+
