@@ -46,11 +46,12 @@ const RegMember = () => {
                         // memberPhoneCheck != "has-success" ? window.alert("휴대폰 번호를 인증하세요") :
                         await axios.post("/register", memberRegisterReq)
                             .then((response) => {
-                                window.alert("회원가입에 성공했습니다")
-                                window.location.replace("/login")
-                            })
-                            .catch((error) => {
-                                window.alert("회원가입에 실패했습니다")
+                                if (response.data.isSuccess == true) {
+                                    window.alert(response.data.message)
+                                    window.location.replace("/login")
+                                } else {
+                                    window.alert(response.data.message)
+                                }
                             })
     }
     return (
