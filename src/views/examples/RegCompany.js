@@ -11,18 +11,6 @@ const RegCompany = () => {
     const [companyName, setCompanyName] = useState();
     const [companyBsnum, setCompanyBsnum] = useState();
 
-
-    const companyRegisterReq = new FormData();
-    companyRegisterReq.append("email", companyEmail);
-    companyRegisterReq.append("password", companyPassword1);
-    companyRegisterReq.append("checkPassword", companyPassword2);
-    companyRegisterReq.append("name", companyManager);
-    companyRegisterReq.append("phoneNumber", companyPhone);
-    companyRegisterReq.append("companyName", companyName);
-    companyRegisterReq.append("bsNum", companyBsnum);
-    companyRegisterReq.append("memberType", "COMPANY");
-    companyRegisterReq.append("loginType", "DEFAULT");
-
     const [companyPasswordCheck, setCompanyPasswordCheck] = useState("");
     const [companyPhoneCheck, setCompanyPhoneCheck] = useState("");
     const [companyBsnumCheck, setCompanyBsnumCheck] = useState("");
@@ -54,6 +42,18 @@ const RegCompany = () => {
     }
 
     const registerMember = async () => {
+        const companyRegisterReq = {
+            "email" : companyEmail,
+            "password" : companyPassword1,
+            "checkPassword" : companyPassword2,
+            "name" : companyManager,
+            "phoneNumber" : companyPhone,
+            "companyName" : companyName,
+            "bsNum" : companyBsnum,
+            "memberType" : "COMPANY",
+            "loginType" : "DEFAULT"
+
+        }
         companyEmail == null ? window.alert("이메일을 입력하세요") :
             companyPassword1 == null ? window.alert("비밀번호를 입력하세요") :
                 // companyPasswordCheck != "has-success" ? window.alert("비밀번호를 확인하세요") :
@@ -63,14 +63,14 @@ const RegCompany = () => {
                         companyName == null ? window.alert("회사 이름을 입력하세요") :
                             companyBsnum == null ? window.alert("사업자 번호를 입력하세요") :
                                 // companyBsnumCheck != "has-success" ? window.alert("사업자 번호를 인증하세요") :
-                                    await axios.post("/register", companyRegisterReq)
-                                        .then((response) => {
-                                            window.alert("회원가입에 성공했습니다")
-                                            window.location.replace("/login")
-                                        })
-                                        .catch((error) => {
-                                            window.alert("회원가입에 실패했습니다")
-                                        })
+                                await axios.post("/register", companyRegisterReq)
+                                    .then((response) => {
+                                        window.alert("회원가입에 성공했습니다")
+                                        window.location.replace("/login")
+                                    })
+                                    .catch((error) => {
+                                        window.alert("회원가입에 실패했습니다")
+                                    })
     }
     return (
         <Form role="form">
