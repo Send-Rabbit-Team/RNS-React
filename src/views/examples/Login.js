@@ -31,13 +31,13 @@ const Login = () => {
         if (response.data.isSuccess === true) {
           window.alert(response.data.message);
           console.log("로그인 성공 결과: ",response.data)
+          localStorage.setItem("bearer", response.data.result.jwt);
           window.location.replace("/admin/index")
           return response.data.code;
         } else{
           window.alert(response.data.message);
           console.log("로그인 실패 결과: ",response.data)
         }
-        
       }
     )
   }
