@@ -42,6 +42,25 @@ const Login = () => {
     )
   }
 
+  var params = new URLSearchParams();
+  params.append('email', "john@gmail.com");
+
+  const google = async () => {
+    axios.defaults.withCredentials = true;
+    await axios.post("/google/login",params)
+        .then((response)=>{
+          window.alert("구글 회원 인증에 성공했습니다")
+          localStorage.setItem("bearer", response.data.result.jwt);
+          window.location.replace("/admin/index")
+          console.log("로그인 성공 결과: ",response.data)
+        })
+        .catch((error) => {
+          console.log(error)
+          window.alert("구글 회원 인증에 실패했습니다")
+        })
+  }
+
+
   return (
     <>
       <Col lg="5" md="7">
@@ -55,7 +74,7 @@ const Login = () => {
                 className="btn-neutral btn-icon"
                 color="default"
                 href="#pablo"
-                onClick={(e) => e.preventDefault()}
+                onClick={google}
               >
                 <span className="btn-inner--icon">
                   <img
