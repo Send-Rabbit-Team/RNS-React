@@ -35,5 +35,12 @@ var routes = [
     component: Register,
     layout: "/main"
   },
+  {
+    path: "/login",
+    name: "로그인",
+    icon: "ni ni-send text-blue",
+    component: Login,
+    layout: "/auth"
+  },
 ];
 export default routes;
