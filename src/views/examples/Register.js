@@ -62,7 +62,7 @@ class Register extends React.Component {
         <>
           <Col lg="6" md="8">
             <Card className="bg-secondary shadow border-0">
-              <CardHeader className="bg-transparent pb-5">
+              <CardHeader className="bg-transparent pb-0">
                 <div className="text-muted text-center mt-2 mb-4">
                   <small>Sign up with</small>
                 </div>
@@ -86,7 +86,7 @@ class Register extends React.Component {
                 </div>
               </CardHeader>
               <CardBody className="px-lg-5 py-lg-5">
-                <div className="text-center text-muted mb-4">
+                <div className="text-center text-muted mb-4 ">
                   <small>Or sign up with credentials</small>
                 </div>
 
