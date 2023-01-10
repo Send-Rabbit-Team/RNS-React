@@ -14,12 +14,15 @@ import {
 } from "reactstrap";
 import { useState } from "react";
 import axios from "axios";
+import setAuthorizationToken from "../../utils/setAuthorizationToken.js"
+
+// Redux 활용을 위한 jwt 라이브러리 - jetpack 요구
+// import jwt from "jsonwebtoken"
 
 
 const Login = () => {
   const [email, setEmail] =  useState();
   const [password, setPassword] =  useState();
-  
 
   const GeneralLoginInfo = {
     email: email,
@@ -39,6 +42,13 @@ const Login = () => {
           localStorage.setItem("bearer", response.data.result.jwt);
           localStorage.setItem("profile_image", response.data.result.profileImage);
           localStorage.setItem("name", response.data.result.name);
+
+          console.log('토큰: ',response.data.result.jwt)
+          setAuthorizationToken(response.data.result.jwt);
+
+          // Redux활용 코드:
+          // console.log('디코딩된 토큰(회원정보): ',jwt.decode(response.data.result.jwt))
+
           window.location.replace("/admin/index")
           return response.data.code;
         } else{
