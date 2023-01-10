@@ -30,10 +30,16 @@ const RegCompany = () => {
 
     const authBsnum = async () => {
         companyBsnum == null ? window.alert("인증할 사업자 번호를 입력하세요") :
-            await axios.get("/", companyBsnum)
+            await axios.post("http://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=4l9JfE06zoxwhuNDuBS2OpeuqOKzRqUxyn80TaaEu0ICL1%2FLVpffn7sMULbtz2ada%2FmbIi9gLZeep3rp9I%2BAVw%3D%3D",
+                {"b_no" : [companyBsnum.toString()]})
                 .then((response) => {
-                    setCompanyBsnumCheck("has-success")
-                    window.alert("사업자 번호 인증에 성공했습니다")
+                    if (response.data["match_cnt"] == 1) {
+                        setCompanyBsnumCheck("has-success")
+                        window.alert("사업자 번호 인증에 성공했습니다")
+                    } else {
+                        setCompanyBsnumCheck("has-danger")
+                        window.alert("사업자 번호 인증에 실패했습니다")
+                    }
                 })
                 .catch((error) => {
                     setCompanyBsnumCheck("has-danger")
@@ -62,14 +68,15 @@ const RegCompany = () => {
                         // companyPhoneCheck != "has-success" ? window.alert("휴대폰 번호를 인증하세요") :
                         companyName == null ? window.alert("회사 이름을 입력하세요") :
                             companyBsnum == null ? window.alert("사업자 번호를 입력하세요") :
-                                // companyBsnumCheck != "has-success" ? window.alert("사업자 번호를 인증하세요") :
+                                companyBsnumCheck != "has-success" ? window.alert("사업자 번호를 인증하세요") :
                                 await axios.post("/register", companyRegisterReq)
                                     .then((response) => {
-                                        window.alert("회원가입에 성공했습니다")
-                                        window.location.replace("/login")
-                                    })
-                                    .catch((error) => {
-                                        window.alert("회원가입에 실패했습니다")
+                                        if (response.data.isSuccess == true) {
+                                            window.alert(response.data.message)
+                                            window.location.replace("/login")
+                                        } else {
+                                            window.alert(response.data.message)
+                                        }
                                     })
     }
     return (
