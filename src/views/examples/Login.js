@@ -19,19 +19,26 @@ import axios from "axios";
 const Login = () => {
   const [email, setEmail] =  useState();
   const [password, setPassword] =  useState();
+  
 
-  const loginInfo = {
+  const GeneralLoginInfo = {
     email: email,
     password: password
   }
 
+  const GoogleLoginInfo = {
+    email: email
+  }
+
   const login = async ()=>{
-    await axios.post("/login", loginInfo)
+    await axios.post("/login", GeneralLoginInfo)
       .then(response => {
         if (response.data.isSuccess === true) {
           window.alert(response.data.message);
           console.log("로그인 성공 결과: ",response.data)
           localStorage.setItem("bearer", response.data.result.jwt);
+          localStorage.setItem("profile_image", response.data.result.profileImage);
+          localStorage.setItem("name", response.data.result.name);
           window.location.replace("/admin/index")
           return response.data.code;
         } else{
@@ -42,22 +49,26 @@ const Login = () => {
     )
   }
 
-  var params = new URLSearchParams();
-  params.append('email', "john@gmail.com");
+  //    **  Header 추가 sample 코드  **
+  //    var params = new URLSearchParams();
+  //    params.append('email', "john@gmail.com");
 
   const google = async () => {
     axios.defaults.withCredentials = true;
-    await axios.post("/google/login",params)
+    await axios.post("/google")
         .then((response)=>{
-          window.alert("구글 회원 인증에 성공했습니다")
-          localStorage.setItem("bearer", response.data.result.jwt);
-          window.location.replace("/admin/index")
-          console.log("로그인 성공 결과: ",response.data)
-        })
-        .catch((error) => {
-          console.log(error)
-          window.alert("구글 회원 인증에 실패했습니다")
-        })
+          if (response.data.isSuccess === true) {
+            window.alert(response.data.message);
+            console.log("로그인 성공 결과: ",response.data)
+            localStorage.setItem("bearer", response.data.result.jwt);
+            window.location.replace("/admin/index")
+            return response.data.code;
+          } else{
+            window.alert(response.data.message);
+            console.log("로그인 실패 결과: ",response.data)
+          }
+         }
+        )
   }
 
 
