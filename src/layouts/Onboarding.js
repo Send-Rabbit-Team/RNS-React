@@ -5,6 +5,7 @@ import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import routes from "routes.js";
 import TextAnimation from "react-text-animations";
 import sms from "../assets/img/brand/bulk-sms.png"
+import animation_sms from "../assets/img/brand/sms-animation.gif"
 import { Button } from "reactstrap";
 
 const Onboarding = (props) => {
@@ -44,13 +45,13 @@ const Onboarding = (props) => {
     <>
       <div className="main-content" ref={mainContent}>
         <AuthNavbar />
-        <div className="header bg-gradient-info py-7 py-lg-7">
+        <div className="header bg-gradient-info py-7 py-lg-2">
           <Container>
-            <div className="header-body mb-7">
-              <Row>
-                <Col lg="5" md="6">
+            <div className="header-body">
+              <Row className="pt-6">
+                <Col lg="4" md="6">
                   <h1 className="text-white" style={{fontSize: 60, paddingTop: 75}} >Rabbit Notification Service</h1>
-                  <p className="text-lead text-light" style={{fontSize: 23}}>
+                  <p className="text-lead text-light" style={{fontSize: 21}}>
                     <TextAnimation.Slide  animation={{
                         duration:1000,
                         delay:2000,
@@ -58,21 +59,18 @@ const Onboarding = (props) => {
                     }} target="안전하게" text={['신속하게', '정확하게', '대량으로']}>
                         당신의 메시지를 "안전하게" 전달해보세요
                     </TextAnimation.Slide>
+                    <Row style={{paddingTop:20,paddingLeft:15}}>
+                      <Button button style={{ width:180, height: 60, fontSize:25}} color="primary"type="button">
+                        시작하기
+                      </Button>
+                    </Row>
                   </p>
                 </Col>
                 <Col style={{marginLeft:30}}>
                   <div>
-                    <img src={sms} style={{paddingTop:30, paddingLeft: 80, width:550, height:440}} alt="sms"/>
+                    <img src={animation_sms} style={{paddingLeft:80, paddingBottom:120,width:630, height:590}} alt="sms"/>
                   </div>
-                </Col>
-              </Row>
-              <Row style={{paddingLeft:15}}>
-                <Button button style={{ width:180, height: 60, fontSize:25}} color="primary"type="button">
-                  시작하기
-                </Button>
-                <Button button style={{ width:180, height: 60, fontSize:25, marginLeft:20}} color="primary"type="button">
-                  로그인
-                </Button>
+                </Col>  
               </Row>
             </div>
           </Container>
@@ -92,16 +90,6 @@ const Onboarding = (props) => {
             </svg>
           </div>
         </div>
-        {/* 혹시 몰라서 남겨둠, 아래는 로그인 연동 컴포넌트 */}
-        {/* Page content */}
-        {/* <Container className="mt--8 pb-5">
-          <Row className="justify-content-center">
-            <Switch>
-              {getRoutes(routes)}
-              <Redirect from="*" to="/auth/login" />
-            </Switch>
-          </Row>
-        </Container> */}
       </div>
     </>
   );

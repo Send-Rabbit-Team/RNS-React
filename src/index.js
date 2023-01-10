@@ -26,9 +26,10 @@ import "assets/scss/argon-dashboard-react.scss";
 import AdminLayout from "layouts/Admin.js";
 import AuthLayout from "layouts/Auth.js";
 import OnboardingLayout from "layouts/Onboarding"
+import setAuthorizationToken from "./utils/setAuthorizationToken.js"
 
 // const root = ReactDOM.createRoot(document.getElementById("root"));
-
+setAuthorizationToken(localStorage.getItem("bearer"))
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
