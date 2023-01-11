@@ -12,13 +12,81 @@ import {
   Row,
   Col
 } from "reactstrap";
+import { useState } from "react";
+import axios from "axios";
+import setAuthorizationToken from "../../utils/setAuthorizationToken.js"
+
+// Redux 활용을 위한 jwt 라이브러리 - jetpack 요구
+// import jwt from "jsonwebtoken"
+
 
 const Login = () => {
+  const [email, setEmail] =  useState();
+  const [password, setPassword] =  useState();
+
+  const GeneralLoginInfo = {
+    email: email,
+    password: password
+  }
+
+  const GoogleLoginInfo = {
+    email: email
+  }
+
+  const login = async ()=>{
+    await axios.post("/login", GeneralLoginInfo)
+      .then(response => {
+        if (response.data.isSuccess === true) {
+          window.alert(response.data.message);
+          console.log("로그인 성공 결과: ",response.data)
+          localStorage.setItem("bearer", response.data.result.jwt);
+          localStorage.setItem("profile_image", response.data.result.profileImage);
+          localStorage.setItem("name", response.data.result.name);
+
+          console.log('토큰: ',response.data.result.jwt)
+          setAuthorizationToken(response.data.result.jwt);
+
+          // Redux활용 코드:
+          // console.log('디코딩된 토큰(회원정보): ',jwt.decode(response.data.result.jwt))
+
+          window.location.replace("/admin/index")
+          return response.data.code;
+        } else{
+          window.alert(response.data.message);
+          console.log("로그인 실패 결과: ",response.data)
+        }
+      }
+    )
+  }
+
+  //    **  Header 추가 sample 코드  **
+  //    var params = new URLSearchParams();
+  //    params.append('email', "john@gmail.com");
+
+  const google = async () => {
+    axios.defaults.withCredentials = true;
+    await axios.post("/google")
+        .then((response)=>{
+          if (response.data.isSuccess === true) {
+            window.alert(response.data.message);
+            console.log("로그인 성공 결과: ",response.data)
+            localStorage.setItem("bearer", response.data.result.jwt);
+            window.location.replace("/admin/index")
+            return response.data.code;
+          } else{
+            window.alert(response.data.message);
+            console.log("로그인 실패 결과: ",response.data)
+          }
+         }
+        )
+  }
+
+
   return (
     <>
       <Col lg="5" md="7">
         <Card className="bg-secondary shadow border-0">
-          <CardHeader className="bg-transparent pb-5">
+          <CardHeader className="bg-transparent pb-0">
             <div className="text-muted text-center mt-2 mb-3">
               <small>Sign in with</small>
             </div>
@@ -27,24 +95,7 @@ const Login = () => {
                 className="btn-neutral btn-icon"
                 color="default"
                 href="#pablo"
-                onClick={(e) => e.preventDefault()}
-              >
-                <span className="btn-inner--icon">
-                  <img
-                    alt="..."
-                    src={
-                      require("../../assets/img/icons/common/github.svg")
-                        .default
-                    }
-                  />
-                </span>
-                <span className="btn-inner--text">Github</span>
-              </Button>
-              <Button
-                className="btn-neutral btn-icon"
-                color="default"
-                href="#pablo"
-                onClick={(e) => e.preventDefault()}
+                onClick={google}
               >
                 <span className="btn-inner--icon">
                   <img
@@ -75,6 +126,7 @@ const Login = () => {
                     placeholder="Email"
                     type="email"
                     autoComplete="new-email"
+                    onChange={(e)=>{setEmail(e.target.value)}}
                   />
                 </InputGroup>
               </FormGroup>
@@ -89,6 +141,7 @@ const Login = () => {
                     placeholder="Password"
                     type="password"
                     autoComplete="new-password"
+                    onChange={(e)=>{setPassword(e.target.value)}}
                   />
                 </InputGroup>
               </FormGroup>
@@ -106,7 +159,7 @@ const Login = () => {
                 </label>
               </div>
               <div className="text-center">
-                <Button className="my-4" color="primary" type="button">
+                <Button className="my-4" color="primary" type="button" onClick={login}>
                   Sign in
                 </Button>
               </div>
@@ -139,3 +192,4 @@ const Login = () => {
 };
 
 export default Login;
+

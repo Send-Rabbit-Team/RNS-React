@@ -48,6 +48,7 @@ class Register extends React.Component {
       [state]: index
     });
   };
+
   google = async () => {
     await axios.get("/google")
         .then((response)=>{
@@ -57,12 +58,13 @@ class Register extends React.Component {
           window.alert("구글 회원 인증에 실패했습니다")
         })
   }
+
   render() {
     return (
         <>
           <Col lg="6" md="8">
             <Card className="bg-secondary shadow border-0">
-              <CardHeader className="bg-transparent pb-5">
+              <CardHeader className="bg-transparent pb-0">
                 <div className="text-muted text-center mt-2 mb-4">
                   <small>Sign up with</small>
                 </div>
@@ -86,7 +88,7 @@ class Register extends React.Component {
                 </div>
               </CardHeader>
               <CardBody className="px-lg-5 py-lg-5">
-                <div className="text-center text-muted mb-4">
+                <div className="text-center text-muted mb-4 ">
                   <small>Or sign up with credentials</small>
                 </div>
 
@@ -137,8 +139,6 @@ class Register extends React.Component {
                     </TabContent>
                   </CardBody>
                 </Card>
-
-
               </CardBody>
             </Card>
           </Col>
