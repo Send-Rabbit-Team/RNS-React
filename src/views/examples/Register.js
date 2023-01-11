@@ -17,30 +17,21 @@
 */
 
 // reactstrap components
-import React, {useState} from "react";
+import React from "react";
 import classnames from "classnames";
-import {
-  Button,
-  Card,
-  CardHeader,
-  CardBody,
-  FormGroup,
-  Form,
-  Input,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroup,
-  Row,
-  Col,
-  Nav, NavItem, NavLink, TabContent, TabPane
-} from "reactstrap";
+import { Card, CardHeader, CardBody, Col, Nav, NavItem, NavLink, TabContent, TabPane, Button} from "reactstrap";
 import RegMember from "./RegMember";
 import RegCompany from "./RegCompany";
 import axios from "axios";
+import {GoogleLogin, GoogleOAuthProvider} from "@react-oauth/google";
+
+const CLIENT_ID_GOOGLE = "835228927820-80mfcdq6p90s97pqbo582f9f1s0ng935.apps.googleusercontent.com"
 
 class Register extends React.Component {
+
   state = {
-    tabs: 1
+    tabs: 1,
+    gmail: null
   };
   toggleNavs = (e, state, index) => {
     e.preventDefault();
@@ -48,47 +39,38 @@ class Register extends React.Component {
       [state]: index
     });
   };
-
-  google = async () => {
-    await axios.get("/google")
-        .then((response)=>{
-          window.alert("구글 회원 인증에 성공했습니다")
-        })
-        .catch((error) => {
-          window.alert("구글 회원 인증에 실패했습니다")
-        })
-  }
-
   render() {
     return (
         <>
           <Col lg="6" md="8">
             <Card className="bg-secondary shadow border-0">
-              <CardHeader className="bg-transparent pb-0">
+              <CardHeader className="bg-transparent pb-5">
                 <div className="text-muted text-center mt-2 mb-4">
                   <small>Sign up with</small>
                 </div>
                 <div className="text-center">
-                  <Button
-                      className="btn-neutral btn-icon"
-                      color="default"
-                      onClick={this.google}
-                  >
-                <span className="btn-inner--icon">
-                  <img
-                      alt="..."
-                      src={
-                        require("../../assets/img/icons/common/google.svg")
-                            .default
-                      }
-                  />
-                </span>
-                    <span className="btn-inner--text">Google</span>
-                  </Button>
+
+                  <GoogleOAuthProvider clientId={CLIENT_ID_GOOGLE}>
+                    <GoogleLogin
+                      onSuccess={async (credentialResponse) => {
+                        await axios.post("/google", credentialResponse)
+                            .then((response) => {
+                              if (response.data.isSuccess) {
+                                window.alert("구글 회원 인증에 성공했습니다")
+                                this.state.gmail = response.data.result.email
+                              } else {
+                                window.alert("구글 회원 인증에 실패했습니다")
+                              }
+                            })
+                      }}
+                      onError={() => window.alert("구글 회원 인증에 실패했습니다")}
+                    />
+                  </GoogleOAuthProvider>
+
                 </div>
               </CardHeader>
               <CardBody className="px-lg-5 py-lg-5">
-                <div className="text-center text-muted mb-4 ">
+                <div className="text-center text-muted mb-4">
                   <small>Or sign up with credentials</small>
                 </div>
 
@@ -131,14 +113,16 @@ class Register extends React.Component {
                   <CardBody>
                     <TabContent activeTab={"tabs" + this.state.tabs}>
                       <TabPane tabId="tabs1">
-                        <RegMember></RegMember>
+                        <RegMember gmail={this.state.gmail}></RegMember>
                       </TabPane>
                       <TabPane tabId="tabs2">
-                        <RegCompany></RegCompany>
+                        <RegCompany gmail={this.state.gmail}></RegCompany>
                       </TabPane>
                     </TabContent>
                   </CardBody>
                 </Card>
+
+
               </CardBody>
             </Card>
           </Col>
