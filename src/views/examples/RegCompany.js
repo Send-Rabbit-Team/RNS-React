@@ -5,21 +5,18 @@ import axios from "axios";
 const RegCompany = (props) => {
     const regUrl = props.gmail == null ? "/register" : "/google/register"
 
-    const [companyEmail, setCompanyEmail] = useState(props.gmail != null ? props.gmail : "");
-    const [companyPassword1, setCompanyPassword1] = useState("");
-    const [companyPassword2, setCompanyPassword2] = useState("");
+    const [companyEmail, setCompanyEmail] = useState();
+    const [companyPassword1, setCompanyPassword1] = useState();
+    const [companyPassword2, setCompanyPassword2] = useState();
     const [companyManager, setCompanyManager] = useState();
     const [companyPhone, setCompanyPhone] = useState();
     const [companyName, setCompanyName] = useState();
     const [companyBsnum, setCompanyBsnum] = useState();
+    const [companyPhoneAccess, setCompanyPhoneAccess] = useState();
 
-    const [companyPasswordCheck, setCompanyPasswordCheck] = useState("");
-    const [companyPhoneCheck, setCompanyPhoneCheck] = useState("");
-    const [companyBsnumCheck, setCompanyBsnumCheck] = useState("");
-
-    const [isModalOpen, setOpenModalOpen] = useState(false)
-
-    const [accessNum, setAccessNum] = useState();
+    const [companyPhoneCheck, setCompanyPhoneCheck] = useState(false);
+    const [companyBsnumCheck, setCompanyBsnumCheck] = useState(false);
+    const [companyModalOpen, setCompanyModalOpen] = useState(false)
 
     const authPhone = async () => {
         companyPhone == null ? window.alert("인증할 휴대폰 번호를 입력하세요") :
@@ -27,30 +24,27 @@ const RegCompany = (props) => {
                 .then((response) => {
                     console.log(response)
                     if (response.data.isSuccess) {
-                        setOpenModalOpen(true)
+                        setCompanyModalOpen(true)
                     } else {
                         window.alert(response.data.message)
                     }
                 })
-                .catch((error) => {
-
-                })
     }
 
     const authAccessNum = async () => {
-        accessNum == null ? window.alert("인증 번호를 입력하세요") :
+        companyPhoneAccess == null ? window.alert("인증 번호를 입력하세요") :
             await axios.post("/sms/valid", {
                 "phoneNumber": companyPhone,
-                "authToken" : accessNum
+                "authToken" : companyPhoneAccess
             }).then((response) => {
                 if (response.data.isSuccess) {
-                    setOpenModalOpen(false)
-                    setCompanyPhoneCheck("has-success")
+                    setCompanyModalOpen(false)
+                    setCompanyPhoneCheck(true)
                     window.alert(response.data.message)
 
                 } else {
-                    setOpenModalOpen(false)
-                    setCompanyPhoneCheck("has-danger")
+                    setCompanyModalOpen(false)
+                    setCompanyPhoneCheck(false)
                     window.alert(response.data.message)
                 }
             })
@@ -62,22 +56,22 @@ const RegCompany = (props) => {
                 {"b_no" : [companyBsnum.toString()]})
                 .then((response) => {
                     if (response.data["match_cnt"] == 1) {
-                        setCompanyBsnumCheck("has-success")
+                        setCompanyBsnumCheck(true)
                         window.alert("사업자 번호 인증에 성공했습니다")
                     } else {
-                        setCompanyBsnumCheck("has-danger")
+                        setCompanyBsnumCheck(false)
                         window.alert("사업자 번호 인증에 실패했습니다")
                     }
                 })
                 .catch((error) => {
-                    setCompanyBsnumCheck("has-danger")
+                    setCompanyBsnumCheck(false)
                     window.alert("사업자 번호 인증에 실패했습니다")
                 })
     }
 
-    const registerMember = async () => {
+    const registerCompany = async () => {
         const companyRegisterReq = {
-            "email" : companyEmail,
+            "email" : props.gmail == null ? companyEmail : props.gmail,
             "password" : companyPassword1,
             "checkPassword" : companyPassword2,
             "name" : companyManager,
@@ -85,33 +79,34 @@ const RegCompany = (props) => {
             "companyName" : companyName,
             "bsNum" : companyBsnum,
             "memberType" : "COMPANY",
-            "loginType" : "DEFAULT"
-
+            "loginType" : props.gmail == null ? "DEFAULT" : "GOOGLE"
         }
-        companyEmail == null ? window.alert("이메일을 입력하세요") :
+        props.gmail == null && companyEmail == null ? window.alert("이메일을 입력하세요") :
             props.gmail == null && companyPassword1 == null ? window.alert("비밀번호를 입력하세요") :
-                // props.gmail == null && companyPasswordCheck != "has-success" ? window.alert("비밀번호를 확인하세요") :
-                companyManager == null ? window.alert("이름을 입력하세요") :
-                    companyPhone == null ? window.alert("휴대폰 번호를 입력하세요") :
-                        // companyPhoneCheck != "has-success" ? window.alert("휴대폰 번호를 인증하세요") :
-                        companyName == null ? window.alert("회사 이름을 입력하세요") :
-                            companyBsnum == null ? window.alert("사업자 번호를 입력하세요") :
-                                companyBsnumCheck != "has-success" ? window.alert("사업자 번호를 인증하세요") :
-                                await axios.post(regUrl, companyRegisterReq)
-                                    .then((response) => {
-                                        if (response.data.isSuccess == true) {
-                                            window.alert(response.data.message)
-                                            window.location.replace("/auth/login")
-                                        } else {
-                                            window.alert(response.data.message)
-                                        }
-                                    })
+                props.gmail == null && companyPassword1 != companyPassword2 ? window.alert("비밀번호가 일치하지 않습니다") :
+                    companyManager == null ? window.alert("이름을 입력하세요") :
+                        companyPhone == null ? window.alert("휴대폰 번호를 입력하세요") :
+                            !companyPhoneCheck ? window.alert("휴대폰 번호를 인증하세요") :
+                                companyName == null ? window.alert("회사 이름을 입력하세요") :
+                                    companyBsnum == null ? window.alert("사업자 번호를 입력하세요") :
+                                        !companyBsnumCheck ? window.alert("사업자 번호를 인증하세요") :
+                                        await axios.post(regUrl, companyRegisterReq)
+                                            .then((response) => {
+                                                if (response.data.isSuccess == true) {
+                                                    window.alert(response.data.message)
+                                                    window.location.replace("/auth/login")
+                                                } else {
+                                                    window.alert(response.data.message)
+                                                }
+                                            }).catch((error) => {
+                                                window.alert(error.response.data.message)
+                                            })
     }
     return (
         <>
             <Modal
                 className="modal-dialog-centered"
-                isOpen={isModalOpen}
+                isOpen={companyModalOpen}
             >
                 <div className="modal-header">
                     <h3 className="modal-title" id="exampleModalLabel">
@@ -122,20 +117,20 @@ const RegCompany = (props) => {
                         className="close"
                         data-dismiss="modal"
                         type="button"
-                        onClick={() => setOpenModalOpen(false)}
+                        onClick={() => setCompanyModalOpen(false)}
                     >
                         <span aria-hidden={true}>×</span>
                     </button>
                 </div>
                 <div className="modal-body">
-                    <Input placeholder="인증 번호를 입력하세요" type="number" onChange={(e) => {setAccessNum(e.target.value)}}/>
+                    <Input placeholder="인증 번호를 입력하세요" type="number" onChange={(e) => {setCompanyPhoneAccess(e.target.value)}}/>
                 </div>
                 <div className="modal-footer">
                     <Button
                         color="secondary"
                         data-dismiss="modal"
                         type="button"
-                        onClick={() => setOpenModalOpen(false)}
+                        onClick={() => setCompanyModalOpen(false)}
                     >
                         Close
                     </Button>
@@ -155,6 +150,7 @@ const RegCompany = (props) => {
                             </InputGroupText>
                         </InputGroupAddon>
                         <Input
+                            value={props.gmail != null ? props.gmail : null}
                             readOnly={props.gmail != null ? true : false}
                             placeholder="Email"
                             type="email"
@@ -180,14 +176,13 @@ const RegCompany = (props) => {
                                     autoComplete="new-password"
                                     onChange={(e)=>{
                                         setCompanyPassword1(e.target.value)
-                                        companyPassword1 === companyPassword2 ? setCompanyPasswordCheck("has-success") : setCompanyPasswordCheck("has-danger")
                                     }}
                                 />
                             </InputGroup>
                         </FormGroup>
 
 
-                        <FormGroup className={companyPasswordCheck}>
+                        <FormGroup>
                             <InputGroup className="input-group-alternative">
                                 <InputGroupAddon addonType="prepend">
                                     <InputGroupText>
@@ -199,7 +194,6 @@ const RegCompany = (props) => {
                                     type="password"
                                     onChange={(e)=>{
                                         setCompanyPassword2(e.target.value)
-                                        companyPassword1 === companyPassword2 ? setCompanyPasswordCheck("has-success") : setCompanyPasswordCheck("has-danger")
                                     }}
                                 />
                             </InputGroup>
@@ -225,29 +219,24 @@ const RegCompany = (props) => {
                 </FormGroup>
 
                 {/*phoneNumber*/}
-                <Row>
-                    <Col xs="9">
-                        <FormGroup className={companyPhoneCheck}>
-                            <InputGroup className="input-group-alternative mb-3">
-                                <InputGroupAddon addonType="prepend">
-                                    <InputGroupText>
-                                        <i className="fas fa-phone"></i>
-                                    </InputGroupText>
-                                </InputGroupAddon>
-                                <Input
-                                    placeholder="Phone"
-                                    type="tel"
-                                    onChange={(e)=>{setCompanyPhone(e.target.value)}}
-                                />
-                            </InputGroup>
-                        </FormGroup>
-                    </Col>
-                    <Col xs="3">
+                <FormGroup>
+                    <InputGroup className="input-group-alternative mb-3">
+                        <InputGroupAddon addonType="prepend">
+                            <InputGroupText>
+                                <i className="fas fa-phone"></i>
+                            </InputGroupText>
+                        </InputGroupAddon>
+                        <Input
+                            placeholder="Phone"
+                            type="tel"
+                            onChange={(e)=>{setCompanyPhone(e.target.value)}}
+                        />
                         <Button color="primary" outline type="button" onClick={authPhone}>
                             인증
                         </Button>
-                    </Col>
-                </Row>
+                    </InputGroup>
+                </FormGroup>
+
 
                 {/*company name*/}
                 <FormGroup>
@@ -266,32 +255,26 @@ const RegCompany = (props) => {
                 </FormGroup>
 
                 {/*company business number*/}
-                <Row>
-                    <Col xs="9">
-                        <FormGroup className={companyBsnumCheck}>
-                            <InputGroup className="input-group-alternative mb-3">
-                                <InputGroupAddon addonType="prepend">
-                                    <InputGroupText>
-                                        <i className="fas fa-briefcase" />
-                                    </InputGroupText>
-                                </InputGroupAddon>
-                                <Input
-                                    placeholder="Company Business Number"
-                                    type="number"
-                                    onChange={(e)=>{setCompanyBsnum(e.target.value)}}
-                                />
-                            </InputGroup>
-                        </FormGroup>
-                    </Col>
-                    <Col xs="3">
+                <FormGroup>
+                    <InputGroup className="input-group-alternative mb-3">
+                        <InputGroupAddon addonType="prepend">
+                            <InputGroupText>
+                                <i className="fas fa-briefcase" />
+                            </InputGroupText>
+                        </InputGroupAddon>
+                        <Input
+                            placeholder="Company Business Number"
+                            type="number"
+                            onChange={(e)=>{setCompanyBsnum(e.target.value)}}
+                        />
                         <Button color="primary" outline type="button" onClick={authBsnum}>
                             인증
                         </Button>
-                    </Col>
-                </Row>
+                    </InputGroup>
+                </FormGroup>
 
                 <div className="text-center">
-                    <Button className="mt-4" color="primary" type="button" onClick={registerMember}>
+                    <Button className="mt-4" color="primary" type="button" onClick={registerCompany}>
                         Create account
                     </Button>
                 </div>
