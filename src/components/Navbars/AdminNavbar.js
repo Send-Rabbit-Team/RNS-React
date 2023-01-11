@@ -35,6 +35,9 @@ import {
 } from "reactstrap";
 
 const AdminNavbar = (props) => {
+  const profile_image = localStorage.getItem("profile_image")
+  const name = localStorage.getItem("name")
+
   return (
     <>
       <Navbar className="navbar-top navbar-dark" expand="md" id="navbar-main">
@@ -64,12 +67,12 @@ const AdminNavbar = (props) => {
                   <span className="avatar avatar-sm rounded-circle">
                     <img
                       alt="..."
-                      src={require("../../assets/img/theme/rabbit-user2.png")}
+                      src={profile_image}
                     />
                   </span>
                   <Media className="ml-2 d-none d-lg-block">
-                    <span className="mb-0 text-sm font-weight-bold">
-                      Jessica Jones
+                    <span className="mb-0 text-lg font-weight-bold" style={{color: 'black'}}>
+                      {name}
                     </span>
                   </Media>
                 </Media>
