@@ -12,9 +12,10 @@ import {
   Row,
   Col
 } from "reactstrap";
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import setAuthorizationToken from "../../utils/setAuthorizationToken.js"
+import {GoogleLogin, GoogleOAuthProvider} from "@react-oauth/google";
 
 // Redux 활용을 위한 jwt 라이브러리 - jetpack 요구
 // import jwt from "jsonwebtoken"
@@ -63,9 +64,9 @@ const Login = () => {
   //    var params = new URLSearchParams();
   //    params.append('email', "john@gmail.com");
 
-  const google = async () => {
+  const google = async (credentialResponse) => {
     axios.defaults.withCredentials = true;
-    await axios.post("/google")
+    await axios.post("/google/login", credentialResponse)
         .then((response)=>{
           if (response.data.isSuccess === true) {
             window.alert(response.data.message);
@@ -86,28 +87,19 @@ const Login = () => {
     <>
       <Col lg="5" md="7">
         <Card className="bg-secondary shadow border-0">
-          <CardHeader className="bg-transparent pb-0">
-            <div className="text-muted text-center mt-2 mb-3">
+          <CardHeader className="bg-transparent pb-5">
+            <div className="text-muted text-center mt-2 mb-4">
               <small>Sign in with</small>
             </div>
             <div className="btn-wrapper text-center">
-              <Button
-                className="btn-neutral btn-icon"
-                color="default"
-                href="#pablo"
-                onClick={google}
-              >
-                <span className="btn-inner--icon">
-                  <img
-                    alt="..."
-                    src={
-                      require("../../assets/img/icons/common/google.svg")
-                        .default
-                    }
-                  />
-                </span>
-                <span className="btn-inner--text">Google</span>
-              </Button>
+
+              <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
+                <GoogleLogin
+                    onSuccess={(credentialResponse) => {google(credentialResponse)}}
+                    onError={() => window.alert("구글 회원 인증에 실패했습니다")}
+                />
+              </GoogleOAuthProvider>
+
             </div>
           </CardHeader>
           <CardBody className="px-lg-5 py-lg-5">
