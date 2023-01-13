@@ -1,11 +1,11 @@
 import Index from "views/Index.js";
 import Profile from "views/examples/Profile.js";
 import Maps from "views/examples/Maps.js";
-import Register from "views/examples/Register.js";
-import Login from "views/examples/Login.js";
-import Tables from "views/examples/SenderNumber.js";
+import Register from "views/auth/Register.js";
+import Login from "views/auth/Login.js";
+import Tables from "views/admin/SenderNumber.js";
 import Icons from "views/examples/Icons.js";
-import SenderNumber from "./views/examples/SenderNumber";
+import SenderNumber from "./views/admin/SenderNumber";
 
 var routes = [
   {

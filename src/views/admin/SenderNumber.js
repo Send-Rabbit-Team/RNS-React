@@ -61,9 +61,7 @@ const SenderNumber = () => {
   const [accessNum, setAccessNum] = useState();
 
   const makeHyphen = (number) => {
-    return number.slice(0,3) + "-" +
-        number.slice(3,7) + "-" +
-        number.slice(7,11)
+    return number.slice(0,3) + "-" + number.slice(3,7) + "-" + number.slice(7,11)
   }
 
   useState(async () => {
@@ -247,7 +245,7 @@ const SenderNumber = () => {
             <Card className="shadow">
               <CardHeader className="border-0">
                 <h3 className="mb-0">발신자 전화번호 목록 &nbsp;&nbsp;
-                  <a href="#"><i className="fas fa-plus-circle" onClick={(e) => {setIsModal(true)}}/></a>
+                  <a href="views/admin/SenderNumber#"><i className="fas fa-plus-circle" onClick={(e) => {setIsModal(true)}}/></a>
                 </h3>
               </CardHeader>
               <Table className="align-items-center table-flush" responsive>
@@ -267,9 +265,9 @@ const SenderNumber = () => {
                         {(nowPage-1)*pageData.size + index + 1}
                       </th>
                       <td>{senderNumber.memo}</td>
-                      <td>{makeHyphen(senderNumber.phoneNumber)}</td>
-                      <td>{makeHyphen(senderNumber.blockNumber)}</td>
-                      <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteSenderNumber(senderNumber.id)}}/></a></td>
+                      <td>{senderNumber.phoneNumber != null ? makeHyphen(senderNumber.phoneNumber) : null}</td>
+                      <td>{senderNumber.blockNumber !=  null ? makeHyphen(senderNumber.blockNumber) : null}</td>
+                      <td><a href="views/admin/SenderNumber#"><i className="fas fa-trash" onClick={(e) => {deleteSenderNumber(senderNumber.id)}}/></a></td>
                     </tr>
                 ))}
                 </tbody>

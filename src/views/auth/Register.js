@@ -46,7 +46,7 @@ class Register extends React.Component {
                 <div className="text-muted text-center mt-2 mb-4">
                   <small>Sign up with</small>
                 </div>
-                <div className="text-center">
+                <div align="center">
 
                   <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
                     <GoogleLogin

@@ -91,7 +91,7 @@ const Login = () => {
             <div className="text-muted text-center mt-2 mb-4">
               <small>Sign in with</small>
             </div>
-            <div className="btn-wrapper text-center">
+            <div align="center">
 
               <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
                 <GoogleLogin
@@ -162,7 +162,7 @@ const Login = () => {
           <Col xs="6">
             <a
               className="text-light"
-              href="#pablo"
+              href="views/auth/Login#pablo"
               onClick={(e) => e.preventDefault()}
             >
               <small>Forgot password?</small>
@@ -171,7 +171,7 @@ const Login = () => {
           <Col className="text-right" xs="6">
             <a
               className="text-light"
-              href="#pablo"
+              href="views/auth/Login#pablo"
               onClick={(e) => e.preventDefault()}
             >
               <small>Create new account</small>
