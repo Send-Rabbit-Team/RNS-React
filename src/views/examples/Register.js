@@ -25,8 +25,6 @@ import RegCompany from "./RegCompany";
 import axios from "axios";
 import {GoogleLogin, GoogleOAuthProvider} from "@react-oauth/google";
 
-const CLIENT_ID_GOOGLE = "835228927820-80mfcdq6p90s97pqbo582f9f1s0ng935.apps.googleusercontent.com"
-
 class Register extends React.Component {
 
   state = {
@@ -50,7 +48,7 @@ class Register extends React.Component {
                 </div>
                 <div className="text-center">
 
-                  <GoogleOAuthProvider clientId={CLIENT_ID_GOOGLE}>
+                  <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
                     <GoogleLogin
                       onSuccess={async (credentialResponse) => {
                         await axios.post("/google", credentialResponse)
@@ -59,7 +57,7 @@ class Register extends React.Component {
                                 window.alert("구글 회원 인증에 성공했습니다")
                                 this.state.gmail = response.data.result.email
                               } else {
-                                window.alert("구글 회원 인증에 실패했습니다")
+                                window.alert(response.data.message)
                               }
                             })
                       }}
