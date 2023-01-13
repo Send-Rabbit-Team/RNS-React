@@ -26,6 +26,8 @@ import {
   Table,
   Container,
   Row,
+  Button,
+  Modal, Input, FormGroup, InputGroup, InputGroupText, InputGroupAddon
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
@@ -50,6 +52,14 @@ const SenderNumber = () => {
   })
   const [senderNumberList, setSenderNumberList] = useState([])
 
+  const [isModal, setIsModal] = useState(false);
+  const [isForm, setIsForm] = useState(false);
+  const [isAccessNumCheck, setIsAccessNumCheck] = useState(false);
+
+  const [newPhoneNumber, setNewPhoneNumber] = useState();
+  const [newMemo, setNewMemo] = useState();
+  const [accessNum, setAccessNum] = useState();
+
   const makeHyphen = (number) => {
     return number.slice(0,3) + "-" +
         number.slice(3,7) + "-" +
@@ -71,12 +81,63 @@ const SenderNumber = () => {
         })
   })
 
+  const authPhone = async () => {
+    newPhoneNumber == null ? window.alert("인증할 전화번호를 입력하세요") :
+        await axios.post("/sms/send", {"to" : newPhoneNumber})
+            .then((response) => {
+              if (response.data.isSuccess) {
+                window.alert("입력하신 전화번호로 인증 문자를 전송하였습니다.")
+                setIsForm(true)
+              } else {
+                window.alert(response.data.message)
+              }
+            })
+  }
+
+  const authAccessNum = async () => {
+    accessNum == null ? window.alert("인증 번호를 입력하세요") :
+        await axios.post("/sms/valid", {
+          "phoneNumber": newPhoneNumber,
+          "authToken" : accessNum
+        }).then((response) => {
+          if (response.data.isSuccess) {
+            setIsForm(false)
+            setIsAccessNumCheck(true)
+            window.alert(response.data.message)
+
+          } else {
+            window.alert(response.data.message)
+          }
+        })
+  }
+
+
+  const registerSenderNumber = async () => {
+    newPhoneNumber == null ?  window.alert("전화번호를 입력하세요") :
+        !isAccessNumCheck ? window.alert("전화번호를 인증하세요") :
+          await axios.post("/sender/register", {
+            "memo" : newMemo,
+            "phoneNumber" : newPhoneNumber
+          })
+          .then((response) => {
+            if (response.data.isSuccess) {
+              window.alert(response.data.message)
+              window.location.reload()
+            } else {
+              window.alert(response.data.message)
+            }
+          })
+          .catch((error) => {
+            window.alert(error.response.data.message)
+          })
+  }
+
   const deleteSenderNumber = async (senderNumberId) => {
     await axios.patch(`/sender/delete/${senderNumberId}`)
         .then((response) => {
           if (response.data.isSuccess) {
             window.alert(response.data.message)
-            window.location.reload()
+            window.location.replace("/admin/sender/1")
           } else {
             window.alert(response.data.message)
           }
@@ -88,6 +149,95 @@ const SenderNumber = () => {
 
   return (
     <>
+      <Modal
+          className="modal-dialog-centered"
+          isOpen={isModal}
+      >
+        <div className="modal-header">
+          <h3 className="modal-title" id="modal-title-default">
+            발신자 전화번호 추가
+          </h3>
+          <button
+              aria-label="Close"
+              className="close"
+              data-dismiss="modal"
+              type="button"
+              onClick={() => setIsModal(false)}
+          >
+            <span aria-hidden={true}>×</span>
+          </button>
+        </div>
+        <div className="modal-body">
+
+          <FormGroup className="mb-3">
+            <InputGroup className="input-group-alternative">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fa fa-edit" />
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                  className="form-control-alternative"
+                  placeholder="메모를 입력하세요"
+                  type="text"
+                  onChange={(e) => {setNewMemo(e.target.value)}}
+              />
+            </InputGroup>
+          </FormGroup>
+
+          <FormGroup>
+            <InputGroup className="input-group-alternative">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fas fa-mobile-alt" />
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                  className="form-control-alternative"
+                  placeholder="전화번호를 입력하세요"
+                  type="text"
+                  onChange={(e) => {setNewPhoneNumber(e.target.value)}}
+              />
+              <Button color="primary" outline type="button" onClick={authPhone}>
+                인증
+              </Button>
+            </InputGroup>
+          </FormGroup>
+
+          <FormGroup style={{display: isForm ? null : "none"}}>
+            <InputGroup className="input-group-alternative">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fas fa-lock" />
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                  className="form-control-alternative"
+                  placeholder="인증번호를 입력하세요"
+                  type="text"
+                  onChange={(e) => {setAccessNum(e.target.value)}}
+              />
+              <Button color="primary" outline type="button" onClick={authAccessNum}>
+                확인
+              </Button>
+            </InputGroup>
+          </FormGroup>
+        </div>
+        <div className="modal-footer">
+          <Button color="primary" type="button" onClick={registerSenderNumber}>
+            Save changes
+          </Button>
+          <Button
+              className="ml-auto"
+              color="link"
+              data-dismiss="modal"
+              type="button"
+              onClick={() => setIsModal(false)}
+          >
+            Close
+          </Button>
+        </div>
+      </Modal>
       <Header />
       {/* Page content */}
       <Container className="mt--7" fluid>
@@ -96,7 +246,9 @@ const SenderNumber = () => {
           <div className="col">
             <Card className="shadow">
               <CardHeader className="border-0">
-                <h3 className="mb-0">발신자 전화번호 목록</h3>
+                <h3 className="mb-0">발신자 전화번호 목록 &nbsp;&nbsp;
+                  <a href="#"><i className="fas fa-plus-circle" onClick={(e) => {setIsModal(true)}}/></a>
+                </h3>
               </CardHeader>
               <Table className="align-items-center table-flush" responsive>
                 <thead className="thead-light">
