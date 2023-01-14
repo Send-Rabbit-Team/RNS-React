@@ -101,16 +101,17 @@ const ContactNumber = () => {
     a => a));
 
   // [수정] 그룹 선택 컨트롤러
-  const editDropDownSelectController = (id)=>{
-    console.log(id,'이 선택되었습니다.')
-    setEditGroupId(id)
-    // setEditGroupName(name) << 수정
+  const editDropDownSelectController = (key)=>{
+    console.log(JSON.parse(key).id,'이 선택되었습니다.')
+    setEditGroupId(JSON.parse(key).id)
+    setEditGroupName(JSON.parse(key).name)
   }
 
   // [추가] 그룹 선택 컨트롤러
   const newDropDownSelectController = (key)=>{
-    setNewGroupId(key.id)
-    setNewGroupName(key.name)
+    console.log(JSON.parse(key).id,'이 선택되었습니다.')
+    setNewGroupId(JSON.parse(key).id)
+    setNewGroupName(JSON.parse(key).name)
   }
 
   // 연락처 추가 메소드
@@ -280,16 +281,16 @@ const ContactNumber = () => {
                     type="text"
                     onChange={(e) => {setNewMemo(e.target.value)}}
                 />
-              <DropdownButton 
+               <DropdownButton 
                 variant="outline-secondary"
                 id="input-group-dropdown-2"
                 title=""
                 align="end"
-                onSelect={(eventKey)=> setNewGroupId(eventKey)}
+                onSelect={(contactGroup)=> newDropDownSelectController((contactGroup))}
               >
                 {contactGroupList.map(
                   contactGroup =>{
-                    return <Dropdown.Item eventKey={contactGroup.id}>{contactGroup.name}</Dropdown.Item>
+                    return <Dropdown.Item eventKey={JSON.stringify(contactGroup)}>{contactGroup.name}</Dropdown.Item>
                     }
                   )}
               </DropdownButton>
@@ -379,11 +380,11 @@ const ContactNumber = () => {
                 id="input-group-dropdown-2"
                 title=""
                 align="end"
-                onSelect={(eventKey)=> editDropDownSelectController(eventKey)}
+                onSelect={(contactGroup)=> editDropDownSelectController((contactGroup))}
               >
                 {contactGroupList.map(
                   contactGroup =>{
-                    return <Dropdown.Item eventKey={contactGroup.id}>{contactGroup.name}</Dropdown.Item>
+                    return <Dropdown.Item eventKey={JSON.stringify(contactGroup)}>{contactGroup.name}</Dropdown.Item>
                     }
                   )}
               </DropdownButton>
