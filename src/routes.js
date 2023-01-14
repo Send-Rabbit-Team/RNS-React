@@ -7,8 +7,9 @@ import Tables from "views/admin/SenderNumber.js";
 import Icons from "views/examples/Icons.js";
 import SenderNumber from "./views/admin/SenderNumber";
 import ContactNumber from "views/examples/Contact.js";
+import ContactGroup from "./views/admin/ContactGroup";
 
-const routes = [
+var routes = [
   {
     path: "/register",
     name: "메시지 전송",
@@ -24,11 +25,11 @@ const routes = [
     layout: "/auth"
   },
   {
-    path: "/register",
-    name: "그룹 관리",
+    path: "/group",
+    name: "수신자 그룹 관리",
     icon: "ni ni-circle-08 text-red",
-    component: Register,
-    layout: "/auth"
+    component: ContactGroup,
+    layout: "/admin"
   },
   {
     path: "/onboarding",
