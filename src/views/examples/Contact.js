@@ -39,10 +39,12 @@ const ContactNumber = () => {
     pageList: []
   })
   const [ContactNumberList, setContactNumberList] = useState([])
+  const [contactGroupList, setContactGroupList] = useState([])
 
   // 연락처 추가 Modal
   const [createModal, setCreateModal] = useState(false);
   const [newGroupId, setNewGroupId] = useState();
+  const [newGroupName, setNewGroupName] = useState();
   const [newPhoneNumber, setNewPhoneNumber] = useState();
   const [newMemo, setNewMemo] = useState();
 
@@ -66,6 +68,8 @@ const ContactNumber = () => {
         number.slice(7,11)
   }
 
+
+
   useState(async () => {
     await axios.get(`/sender/list/${nowPage}`)
         .then((response) => {
@@ -79,8 +83,35 @@ const ContactNumber = () => {
         .catch((error) => {
           window.alert(error.response.data.message)
         })
-  })
+     })
 
+
+  useState(async ()=>{
+    await axios.get(`/group/getAll`)
+        .then((response)=>{
+          if(response.data.isSuccess){
+            setContactGroupList([...response.data.result])
+          } else{
+            window.alert(response.data.message)
+          }
+        })
+     })
+
+  console.log('컨텍트 그룹 리스트: ', contactGroupList.map(
+    a => a));
+
+  // [수정] 그룹 선택 컨트롤러
+  const editDropDownSelectController = (id)=>{
+    console.log(id,'이 선택되었습니다.')
+    setEditGroupId(id)
+    // setEditGroupName(name) << 수정
+  }
+
+  // [추가] 그룹 선택 컨트롤러
+  const newDropDownSelectController = (key)=>{
+    setNewGroupId(key.id)
+    setNewGroupName(key.name)
+  }
 
   // 연락처 추가 메소드
   const registerContactNumber = async () => {
@@ -245,6 +276,7 @@ const ContactNumber = () => {
                 <Input
                     className="form-control-alternative"
                     placeholder="그룹을 선택하세요"
+                    value={newGroupName!=null?newGroupName:""}
                     type="text"
                     onChange={(e) => {setNewMemo(e.target.value)}}
                 />
@@ -255,10 +287,11 @@ const ContactNumber = () => {
                 align="end"
                 onSelect={(eventKey)=> setNewGroupId(eventKey)}
               >
-                  <Dropdown.Item eventKey={1}>그룹 1</Dropdown.Item>
-                  <Dropdown.Item eventKey={2}>그룹 2</Dropdown.Item>
-                  <Dropdown.Item eventKey={3}>그룹 3</Dropdown.Item>
-  
+                {contactGroupList.map(
+                  contactGroup =>{
+                    return <Dropdown.Item eventKey={contactGroup.id}>{contactGroup.name}</Dropdown.Item>
+                    }
+                  )}
               </DropdownButton>
             </InputGroup>
           </FormGroup>
@@ -346,12 +379,13 @@ const ContactNumber = () => {
                 id="input-group-dropdown-2"
                 title=""
                 align="end"
-                onSelect={(eventKey)=> setEditGroupId(eventKey)}
+                onSelect={(eventKey)=> editDropDownSelectController(eventKey)}
               >
-                  <Dropdown.Item eventKey={1}>그룹 1</Dropdown.Item>
-                  <Dropdown.Item eventKey={2}>그룹 2</Dropdown.Item>
-                  <Dropdown.Item eventKey={3}>그룹 3</Dropdown.Item>
-  
+                {contactGroupList.map(
+                  contactGroup =>{
+                    return <Dropdown.Item eventKey={contactGroup.id}>{contactGroup.name}</Dropdown.Item>
+                    }
+                  )}
               </DropdownButton>
    
             </InputGroup>
@@ -364,9 +398,6 @@ const ContactNumber = () => {
           </Button>
         </div>
       </Modal>
-
-
-
 
 
       <Header />
