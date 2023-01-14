@@ -6,8 +6,9 @@ import Login from "views/auth/Login.js";
 import Tables from "views/admin/SenderNumber.js";
 import Icons from "views/examples/Icons.js";
 import SenderNumber from "./views/admin/SenderNumber";
+import ContactNumber from "views/examples/Contact.js";
 
-var routes = [
+const routes = [
   {
     path: "/register",
     name: "메시지 전송",
@@ -48,6 +49,13 @@ var routes = [
     name: "발신자 번호 관리",
     icon: "fas fa-phone",
     component: SenderNumber,
+    layout: "/admin"
+  },
+  {
+    path: `/contact/:page`,
+    name: "연락처 관리",
+    icon: "fas fa-phone",
+    component: ContactNumber,
     layout: "/admin"
   },
 ];
