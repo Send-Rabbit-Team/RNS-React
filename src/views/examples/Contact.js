@@ -21,11 +21,12 @@ import axios from "axios";
 
 const ContactNumber = () => {
 
+  //페이지네이션
   const params = useParams();
   const nowPage = isNaN(params.page) ? 1 : params.page
-  const dummyKey = 19;
 
-  console.log('params.page: ',params)
+  //페이지네이션 구현 되기 전까지 사용할 dummy contact id
+  const dummyKey = 19;
 
   const [pageData, setPageData] = useState({
     totalPage: 0,
@@ -41,10 +42,14 @@ const ContactNumber = () => {
 
   // 연락처 추가 Modal
   const [createModal, setCreateModal] = useState(false);
-  const [isForm, setIsForm] = useState(false);
-  const [isAccessNumCheck, setIsAccessNumCheck] = useState(false);
+  const [newGroupId, setNewGroupId] = useState();
   const [newPhoneNumber, setNewPhoneNumber] = useState();
   const [newMemo, setNewMemo] = useState();
+
+
+
+  const [isForm, setIsForm] = useState(false);
+  const [isAccessNumCheck, setIsAccessNumCheck] = useState(false);
   const [accessNum, setAccessNum] = useState();
 
   // 연락처 수정 Modal
@@ -54,6 +59,7 @@ const ContactNumber = () => {
   const [editGroupId, setEditGroupId] = useState();
   const [editGroupName, setEditGroupName] =useState();
 
+  // 연락처 format 수정 메소드
   const makeHyphen = (number) => {
     return number.slice(0,3) + "-" +
         number.slice(3,7) + "-" +
@@ -75,26 +81,30 @@ const ContactNumber = () => {
         })
   })
 
+
+  // 연락처 추가 메소드
   const registerContactNumber = async () => {
     newPhoneNumber == null ?  window.alert("전화번호를 입력하세요") :
-        !isAccessNumCheck ? window.alert("전화번호를 인증하세요") :
-          await axios.post("/contact/create", {
-            "memo" : newMemo,
-            "phoneNumber" : newPhoneNumber
-          })
-          .then((response) => {
-            if (response.data.isSuccess) {
-              window.alert(response.data.message)
-              window.location.reload()
-            } else {
-              window.alert(response.data.message)
-            }
-          })
-          .catch((error) => {
-            window.alert(error.response.data.message)
-          })
+    await axios.post("/contact/create", {
+      "contactGroupId":newGroupId,
+      "memo" : newMemo,
+      "phoneNumber" : newPhoneNumber
+    })
+    .then((response) => {
+      if (response.data.isSuccess) {
+        window.alert(response.data.message)
+        window.location.reload()
+      } else {
+        window.alert(response.data.message)
+      }
+    })
+    .catch((error) => {
+      // window.alert(error.response.data.message)
+      window.location.reload()
+    })
   }
 
+  // 연락처 삭제 메소드
   const deleteContactNumber = async (ContactNumberId) => {
     await axios.patch(`/contact/delete/${ContactNumberId}`)
         .then((response) => {
@@ -170,8 +180,6 @@ const ContactNumber = () => {
   }
 
 
-  console.log('수정된 그룹 아이디 값: ',editGroupId);
-
   return (
     <>
       
@@ -245,10 +253,12 @@ const ContactNumber = () => {
                 id="input-group-dropdown-2"
                 title=""
                 align="end"
+                onSelect={(eventKey)=> setNewGroupId(eventKey)}
               >
-                <Dropdown.Item >그룹 1</Dropdown.Item>
-                <Dropdown.Item >그룹 2</Dropdown.Item>
-                <Dropdown.Item >그룹 3</Dropdown.Item>
+                  <Dropdown.Item eventKey={1}>그룹 1</Dropdown.Item>
+                  <Dropdown.Item eventKey={2}>그룹 2</Dropdown.Item>
+                  <Dropdown.Item eventKey={3}>그룹 3</Dropdown.Item>
+  
               </DropdownButton>
             </InputGroup>
           </FormGroup>
