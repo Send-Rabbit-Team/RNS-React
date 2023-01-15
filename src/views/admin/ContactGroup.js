@@ -27,7 +27,7 @@ import {
   Container,
   Row,
   Button,
-  Modal, Input, FormGroup, InputGroup, InputGroupText, InputGroupAddon
+  Modal, Input, FormGroup, InputGroup, InputGroupText, InputGroupAddon,
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
@@ -57,6 +57,7 @@ const ContactGroup = () => {
   const [newGroupName, setNewGroupName] = useState();
   const [editGroupId, setEditGroupId] = useState();
   const [editGroupName, setEditGroupName] = useState();
+  const [contactList, setContactList] = useState([]);
 
   const makeDate = (dateList) => {
     return dateList[0] + "-" + dateList[1] + "-" + dateList[2] + " " + dateList[3] + ":" + dateList[4] + ":" + dateList[5]
@@ -133,6 +134,22 @@ const ContactGroup = () => {
         })
   }
 
+  // 연락처 그룹 연동 해제 api 연동
+  const quitContactGroup = async (contactId) => {
+    await axios.patch(`/contact/quit/${contactId}`)
+        .then((response) => {
+          if (response.data.isSuccess) {
+            window.alert(response.data.message)
+            window.location.replace("/admin/group/1")
+          } else {
+            window.alert(response.data.message)
+          }
+        })
+        .catch((error) => {
+          window.alert(error.response.data.message)
+        })
+  }
+
   return (
     <>
 
@@ -140,12 +157,13 @@ const ContactGroup = () => {
       <Modal
           className="modal-dialog-centered"
           isOpen={isRegModal || isModModal}
+          size="lg"
       >
 
         {/* modal header */}
         <div className="modal-header">
           <h3 className="modal-title" id="modal-title-default">
-            수신자 그룹 추가
+            {isRegModal ? "수신자 그룹 추가" : isModModal ? "수신자 그룹 수정" : null}
           </h3>
           <button
               aria-label="Close"
@@ -178,6 +196,33 @@ const ContactGroup = () => {
               />
             </InputGroup>
           </FormGroup>
+
+          {/* 그룹에 포함된 연락처 목록 */}
+          {isRegModal ? null : isModModal ? (
+              <Table className="align-items-center mb-3" responsive>
+                <thead className="thead-light">
+                <tr>
+                  <th scope="col">No</th>
+                  <th scope="col">메모</th>
+                  <th scope="col">전화번호</th>
+                  <th scope="col">그룹에서 삭제</th>
+                </tr>
+                </thead>
+                <tbody>
+                {contactList.map((contact, index) => (
+                    <tr>
+                      <th scope="row" key={contact.id}>
+                        {(nowPage-1)*pageData.size + index + 1}
+                      </th>
+                      <td>{contact.memo}</td>
+                      <td>{contact.phoneNumber}</td>
+                      <td><a href="#"><i className="fas fa-trash" onClick={(e) => {quitContactGroup(contact.id)}}/></a></td>
+                    </tr>
+                ))}
+                </tbody>
+              </Table>
+          ) : null}
+
         </div>
 
         {/* modal footer */}
@@ -221,7 +266,8 @@ const ContactGroup = () => {
                     <th scope="col">그룹 이름</th>
                     <th scope="col">그룹 생성일</th>
                     <th scope="col">그룹 수정일</th>
-                    <th scope="col" />
+                    <th scope="col">삭제</th>
+                    <th scope="col">수정</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -230,14 +276,17 @@ const ContactGroup = () => {
                       <th scope="row" key={contactGroup.id}>
                         {(nowPage-1)*pageData.size + index + 1}
                       </th>
-                      <td><a href="#" onClick={(e) => {
-                        setIsModModal(true);
-                        setEditGroupId(contactGroup.id);
-                        setEditGroupName(contactGroup.name)
-                      }}>{contactGroup.name}</a></td>
+                      <td>{contactGroup.name}({contactGroup.contactDTOList.length})</td>
                       <td>{makeDate(contactGroup.createdAt)}</td>
                       <td>{makeDate(contactGroup.updatedAt)}</td>
                       <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteContactGroup(contactGroup.id)}}/></a></td>
+                      <td><a href="#"><i className="ni ni-settings-gear-65" onClick={(e) => {
+                        setIsModModal(true);
+                        setEditGroupId(contactGroup.id);
+                        setEditGroupName(contactGroup.name);
+                        setContactList(contactGroup.contactDTOList);
+                      }
+                      }/></a></td>
                     </tr>
                 ))}
                 </tbody>

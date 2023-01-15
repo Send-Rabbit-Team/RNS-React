@@ -245,7 +245,7 @@ const SenderNumber = () => {
             <Card className="shadow">
               <CardHeader className="border-0">
                 <h3 className="mb-0">발신자 전화번호 목록 &nbsp;&nbsp;
-                  <a href="views/admin/SenderNumber#"><i className="fas fa-plus-circle" onClick={(e) => {setIsModal(true)}}/></a>
+                  <a href="#"><i className="fas fa-plus-circle" onClick={(e) => {setIsModal(true)}}/></a>
                 </h3>
               </CardHeader>
               <Table className="align-items-center table-flush" responsive>
@@ -267,7 +267,7 @@ const SenderNumber = () => {
                       <td>{senderNumber.memo}</td>
                       <td>{senderNumber.phoneNumber != null ? makeHyphen(senderNumber.phoneNumber) : null}</td>
                       <td>{senderNumber.blockNumber !=  null ? makeHyphen(senderNumber.blockNumber) : null}</td>
-                      <td><a href="views/admin/SenderNumber#"><i className="fas fa-trash" onClick={(e) => {deleteSenderNumber(senderNumber.id)}}/></a></td>
+                      <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteSenderNumber(senderNumber.id)}}/></a></td>
                     </tr>
                 ))}
                 </tbody>
