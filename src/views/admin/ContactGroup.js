@@ -1,0 +1,299 @@
+/*!
+
+=========================================================
+* Argon Dashboard React - v1.2.2
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/argon-dashboard-react
+* Copyright 2022 Creative Tim (https://www.creative-tim.com)
+* Licensed under MIT (https://github.com/creativetimofficial/argon-dashboard-react/blob/master/LICENSE.md)
+
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+*/
+// reactstrap components
+import {
+  Card,
+  CardHeader,
+  CardFooter,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
+  Table,
+  Container,
+  Row,
+  Button,
+  Modal, Input, FormGroup, InputGroup, InputGroupText, InputGroupAddon
+} from "reactstrap";
+// core components
+import Header from "components/Headers/Header.js";
+import React, {useState} from "react";
+import { useParams } from 'react-router-dom';
+import axios from "axios";
+
+const ContactGroup = () => {
+
+  const params = useParams();
+  const nowPage = isNaN(params.page) ? 1 : params.page
+
+  const [pageData, setPageData] = useState({
+    totalPage: 0,
+    page: 1,
+    size: 0,
+    start: 0,
+    end: 0,
+    prev: false,
+    next: false,
+    pageList: []
+  })
+
+  const [contactGroupList, setContactGroupList] = useState([])
+  const [isRegModal, setIsRegModal] = useState(false);
+  const [isModModal, setIsModModal] = useState(false);
+  const [newGroupName, setNewGroupName] = useState();
+  const [editGroupId, setEditGroupId] = useState();
+  const [editGroupName, setEditGroupName] = useState();
+
+  const makeDate = (dateList) => {
+    return dateList[0] + "-" + dateList[1] + "-" + dateList[2] + " " + dateList[3] + ":" + dateList[4] + ":" + dateList[5]
+  }
+
+  // 그룹 조회 api 연동
+  useState(async () => {
+    await axios.get(`/group/list/${nowPage}`)
+        .then((response) => {
+          if (response.data.isSuccess) {
+            setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
+            setContactGroupList(response.data.result.dtoList)
+          } else {
+            window.alert(response.data.message)
+          }
+        })
+        .catch((error) => {
+          window.alert(error.response.data.message)
+        })
+  })
+
+  // 그룹 생성 api 연동
+  const registerContactGroup = async () => {
+    newGroupName == null ?  window.alert("그룹 이름을 입력하세요") :
+        await axios.post("/group/save", {
+          "name" : newGroupName
+        })
+        .then((response) => {
+          if (response.data.isSuccess) {
+            window.alert(response.data.message)
+            window.location.replace("/admin/group/1")
+          } else {
+            window.alert(response.data.message)
+          }
+        })
+        .catch((error) => {
+          window.alert(error.response.data.message)
+        })
+  }
+
+  // 그룹 수정 api 연동
+  const editContactGroup = async (contactGroupId) => {
+    editGroupName == null ? window.alert("그룹 이름을 입력하세요") :
+      await axios.patch('/group/edit', {
+        "contactGroupId" : editGroupId,
+        "name" : editGroupName
+      })
+          .then((response) => {
+            if (response.data.isSuccess) {
+              window.alert(response.data.message)
+              window.location.replace("/admin/group/1")
+            } else {
+              window.alert(response.data.message)
+            }
+          })
+          .catch((error) => {
+            window.alert(error.response.data.message)
+          })
+  }
+
+  // 그룹 삭제 api 연동
+  const deleteContactGroup = async (contactGroupId) => {
+    await axios.patch(`/group/delete/${contactGroupId}`)
+        .then((response) => {
+          if (response.data.isSuccess) {
+            window.alert(response.data.message)
+            window.location.replace("/admin/group/1")
+          } else {
+            window.alert(response.data.message)
+          }
+        })
+        .catch((error) => {
+          window.alert(error.response.data.message)
+        })
+  }
+
+  return (
+    <>
+
+      {/* modal start */}
+      <Modal
+          className="modal-dialog-centered"
+          isOpen={isRegModal || isModModal}
+      >
+
+        {/* modal header */}
+        <div className="modal-header">
+          <h3 className="modal-title" id="modal-title-default">
+            수신자 그룹 추가
+          </h3>
+          <button
+              aria-label="Close"
+              className="close"
+              data-dismiss="modal"
+              type="button"
+              onClick={() => {setIsRegModal(false); setIsModModal(false)}}
+          >
+            <span aria-hidden={true}>×</span>
+          </button>
+        </div>
+
+        {/* modal body */}
+        <div className="modal-body">
+
+          {/* input : 그룹 이름 입력 */}
+          <FormGroup className="mb-3">
+            <InputGroup className="input-group-alternative">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fas fa-users" />
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                  value={isModModal ? editGroupName : null}
+                  className="form-control-alternative"
+                  placeholder="그룹 이름을 입력하세요"
+                  type="text"
+                  onChange={(e) => (isRegModal ? setNewGroupName(e.target.value) : (isModModal ? setEditGroupName(e.target.value) : null))}
+              />
+            </InputGroup>
+          </FormGroup>
+        </div>
+
+        {/* modal footer */}
+        <div className="modal-footer">
+          <Button color="primary" type="button" onClick={isRegModal ? registerContactGroup : (isModModal ? editContactGroup : null)}>
+            Save changes
+          </Button>
+          <Button
+              className="ml-auto"
+              color="link"
+              data-dismiss="modal"
+              type="button"
+              onClick={() => {setIsRegModal(false); setIsModModal(false)}}
+          >
+            Close
+          </Button>
+        </div>
+      </Modal>
+      {/* modal end */}
+
+
+      <Header />
+
+
+      {/* Page content */}
+      <Container className="mt--7" fluid>
+
+        {/* Table */}
+        <Row>
+          <div className="col">
+            <Card className="shadow">
+              <CardHeader className="border-0">
+                <h3 className="mb-0">수신자 그룹 목록 &nbsp;&nbsp;
+                  <a href="#"><i className="fas fa-plus-circle" onClick={(e) => {setIsRegModal(true)}}/></a>
+                </h3>
+              </CardHeader>
+              <Table className="align-items-center table-flush" responsive>
+                <thead className="thead-light">
+                  <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">그룹 이름</th>
+                    <th scope="col">그룹 생성일</th>
+                    <th scope="col">그룹 수정일</th>
+                    <th scope="col" />
+                  </tr>
+                </thead>
+                <tbody>
+                {contactGroupList.map((contactGroup, index) => (
+                    <tr>
+                      <th scope="row" key={contactGroup.id}>
+                        {(nowPage-1)*pageData.size + index + 1}
+                      </th>
+                      <td><a href="#" onClick={(e) => {
+                        setIsModModal(true);
+                        setEditGroupId(contactGroup.id);
+                        setEditGroupName(contactGroup.name)
+                      }}>{contactGroup.name}</a></td>
+                      <td>{makeDate(contactGroup.createdAt)}</td>
+                      <td>{makeDate(contactGroup.updatedAt)}</td>
+                      <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteContactGroup(contactGroup.id)}}/></a></td>
+                    </tr>
+                ))}
+                </tbody>
+              </Table>
+
+
+              {/* card footer */}
+              <CardFooter className="py-4">
+                <nav aria-label="...">
+
+                  {/* pagination */}
+                  <Pagination
+                    className="pagination justify-content-end mb-0"
+                    listClassName="justify-content-end mb-0"
+                  >
+                    {/*prev*/}
+                    <PaginationItem className={pageData.prev ? "active" : "disabled"}>
+                      <PaginationLink
+                        href={"/admin/group/" + (pageData.start-1).toString()}
+                        tabIndex="-1"
+                      >
+                        <i className="fas fa-angle-left" />
+                        <span className="sr-only">Previous</span>
+                      </PaginationLink>
+                    </PaginationItem>
+
+                    {/*now*/}
+                    {pageData.pageList.map(item => (
+                        <PaginationItem className={item == parseInt(nowPage) ? "active" : "inactive"}>
+                          <PaginationLink
+                              href={"/admin/group/" + item}
+                          >
+                            {item}
+                          </PaginationLink>
+                        </PaginationItem>
+                    ))}
+
+                    {/*next*/}
+                    <PaginationItem className={pageData.next ? "active" : "disabled"}>
+                      <PaginationLink
+                          href={"/admin/group/" + (pageData.end+1).toString()}
+                      >
+                        <i className="fas fa-angle-right" />
+                        <span className="sr-only">Next</span>
+                      </PaginationLink>
+                    </PaginationItem>
+
+                  </Pagination>
+                </nav>
+              </CardFooter>
+            </Card>
+          </div>
+        </Row>
+      </Container>
+    </>
+  );
+};
+
+export default ContactGroup;
