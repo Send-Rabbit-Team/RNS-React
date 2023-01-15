@@ -51,7 +51,7 @@ const ContactNumber = () => {
 
   // 연락처 추가 Modal
   const [createModal, setCreateModal] = useState(false);
-  const [newGroupId, setNewGroupId] = useState();
+  const [newGroupId, setNewGroupId] = useState(null);
   const [newGroupName, setNewGroupName] = useState();
   const [newPhoneNumber, setNewPhoneNumber] = useState();
   const [newMemo, setNewMemo] = useState();
@@ -112,8 +112,6 @@ const ContactNumber = () => {
      },[searchInput]
     )
 
-
-
   useState(async ()=>{
     await axios.get(`/group/getAll`)
         .then((response)=>{
@@ -141,20 +139,30 @@ const ContactNumber = () => {
     }
   }
 
-
-
-  
-
   // [수정] 그룹 선택 컨트롤러
   const editDropDownSelectController = (key)=>{
-    setEditGroupId(JSON.parse(key).id)
-    setEditGroupName(JSON.parse(key).name)
+    if (key =="(그룹 없음)"){
+      setEditGroupId("null")
+      setEditGroupName("(그룹없음)")
+      console.log('여기야 여기 !!: ',editGroupId)
+    } else{
+      setEditGroupId(JSON.parse(key).id)
+      setEditGroupName(JSON.parse(key).name)
+    }
   }
 
   // [추가] 그룹 선택 컨트롤러
   const newDropDownSelectController = (key)=>{
-    setNewGroupId(JSON.parse(key).id)
-    setNewGroupName(JSON.parse(key).name)
+    console.log('key: ',key)
+    if (key =="(그룹 없음)"){
+      setNewGroupId(null)
+      setNewGroupName("(그룹없음)")
+      
+    } else{
+      setNewGroupId(JSON.parse(key).id)
+      setNewGroupName(JSON.parse(key).name)
+    }
+    
   }
 
   // 연락처 추가 메소드
@@ -174,7 +182,6 @@ const ContactNumber = () => {
       }
     })
     .catch((error) => {
-      // window.alert(error.response.data.message)
       window.location.reload()
     })
   }
@@ -232,7 +239,9 @@ const ContactNumber = () => {
 
   // 연락처 수정 메소드
   const editContactNumber = async () => {
+    console.log('editGroupId: ',editGroupId)
     editPhoneNumber == null ?  window.alert("전화번호를 입력하세요") :
+          console.log('editContactId: ',editContactId)
           await axios.patch("/contact/edit", {
             "contactId": editContactId,
             "contactGroupId": editGroupId,
@@ -251,7 +260,6 @@ const ContactNumber = () => {
           })
           .catch((error) => {
             console.log(error)
-            // window.alert('완전 다른 에러: ',error)
             window.location.reload()
           })
   }
@@ -264,15 +272,16 @@ const ContactNumber = () => {
 
 
   const contactNumberListComponent = ContactNumberList.map((ContactNumber, index) => (
+    console.log('ContactNumber: ',ContactNumber),
       <tr>
         <th scope="row" key={ContactNumber.id}>
           {(nowPage-1)*pageData.size + index + 1}
         </th>
         <td>{makeHyphen(ContactNumber.phoneNumber)}</td>
-        <td>카카오 엔터프라이즈</td>
+        <td>{ContactNumber.groupName}</td>
         <td>{ContactNumber.contactMemo}</td>
-        <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteContactNumber(ContactNumber.id)}}/></a></td>
-        <td><a href="#"><i className="ni ni-settings-gear-65" onClick={(e) => {editConatactController(ContactNumber.id)}}/></a></td>
+        <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteContactNumber(ContactNumber.contactId)}}/></a></td>
+        <td><a href="#"><i className="ni ni-settings-gear-65" onClick={(e) => {editConatactController(ContactNumber.contactId)}}/></a></td>
       </tr>
     )
   )
@@ -358,7 +367,6 @@ const ContactNumber = () => {
                     placeholder="그룹을 선택하세요"
                     value={newGroupName!=null?newGroupName:""}
                     type="text"
-                    onChange={(e) => {setNewMemo(e.target.value)}}
                 />
                <DropdownButton 
                 variant="outline-secondary"
@@ -367,6 +375,7 @@ const ContactNumber = () => {
                 align="end"
                 onSelect={(contactGroup)=> newDropDownSelectController((contactGroup))}
               >
+                <Dropdown.Item eventKey="(그룹 없음)" className="text-lead text-light">(그룹 없음)</Dropdown.Item>
                 {contactGroupList.map(
                   contactGroup =>{
                     return <Dropdown.Item eventKey={JSON.stringify(contactGroup)}>{contactGroup.name}</Dropdown.Item>
@@ -460,6 +469,8 @@ const ContactNumber = () => {
                 align="end"
                 onSelect={(contactGroup)=> editDropDownSelectController((contactGroup))}
               >
+
+                <Dropdown.Item eventKey="(그룹 없음)" className="text-lead text-light">(그룹 없음)</Dropdown.Item>
                 {contactGroupList.map(
                   contactGroup =>{
                     return <Dropdown.Item eventKey={JSON.stringify(contactGroup)}>{contactGroup.name}</Dropdown.Item>
@@ -493,11 +504,6 @@ const ContactNumber = () => {
                         <a href="#"><i className="fas fa-plus-circle" onClick={(e) => {setCreateModal(true)}}/></a>
                       </h3>
                     </Col>
-
-
-
-
-
                     {/* 연락처 검색 */}
                     <Col>
                       <InputGroup className="mb-0">
