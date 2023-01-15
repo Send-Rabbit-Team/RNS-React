@@ -8,13 +8,14 @@ import {
   Table,
   Container,
   Row,
+  Col,
   Button,
   Modal, Input, FormGroup, InputGroup, InputGroupText, InputGroupAddon
 } from "reactstrap";
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Header from "components/Headers/Header.js";
-import React, {useState} from "react";
+import React, {useState,useEffect} from "react";
 import { useParams } from 'react-router-dom';
 import axios from "axios";
 
@@ -24,9 +25,7 @@ const ContactNumber = () => {
   //페이지네이션
   const params = useParams();
   const nowPage = isNaN(params.page) ? 1 : params.page
-
-  //페이지네이션 구현 되기 전까지 사용할 dummy contact id
-  const dummyKey = 19;
+  console.log('nowPage: ',nowPage)
 
   const [pageData, setPageData] = useState({
     totalPage: 0,
@@ -38,24 +37,28 @@ const ContactNumber = () => {
     next: false,
     pageList: []
   })
+
   const [ContactNumberList, setContactNumberList] = useState([])
   const [contactGroupList, setContactGroupList] = useState([])
 
+
+  // 연락처 필터
+  const [searchInput, setSearchInput] = useState();
+  const [filter, setFilter] = useState(false);
+  const [searchContactNumberList,setSearchContactNumberList] = useState([]);
+  console.log('searchInput: ',searchInput)
+
+
   // 연락처 추가 Modal
   const [createModal, setCreateModal] = useState(false);
-  const [newGroupId, setNewGroupId] = useState();
+  const [newGroupId, setNewGroupId] = useState(null);
   const [newGroupName, setNewGroupName] = useState();
   const [newPhoneNumber, setNewPhoneNumber] = useState();
   const [newMemo, setNewMemo] = useState();
 
-
-
-  const [isForm, setIsForm] = useState(false);
-  const [isAccessNumCheck, setIsAccessNumCheck] = useState(false);
-  const [accessNum, setAccessNum] = useState();
-
   // 연락처 수정 Modal
   const [editModal, setEditModal] = useState(false);
+  const [editContactId, setEditContactId] = useState();
   const [editPhoneNumber, setEditPhoneNumber] =useState();
   const [editMemo, setEditMemo] = useState();
   const [editGroupId, setEditGroupId] = useState();
@@ -68,23 +71,46 @@ const ContactNumber = () => {
         number.slice(7,11)
   }
 
-
-
+  // 연락처 모두 불러오기
   useState(async () => {
-    await axios.get(`/sender/list/${nowPage}`)
+    await axios.get(`/contact/list/${nowPage}`)
         .then((response) => {
           if (response.data.isSuccess) {
-            setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
-            setContactNumberList(response.data.result.dtoList)
+              setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
+              setContactNumberList(response.data.result.dtoList)
+              console.log('전체 연락처 불러오기 성공: ', response.data.result.dtoList)
           } else {
             window.alert(response.data.message)
+            console.log('전체 연락처 불러오기 실패: ', response.data)
           }
         })
         .catch((error) => {
+          console.log('그냥 에러: ', error)
           window.alert(error.response.data.message)
         })
-     })
+     }
+    )
 
+  // 연락처 검색하기
+  useEffect(
+    async () => {
+    await axios.get(`/contact/search/${nowPage}?phoneNumber=${searchInput}`)
+        .then((response) => {
+          if (response.data.isSuccess) {
+              setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
+              setSearchContactNumberList(response.data.result.dtoList)
+            console.log('검색 성공: ', response.data)
+          } else {
+            window.alert(response.data.message)
+            console.log('검색 실패: ', response.data)
+          }
+        })
+        .catch((error) => {
+          console.log('그냥 에러: ', error)
+          window.alert(error.response.data.message)
+        })
+     },[searchInput]
+    )
 
   useState(async ()=>{
     await axios.get(`/group/getAll`)
@@ -95,23 +121,48 @@ const ContactNumber = () => {
             window.alert(response.data.message)
           }
         })
-     })
+      }
+    )
 
-  console.log('컨텍트 그룹 리스트: ', contactGroupList.map(
-    a => a));
+  // 검색 컨트롤러
+  const searchController = (value) => {
+    console.log('value', value);
+    if (value.length == 0 && filter==true){
+      setFilter(false)
+    } else if(value.length !=0 && filter==false){
+      setFilter(true)
+      setSearchInput(value)
+    }
+
+    if (filter == true){
+      setSearchInput(value)
+    }
+  }
 
   // [수정] 그룹 선택 컨트롤러
   const editDropDownSelectController = (key)=>{
-    console.log(JSON.parse(key).id,'이 선택되었습니다.')
-    setEditGroupId(JSON.parse(key).id)
-    setEditGroupName(JSON.parse(key).name)
+    if (key =="(그룹 없음)"){
+      setEditGroupId("null")
+      setEditGroupName("(그룹없음)")
+      console.log('여기야 여기 !!: ',editGroupId)
+    } else{
+      setEditGroupId(JSON.parse(key).id)
+      setEditGroupName(JSON.parse(key).name)
+    }
   }
 
   // [추가] 그룹 선택 컨트롤러
   const newDropDownSelectController = (key)=>{
-    console.log(JSON.parse(key).id,'이 선택되었습니다.')
-    setNewGroupId(JSON.parse(key).id)
-    setNewGroupName(JSON.parse(key).name)
+    console.log('key: ',key)
+    if (key =="(그룹 없음)"){
+      setNewGroupId(null)
+      setNewGroupName("(그룹없음)")
+      
+    } else{
+      setNewGroupId(JSON.parse(key).id)
+      setNewGroupName(JSON.parse(key).name)
+    }
+    
   }
 
   // 연락처 추가 메소드
@@ -131,7 +182,6 @@ const ContactNumber = () => {
       }
     })
     .catch((error) => {
-      // window.alert(error.response.data.message)
       window.location.reload()
     })
   }
@@ -175,6 +225,7 @@ const ContactNumber = () => {
       (response) => {
       if (response.data.isSuccess) {
         console.log('연락처 정보 받아오기 성공: ',response.data)
+        setEditContactId(ContactNumberId)
         setEditPhoneNumber(response.data.result.phoneNumber);
         setEditGroupId(response.data.result.groupId);
         getGroupInfo(response.data.result.groupId);
@@ -188,10 +239,11 @@ const ContactNumber = () => {
 
   // 연락처 수정 메소드
   const editContactNumber = async () => {
+    console.log('editGroupId: ',editGroupId)
     editPhoneNumber == null ?  window.alert("전화번호를 입력하세요") :
-          console.log();
+          console.log('editContactId: ',editContactId)
           await axios.patch("/contact/edit", {
-            "contactId": dummyKey,
+            "contactId": editContactId,
             "contactGroupId": editGroupId,
             "phoneNumber" : editPhoneNumber,
             "memo" : editMemo,
@@ -199,6 +251,8 @@ const ContactNumber = () => {
           .then((response) => {
             if (response.data.isSuccess) {
               window.alert('연락처를 수정했습니다.')
+              
+
               window.location.reload()
             } else {
               window.alert('연락처를 수정하는데 실패했습니다.')
@@ -206,16 +260,50 @@ const ContactNumber = () => {
           })
           .catch((error) => {
             console.log(error)
-            // window.alert('완전 다른 에러: ',error)
             window.location.reload()
           })
   }
 
 
+
+  const searchContactNumber = searchContactNumberList.filter((p) => {
+    return p.phoneNumber.includes(searchInput)
+  })
+
+
+  const contactNumberListComponent = ContactNumberList.map((ContactNumber, index) => (
+    console.log('ContactNumber: ',ContactNumber),
+      <tr>
+        <th scope="row" key={ContactNumber.id}>
+          {(nowPage-1)*pageData.size + index + 1}
+        </th>
+        <td>{makeHyphen(ContactNumber.phoneNumber)}</td>
+        <td>{ContactNumber.groupName}</td>
+        <td>{ContactNumber.contactMemo}</td>
+        <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteContactNumber(ContactNumber.contactId)}}/></a></td>
+        <td><a href="#"><i className="ni ni-settings-gear-65" onClick={(e) => {editConatactController(ContactNumber.contactId)}}/></a></td>
+      </tr>
+    )
+  )
+  
+  const searchContactNumberListComponent = searchContactNumber.map((searchContactNumber, index) => (
+    <tr>
+      <th scope="row" key={searchContactNumber.id}>
+        {(nowPage-1)*pageData.size + index + 1}
+      </th>
+      <td>{makeHyphen(searchContactNumber.phoneNumber)}</td>
+      <td>카카오 엔터프라이즈</td>
+      <td>{searchContactNumber.memo}</td>
+      <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteContactNumber(searchContactNumber.id)}}/></a></td>
+      <td><a href="#"><i className="ni ni-settings-gear-65" onClick={(e) => {editConatactController(searchContactNumber.id)}}/></a></td>
+    </tr>
+  )
+)
+
+
+
   return (
     <>
-      
-
       {/* 연락처 추가 */}
       <Modal
           className="modal-dialog-centered"
@@ -279,7 +367,6 @@ const ContactNumber = () => {
                     placeholder="그룹을 선택하세요"
                     value={newGroupName!=null?newGroupName:""}
                     type="text"
-                    onChange={(e) => {setNewMemo(e.target.value)}}
                 />
                <DropdownButton 
                 variant="outline-secondary"
@@ -288,6 +375,7 @@ const ContactNumber = () => {
                 align="end"
                 onSelect={(contactGroup)=> newDropDownSelectController((contactGroup))}
               >
+                <Dropdown.Item eventKey="(그룹 없음)" className="text-lead text-light">(그룹 없음)</Dropdown.Item>
                 {contactGroupList.map(
                   contactGroup =>{
                     return <Dropdown.Item eventKey={JSON.stringify(contactGroup)}>{contactGroup.name}</Dropdown.Item>
@@ -296,7 +384,6 @@ const ContactNumber = () => {
               </DropdownButton>
             </InputGroup>
           </FormGroup>
-
         </div>
         <div className="modal-footer">
           <Button color="primary" type="button" onClick={registerContactNumber}>
@@ -382,6 +469,8 @@ const ContactNumber = () => {
                 align="end"
                 onSelect={(contactGroup)=> editDropDownSelectController((contactGroup))}
               >
+
+                <Dropdown.Item eventKey="(그룹 없음)" className="text-lead text-light">(그룹 없음)</Dropdown.Item>
                 {contactGroupList.map(
                   contactGroup =>{
                     return <Dropdown.Item eventKey={JSON.stringify(contactGroup)}>{contactGroup.name}</Dropdown.Item>
@@ -409,9 +498,29 @@ const ContactNumber = () => {
           <div className="col">
             <Card className="shadow">
               <CardHeader className="border-0">
-                <h3 className="mb-0">연락처 목록 &nbsp;&nbsp;
-                  <a href="#"><i className="fas fa-plus-circle" onClick={(e) => {setCreateModal(true)}}/></a>
-                </h3>
+                <Row>
+                    <Col>
+                      <h3 className="mb-0" style={{paddingTop:10}}>연락처 목록 &nbsp;&nbsp;
+                        <a href="#"><i className="fas fa-plus-circle" onClick={(e) => {setCreateModal(true)}}/></a>
+                      </h3>
+                    </Col>
+                    {/* 연락처 검색 */}
+                    <Col>
+                      <InputGroup className="mb-0">
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <i className="ni ni-zoom-split-in" />
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <Input 
+                          placeholder="Search" 
+                          type="text" 
+                          onChange={(e) => {searchController(e.target.value)}}
+                          value={searchInput}
+                          onCh/>
+                      </InputGroup>
+                    </Col>
+                </Row>
               </CardHeader>
               <Table className="align-items-center table-flush" responsive>
                 <thead className="thead-light">
@@ -420,42 +529,12 @@ const ContactNumber = () => {
                     <th scope="col">전화번호</th>
                     <th scope="col">그룹</th>
                     <th scope="col">메모</th>
-                    
                     <th scope="col">삭제</th>
                     <th scope="col">수정</th>
                   </tr>
                 </thead>
                 <tbody>
-
-
-
-
-                  {/* Dummy Conatact */}
-                    <tr>
-                      <th scope="row" key={dummyKey}>
-                        1
-                      </th>
-                      <td>010-9190-8201</td>
-                      <td>카카오 엔터프라이즈</td>
-                      <td>메모입니다.</td>
-                      <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteContactNumber(dummyKey)}}/></a></td>
-                      <td><a href="#"><i className="ni ni-settings-gear-65" onClick={(e) => {editConatactController(dummyKey)}}/></a></td>
-                    </tr>
-
-
-                
-                {ContactNumberList.map((ContactNumber, index) => (
-                    <tr>
-                      <th scope="row" key={ContactNumber.id}>
-                        {(nowPage-1)*pageData.size + index + 1}
-                      </th>
-                      <td>{ContactNumber.memo}</td>
-                      <td>{makeHyphen(ContactNumber.phoneNumber)}</td>
-                      <td>{makeHyphen(ContactNumber.blockNumber)}</td>
-                      <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteContactNumber(ContactNumber.id)}}/></a></td>
-                      <td><a href="#"><i className="ni ni-settings-gear-65" onClick={(e) => {deleteContactNumber(ContactNumber.id)}}/></a></td>
-                    </tr>
-                ))}
+                  {filter==true?searchContactNumberListComponent:contactNumberListComponent}
                 </tbody>
               </Table>
               <CardFooter className="py-4">
@@ -467,7 +546,7 @@ const ContactNumber = () => {
                     {/*prev*/}
                     <PaginationItem className={pageData.prev ? "active" : "disabled"}>
                       <PaginationLink
-                        href={"/admin/sender/" + (pageData.start-1).toString()}
+                        href={"/admin/contact/" + (pageData.start-1).toString()}
                         tabIndex="-1"
                       >
                         <i className="fas fa-angle-left" />
@@ -479,7 +558,7 @@ const ContactNumber = () => {
                     {pageData.pageList.map(item => (
                         <PaginationItem className={item == parseInt(nowPage) ? "active" : "inactive"}>
                           <PaginationLink
-                              href={"/admin/sender/" + item}
+                              href={"/admin/contact/" + item}
                           >
                             {item}
                           </PaginationLink>
@@ -489,7 +568,7 @@ const ContactNumber = () => {
                     {/*next*/}
                     <PaginationItem className={pageData.next ? "active" : "disabled"}>
                       <PaginationLink
-                          href={"/admin/sender/" + (pageData.end+1).toString()}
+                          href={"/admin/contact/" + (pageData.end+1).toString()}
                       >
                         <i className="fas fa-angle-right" />
                         <span className="sr-only">Next</span>

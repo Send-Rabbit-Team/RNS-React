@@ -53,7 +53,7 @@ var routes = [
     layout: "/admin"
   },
   {
-    path: `/contact/:page`,
+    path: "/contact/:page",
     name: "연락처 관리",
     icon: "fas fa-phone",
     component: ContactNumber,
