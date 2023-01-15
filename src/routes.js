@@ -25,7 +25,7 @@ var routes = [
     layout: "/auth"
   },
   {
-    path: "/group",
+    path: "/group/:page",
     name: "수신자 그룹 관리",
     icon: "ni ni-circle-08 text-red",
     component: ContactGroup,
