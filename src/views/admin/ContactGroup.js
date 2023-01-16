@@ -120,34 +120,39 @@ const ContactGroup = () => {
 
   // 그룹 삭제 api 연동
   const deleteContactGroup = async (contactGroupId) => {
-    await axios.patch(`/group/delete/${contactGroupId}`)
-        .then((response) => {
-          if (response.data.isSuccess) {
-            window.alert(response.data.message)
-            window.location.replace("/admin/group/1")
-          } else {
-            window.alert(response.data.message)
-          }
-        })
-        .catch((error) => {
-          window.alert(error.response.data.message)
-        })
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      await axios.patch(`/group/delete/${contactGroupId}`)
+          .then((response) => {
+            if (response.data.isSuccess) {
+              window.alert(response.data.message)
+              window.location.replace("/admin/group/1")
+            } else {
+              window.alert(response.data.message)
+            }
+          })
+          .catch((error) => {
+            window.alert(error.response.data.message)
+          })
+    }
+
   }
 
   // 연락처 그룹 연동 해제 api 연동
   const quitContactGroup = async (contactId) => {
-    await axios.patch(`/contact/quit/${contactId}`)
-        .then((response) => {
-          if (response.data.isSuccess) {
-            window.alert(response.data.message)
-            window.location.replace("/admin/group/1")
-          } else {
-            window.alert(response.data.message)
-          }
-        })
-        .catch((error) => {
-          window.alert(error.response.data.message)
-        })
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      await axios.patch(`/contact/quit/${contactId}`)
+          .then((response) => {
+            if (response.data.isSuccess) {
+              window.alert(response.data.message)
+              window.location.replace("/admin/group/1")
+            } else {
+              window.alert(response.data.message)
+            }
+          })
+          .catch((error) => {
+            window.alert(error.response.data.message)
+          })
+    }
   }
 
   return (
