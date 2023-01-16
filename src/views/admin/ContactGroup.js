@@ -233,16 +233,7 @@ const ContactGroup = () => {
         {/* modal footer */}
         <div className="modal-footer">
           <Button color="primary" type="button" onClick={isRegModal ? registerContactGroup : (isModModal ? editContactGroup : null)}>
-            Save changes
-          </Button>
-          <Button
-              className="ml-auto"
-              color="link"
-              data-dismiss="modal"
-              type="button"
-              onClick={() => {setIsRegModal(false); setIsModModal(false)}}
-          >
-            Close
+            {isRegModal ? "추가하기" : isModModal ? "수정하기" : null}
           </Button>
         </div>
       </Modal>

@@ -64,6 +64,7 @@ const SenderNumber = () => {
     return number.slice(0,3) + "-" + number.slice(3,7) + "-" + number.slice(7,11)
   }
 
+  //발신자 전화번호 목록 불러오기
   useState(async () => {
     await axios.get(`/sender/list/${nowPage}`)
         .then((response) => {
@@ -79,6 +80,7 @@ const SenderNumber = () => {
         })
   })
 
+  // 인증번호 받기
   const authPhone = async () => {
     newPhoneNumber == null ? window.alert("인증할 전화번호를 입력하세요") :
         await axios.post("/sms/send", {"to" : newPhoneNumber})
@@ -92,6 +94,7 @@ const SenderNumber = () => {
             })
   }
 
+  // 인증번호 확인
   const authAccessNum = async () => {
     accessNum == null ? window.alert("인증 번호를 입력하세요") :
         await axios.post("/sms/valid", {
@@ -109,7 +112,7 @@ const SenderNumber = () => {
         })
   }
 
-
+  // 발신자 번호 추가하기
   const registerSenderNumber = async () => {
     newPhoneNumber == null ?  window.alert("전화번호를 입력하세요") :
         !isAccessNumCheck ? window.alert("전화번호를 인증하세요") :
@@ -130,27 +133,33 @@ const SenderNumber = () => {
           })
   }
 
+  // 발신자 번호 삭제하기
   const deleteSenderNumber = async (senderNumberId) => {
-    await axios.patch(`/sender/delete/${senderNumberId}`)
-        .then((response) => {
-          if (response.data.isSuccess) {
-            window.alert(response.data.message)
-            window.location.replace("/admin/sender/1")
-          } else {
-            window.alert(response.data.message)
-          }
-        })
-        .catch((error) => {
-          window.alert(error.response.data.message)
-        })
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      await axios.patch(`/sender/delete/${senderNumberId}`)
+          .then((response) => {
+            if (response.data.isSuccess) {
+              window.alert(response.data.message)
+              window.location.replace("/admin/sender/1")
+            } else {
+              window.alert(response.data.message)
+            }
+          })
+          .catch((error) => {
+            window.alert(error.response.data.message)
+          })
+    }
   }
 
   return (
     <>
+      {/* modal */}
       <Modal
           className="modal-dialog-centered"
           isOpen={isModal}
       >
+
+        {/*modal header*/}
         <div className="modal-header">
           <h3 className="modal-title" id="modal-title-default">
             발신자 전화번호 추가
@@ -165,8 +174,11 @@ const SenderNumber = () => {
             <span aria-hidden={true}>×</span>
           </button>
         </div>
+
+        {/*modal body*/}
         <div className="modal-body">
 
+          {/*input memo*/}
           <FormGroup className="mb-3">
             <InputGroup className="input-group-alternative">
               <InputGroupAddon addonType="prepend">
@@ -183,6 +195,7 @@ const SenderNumber = () => {
             </InputGroup>
           </FormGroup>
 
+          {/*input phoneNumber*/}
           <FormGroup>
             <InputGroup className="input-group-alternative">
               <InputGroupAddon addonType="prepend">
@@ -202,6 +215,7 @@ const SenderNumber = () => {
             </InputGroup>
           </FormGroup>
 
+          {/*input accessNum*/}
           <FormGroup style={{display: isForm ? null : "none"}}>
             <InputGroup className="input-group-alternative">
               <InputGroupAddon addonType="prepend">
@@ -220,19 +234,13 @@ const SenderNumber = () => {
               </Button>
             </InputGroup>
           </FormGroup>
+
         </div>
+
+        {/*modal footer*/}
         <div className="modal-footer">
           <Button color="primary" type="button" onClick={registerSenderNumber}>
-            Save changes
-          </Button>
-          <Button
-              className="ml-auto"
-              color="link"
-              data-dismiss="modal"
-              type="button"
-              onClick={() => setIsModal(false)}
-          >
-            Close
+            추가하기
           </Button>
         </div>
       </Modal>
@@ -274,6 +282,7 @@ const SenderNumber = () => {
               </Table>
               <CardFooter className="py-4">
                 <nav aria-label="...">
+
                   <Pagination
                     className="pagination justify-content-end mb-0"
                     listClassName="justify-content-end mb-0"

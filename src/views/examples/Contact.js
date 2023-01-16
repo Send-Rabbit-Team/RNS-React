@@ -157,12 +157,12 @@ const ContactNumber = () => {
     if (key =="(그룹 없음)"){
       setNewGroupId(null)
       setNewGroupName("(그룹없음)")
-      
+
     } else{
       setNewGroupId(JSON.parse(key).id)
       setNewGroupName(JSON.parse(key).name)
     }
-    
+
   }
 
   // 연락처 추가 메소드
@@ -188,18 +188,21 @@ const ContactNumber = () => {
 
   // 연락처 삭제 메소드
   const deleteContactNumber = async (ContactNumberId) => {
-    await axios.patch(`/contact/delete/${ContactNumberId}`)
-        .then((response) => {
-          if (response.data.isSuccess) {
-            window.alert(response.data.message)
-            window.location.replace("/admin/contact/1")
-          } else {
-            window.alert(response.data.message)
-          }
-        })
-        .catch((error) => {
-          window.alert(error.response.data.message)
-        })
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      await axios.patch(`/contact/delete/${ContactNumberId}`)
+          .then((response) => {
+            if (response.data.isSuccess) {
+              window.alert(response.data.message)
+              window.location.replace("/admin/contact/1")
+            } else {
+              window.alert(response.data.message)
+            }
+          })
+          .catch((error) => {
+            window.alert(error.response.data.message)
+          })
+    }
+
   }
 
   // 그룹 정보 불러오기
@@ -251,7 +254,7 @@ const ContactNumber = () => {
           .then((response) => {
             if (response.data.isSuccess) {
               window.alert('연락처를 수정했습니다.')
-              
+
 
               window.location.reload()
             } else {
@@ -285,7 +288,7 @@ const ContactNumber = () => {
       </tr>
     )
   )
-  
+
   const searchContactNumberListComponent = searchContactNumber.map((searchContactNumber, index) => (
     <tr>
       <th scope="row" key={searchContactNumber.id}>
@@ -368,7 +371,7 @@ const ContactNumber = () => {
                     value={newGroupName!=null?newGroupName:""}
                     type="text"
                 />
-               <DropdownButton 
+               <DropdownButton
                 variant="outline-secondary"
                 id="input-group-dropdown-2"
                 title=""
@@ -461,8 +464,8 @@ const ContactNumber = () => {
                     type="text"
                     onChange={(e) => {setNewMemo(e.target.value)}}
                 />
-         
-              <DropdownButton 
+
+              <DropdownButton
                 variant="outline-secondary"
                 id="input-group-dropdown-2"
                 title=""
@@ -477,7 +480,7 @@ const ContactNumber = () => {
                     }
                   )}
               </DropdownButton>
-   
+
             </InputGroup>
           </FormGroup>
 
@@ -512,9 +515,9 @@ const ContactNumber = () => {
                             <i className="ni ni-zoom-split-in" />
                           </InputGroupText>
                         </InputGroupAddon>
-                        <Input 
-                          placeholder="Search" 
-                          type="text" 
+                        <Input
+                          placeholder="Search"
+                          type="text"
                           onChange={(e) => {searchController(e.target.value)}}
                           value={searchInput}
                           onCh/>
