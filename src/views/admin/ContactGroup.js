@@ -264,6 +264,7 @@ const ContactGroup = () => {
                   <tr>
                     <th scope="col">No</th>
                     <th scope="col">그룹 이름</th>
+                    <th scope="col">그룹 연락처 수</th>
                     <th scope="col">그룹 생성일</th>
                     <th scope="col">그룹 수정일</th>
                     <th scope="col">삭제</th>
@@ -276,7 +277,8 @@ const ContactGroup = () => {
                       <th scope="row" key={contactGroup.id}>
                         {(nowPage-1)*pageData.size + index + 1}
                       </th>
-                      <td>{contactGroup.name}({contactGroup.contactDTOList.length})</td>
+                      <td>{contactGroup.name}</td>
+                      <td>{contactGroup.contactDTOList.length}</td>
                       <td>{makeDate(contactGroup.createdAt)}</td>
                       <td>{makeDate(contactGroup.updatedAt)}</td>
                       <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteContactGroup(contactGroup.id)}}/></a></td>
