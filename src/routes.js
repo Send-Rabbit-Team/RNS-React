@@ -8,6 +8,7 @@ import Icons from "views/examples/Icons.js";
 import SenderNumber from "./views/admin/SenderNumber";
 import ContactNumber from "views/examples/Contact.js";
 import ContactGroup from "./views/admin/ContactGroup";
+import SendSms from "./views/admin/SendSms"
 
 var routes = [
   {
@@ -52,7 +53,7 @@ var routes = [
   },
   {
     path: "/sender/:page",
-    name: "발신자 번호 관리",
+    name: "발신번호 관리",
     icon: "fas fa-phone",
     component: SenderNumber,
     layout: "/admin",
@@ -61,10 +62,18 @@ var routes = [
   {
     path: "/contact/:page",
     name: "연락처 관리",
-    icon: "fas fa-phone",
+    icon: "ni ni-collection",
     component: ContactNumber,
     layout: "/admin",
     sidebar:true
   },
+  {
+    path: "/sms",
+    name: "SMS 발송",
+    icon: "ni ni-email-83",
+    component: SendSms,
+    layout: "/admin",
+    sidebar:true
+  }
 ];
 export default routes;

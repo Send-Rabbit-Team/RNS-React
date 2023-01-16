@@ -2,6 +2,7 @@ import {
   Card,
   CardHeader,
   CardFooter,
+  CardBody,
   Pagination,
   PaginationItem,
   PaginationLink,
@@ -537,7 +538,8 @@ const ContactNumber = () => {
                   {filter==true?searchContactNumberListComponent:contactNumberListComponent}
                 </tbody>
               </Table>
-              <CardFooter className="py-4">
+              
+              <CardBody className="py-4">
                 <nav aria-label="...">
                   <Pagination
                     className="pagination justify-content-end mb-0"
@@ -577,7 +579,7 @@ const ContactNumber = () => {
 
                   </Pagination>
                 </nav>
-              </CardFooter>
+              </CardBody>
             </Card>
           </div>
         </Row>
