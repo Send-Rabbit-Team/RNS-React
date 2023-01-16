@@ -37,9 +37,9 @@ import axios from "axios";
 
 const SenderNumber = () => {
 
+  // 페이지네이션
   const params = useParams();
   const nowPage = isNaN(params.page) ? 1 : params.page
-
   const [pageData, setPageData] = useState({
     totalPage: 0,
     page: 1,
@@ -50,16 +50,25 @@ const SenderNumber = () => {
     next: false,
     pageList: []
   })
+
+  // 발신자 전화번호 조회
   const [senderNumberList, setSenderNumberList] = useState([])
 
+  // 발신자 전화번호 추가 모달
   const [isModal, setIsModal] = useState(false);
+
+  // 인증번호 입력 창
   const [isForm, setIsForm] = useState(false);
+
+  // 인증번호 확인 여부
   const [isAccessNumCheck, setIsAccessNumCheck] = useState(false);
 
+  // 발신자 전화번호 추가
   const [newPhoneNumber, setNewPhoneNumber] = useState();
   const [newMemo, setNewMemo] = useState();
   const [accessNum, setAccessNum] = useState();
 
+  // 연락처 format 수정 메소드
   const makeHyphen = (number) => {
     return number.slice(0,3) + "-" + number.slice(3,7) + "-" + number.slice(7,11)
   }

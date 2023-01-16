@@ -37,9 +37,9 @@ import axios from "axios";
 
 const ContactGroup = () => {
 
+  // 페이지네이션
   const params = useParams();
   const nowPage = isNaN(params.page) ? 1 : params.page
-
   const [pageData, setPageData] = useState({
     totalPage: 0,
     page: 1,
@@ -51,14 +51,27 @@ const ContactGroup = () => {
     pageList: []
   })
 
+  // 그룹 조회
   const [contactGroupList, setContactGroupList] = useState([])
+
+  // 그룹 생성
   const [isRegModal, setIsRegModal] = useState(false);
-  const [isModModal, setIsModModal] = useState(false);
   const [newGroupName, setNewGroupName] = useState();
+
+  // 그룹 수정
+  const [isModModal, setIsModModal] = useState(false);
   const [editGroupId, setEditGroupId] = useState();
   const [editGroupName, setEditGroupName] = useState();
+
+  // 그룹에 포함된 연락처 목록
   const [contactList, setContactList] = useState([]);
 
+  // 연락처 format 수정 메소드
+  const makeHyphen = (number) => {
+    return number.slice(0,3) + "-" + number.slice(3,7) + "-" + number.slice(7,11)
+  }
+
+  // 날짜 format 수정 메소드
   const makeDate = (dateList) => {
     return dateList[0] + "-" + dateList[1] + "-" + dateList[2] + " " + dateList[3] + ":" + dateList[4] + ":" + dateList[5]
   }
@@ -220,7 +233,7 @@ const ContactGroup = () => {
                         {(nowPage-1)*pageData.size + index + 1}
                       </th>
                       <td>{contact.memo}</td>
-                      <td>{contact.phoneNumber}</td>
+                      <td>{contact.phoneNumber != null ? makeHyphen(contact.phoneNumber) : null}</td>
                       <td><a href="#"><i className="fas fa-trash" onClick={(e) => {quitContactGroup(contact.id)}}/></a></td>
                     </tr>
                 ))}
