@@ -37,9 +37,9 @@ import axios from "axios";
 
 const ContactGroup = () => {
 
+  // 페이지네이션
   const params = useParams();
   const nowPage = isNaN(params.page) ? 1 : params.page
-
   const [pageData, setPageData] = useState({
     totalPage: 0,
     page: 1,
@@ -51,14 +51,27 @@ const ContactGroup = () => {
     pageList: []
   })
 
+  // 그룹 조회
   const [contactGroupList, setContactGroupList] = useState([])
+
+  // 그룹 생성
   const [isRegModal, setIsRegModal] = useState(false);
-  const [isModModal, setIsModModal] = useState(false);
   const [newGroupName, setNewGroupName] = useState();
+
+  // 그룹 수정
+  const [isModModal, setIsModModal] = useState(false);
   const [editGroupId, setEditGroupId] = useState();
   const [editGroupName, setEditGroupName] = useState();
+
+  // 그룹에 포함된 연락처 목록
   const [contactList, setContactList] = useState([]);
 
+  // 연락처 format 수정 메소드
+  const makeHyphen = (number) => {
+    return number.slice(0,3) + "-" + number.slice(3,7) + "-" + number.slice(7,11)
+  }
+
+  // 날짜 format 수정 메소드
   const makeDate = (dateList) => {
     return dateList[0] + "-" + dateList[1] + "-" + dateList[2] + " " + dateList[3] + ":" + dateList[4] + ":" + dateList[5]
   }
@@ -120,34 +133,39 @@ const ContactGroup = () => {
 
   // 그룹 삭제 api 연동
   const deleteContactGroup = async (contactGroupId) => {
-    await axios.patch(`/group/delete/${contactGroupId}`)
-        .then((response) => {
-          if (response.data.isSuccess) {
-            window.alert(response.data.message)
-            window.location.replace("/admin/group/1")
-          } else {
-            window.alert(response.data.message)
-          }
-        })
-        .catch((error) => {
-          window.alert(error.response.data.message)
-        })
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      await axios.patch(`/group/delete/${contactGroupId}`)
+          .then((response) => {
+            if (response.data.isSuccess) {
+              window.alert(response.data.message)
+              window.location.replace("/admin/group/1")
+            } else {
+              window.alert(response.data.message)
+            }
+          })
+          .catch((error) => {
+            window.alert(error.response.data.message)
+          })
+    }
+
   }
 
   // 연락처 그룹 연동 해제 api 연동
   const quitContactGroup = async (contactId) => {
-    await axios.patch(`/contact/quit/${contactId}`)
-        .then((response) => {
-          if (response.data.isSuccess) {
-            window.alert(response.data.message)
-            window.location.replace("/admin/group/1")
-          } else {
-            window.alert(response.data.message)
-          }
-        })
-        .catch((error) => {
-          window.alert(error.response.data.message)
-        })
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      await axios.patch(`/contact/quit/${contactId}`)
+          .then((response) => {
+            if (response.data.isSuccess) {
+              window.alert(response.data.message)
+              window.location.replace("/admin/group/1")
+            } else {
+              window.alert(response.data.message)
+            }
+          })
+          .catch((error) => {
+            window.alert(error.response.data.message)
+          })
+    }
   }
 
   return (
@@ -215,7 +233,7 @@ const ContactGroup = () => {
                         {(nowPage-1)*pageData.size + index + 1}
                       </th>
                       <td>{contact.memo}</td>
-                      <td>{contact.phoneNumber}</td>
+                      <td>{contact.phoneNumber != null ? makeHyphen(contact.phoneNumber) : null}</td>
                       <td><a href="#"><i className="fas fa-trash" onClick={(e) => {quitContactGroup(contact.id)}}/></a></td>
                     </tr>
                 ))}
@@ -228,16 +246,7 @@ const ContactGroup = () => {
         {/* modal footer */}
         <div className="modal-footer">
           <Button color="primary" type="button" onClick={isRegModal ? registerContactGroup : (isModModal ? editContactGroup : null)}>
-            Save changes
-          </Button>
-          <Button
-              className="ml-auto"
-              color="link"
-              data-dismiss="modal"
-              type="button"
-              onClick={() => {setIsRegModal(false); setIsModModal(false)}}
-          >
-            Close
+            {isRegModal ? "추가하기" : isModModal ? "수정하기" : null}
           </Button>
         </div>
       </Modal>
@@ -264,6 +273,7 @@ const ContactGroup = () => {
                   <tr>
                     <th scope="col">No</th>
                     <th scope="col">그룹 이름</th>
+                    <th scope="col">그룹 연락처 수</th>
                     <th scope="col">그룹 생성일</th>
                     <th scope="col">그룹 수정일</th>
                     <th scope="col">삭제</th>
@@ -276,7 +286,8 @@ const ContactGroup = () => {
                       <th scope="row" key={contactGroup.id}>
                         {(nowPage-1)*pageData.size + index + 1}
                       </th>
-                      <td>{contactGroup.name}({contactGroup.contactDTOList.length})</td>
+                      <td>{contactGroup.name}</td>
+                      <td>{contactGroup.contactDTOList.length}</td>
                       <td>{makeDate(contactGroup.createdAt)}</td>
                       <td>{makeDate(contactGroup.updatedAt)}</td>
                       <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteContactGroup(contactGroup.id)}}/></a></td>
