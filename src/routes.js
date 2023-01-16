@@ -8,6 +8,7 @@ import Icons from "views/examples/Icons.js";
 import SenderNumber from "./views/admin/SenderNumber";
 import ContactNumber from "views/examples/Contact.js";
 import ContactGroup from "./views/admin/ContactGroup";
+import SendSms from "./views/admin/SendSms"
 
 var routes = [
   {
@@ -15,49 +16,64 @@ var routes = [
     name: "메시지 전송",
     icon: "ni ni-send text-blue",
     component: Register,
-    layout: "/auth"
+    layout: "/auth",
+    sidebar:true
   },
   {
     path: "/register",
     name: "메시지 관리",
     icon: "ni ni-email-83 text-green",
     component: Register,
-    layout: "/auth"
+    layout: "/auth",
+    sidebar:true
   },
   {
     path: "/group/:page",
     name: "수신자 그룹 관리",
     icon: "ni ni-circle-08 text-red",
     component: ContactGroup,
-    layout: "/admin"
+    layout: "/admin",
+    sidebar:true
   },
   {
     path: "/onboarding",
     name: "온보딩",
     icon: "ni ni-send text-blue",
     component: Register,
-    layout: "/main"
+    layout: "/main",
+    sidebar:false
   },
   {
     path: "/login",
     name: "로그인",
     icon: "ni ni-send text-blue",
     component: Login,
-    layout: "/auth"
+    layout: "/auth",
+    sidebar:false
   },
   {
     path: "/sender/:page",
-    name: "발신자 번호 관리",
+    name: "발신번호 관리",
     icon: "fas fa-phone",
     component: SenderNumber,
-    layout: "/admin"
+    layout: "/admin",
+    sidebar:true
   },
   {
     path: "/contact/:page",
     name: "연락처 관리",
-    icon: "fas fa-phone",
+    icon: "ni ni-collection",
     component: ContactNumber,
-    layout: "/admin"
+    layout: "/admin",
+    sidebar:true
   },
+  {
+    path: "/sms",
+    name: "SMS 발송",
+    icon: "ni ni-email-83",
+    component: SendSms,
+    layout: "/admin",
+    sidebar:true
+  }
 ];
 export default routes;

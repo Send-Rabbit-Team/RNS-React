@@ -2,6 +2,7 @@ import {
   Card,
   CardHeader,
   CardFooter,
+  CardBody,
   Pagination,
   PaginationItem,
   PaginationLink,
@@ -280,11 +281,11 @@ const ContactNumber = () => {
         <th scope="row" key={ContactNumber.id}>
           {(nowPage-1)*pageData.size + index + 1}
         </th>
-        <td>{makeHyphen(ContactNumber.phoneNumber)}</td>
-        <td>{ContactNumber.groupName}</td>
-        <td>{ContactNumber.contactMemo}</td>
-        <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteContactNumber(ContactNumber.contactId)}}/></a></td>
-        <td><a href="#"><i className="ni ni-settings-gear-65" onClick={(e) => {editConatactController(ContactNumber.contactId)}}/></a></td>
+          <td>{ContactNumber.contactMemo}</td>
+          <td>{makeHyphen(ContactNumber.phoneNumber)}</td>
+          <td>{ContactNumber.groupName}</td>
+          <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteContactNumber(ContactNumber.contactId)}}/></a></td>
+          <td><a href="#"><i className="ni ni-settings-gear-65" onClick={(e) => {editConatactController(ContactNumber.contactId)}}/></a></td>
       </tr>
     )
   )
@@ -529,9 +530,9 @@ const ContactNumber = () => {
                 <thead className="thead-light">
                   <tr>
                     <th scope="col">No</th>
+                    <th scope="col">메모</th>
                     <th scope="col">전화번호</th>
                     <th scope="col">그룹</th>
-                    <th scope="col">메모</th>
                     <th scope="col">삭제</th>
                     <th scope="col">수정</th>
                   </tr>
@@ -540,7 +541,8 @@ const ContactNumber = () => {
                   {filter==true?searchContactNumberListComponent:contactNumberListComponent}
                 </tbody>
               </Table>
-              <CardFooter className="py-4">
+              
+              <CardBody className="py-4">
                 <nav aria-label="...">
                   <Pagination
                     className="pagination justify-content-end mb-0"
@@ -580,7 +582,7 @@ const ContactNumber = () => {
 
                   </Pagination>
                 </nav>
-              </CardFooter>
+              </CardBody>
             </Card>
           </div>
         </Row>
