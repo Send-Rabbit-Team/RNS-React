@@ -2,21 +2,16 @@ import {
     Card,
     CardHeader,
     CardFooter,
-    Pagination,
-    PaginationItem,
-    PaginationLink,
-    Table,
     Container,
     Row,
     Col,
     Button,
     Modal, Input, FormGroup, InputGroup, InputGroupText, InputGroupAddon
   } from "reactstrap";
-  import Dropdown from 'react-bootstrap/Dropdown';
-  import DropdownButton from 'react-bootstrap/DropdownButton';
   import Header from "components/Headers/Header.js";
   import React, {useState,useEffect} from "react";
   import { useParams } from 'react-router-dom';
+  import Accordion from 'react-bootstrap/Accordion';
   import axios from "axios";
   
   
@@ -304,10 +299,7 @@ import {
   
     return (
       <>
-  
-  
         <Header />
-        {/* Page content */}
         <Container className="mt--7" fluid>
           {/* Table */}
           <Row>
@@ -317,18 +309,141 @@ import {
                   <Row>
                       <Col>
                         <h3 className="mb-0" style={{paddingTop:10}}>SMS 발송 &nbsp;&nbsp;
-                          <a href="#"><i className="fas fa-plus-circle" onClick={(e) => {setCreateModal(true)}}/></a>
                         </h3>
+                      </Col>
+                      <Col>
+                        <h3 className="mb-0" style={{paddingTop:10}}>SMS 미리보기 &nbsp;&nbsp;</h3>
                       </Col>
                   </Row>
                 </CardHeader>
                 
                 <CardFooter className="py-4">
-               
+                    <Row>
+                        <Col md="6">
+                            <FormGroup>
+                                <div className="d-flex justify-content-between" style={{paddingBottom:20, flexDirection: "row"}} align="center" >
+                                    <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}}>
+                                    사진
+                                    </Button>
+                                    <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}}>
+                                    발신자
+                                    </Button>
+                                    <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:15}}>
+                                    수신거부번호
+                                    </Button>
+                                    <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}}>
+                                    템플릿
+                                    </Button>
+                                </div>
+                                <InputGroup className="input-group-alternative">
+                                    <InputGroupAddon addonType="prepend">
+                                        {/* 애드온 */}
+                                    </InputGroupAddon>
+                                    <Row>
+                                        <Col md="50">
+                                            <Input
+                                                id="exampleFormControlTextarea2"
+                                                style={{margin:22,boxSizing: "border-box", fontSize:30}}
+                                                placeholder="제목을 입력하세요."
+                                                cols="10"
+                                                rows="1"
+                                                type="textarea"
+                                            />
+                                            <hr class="hr hr-blurry" style={{marginLeft:50,width:500}}/>
+                                            <Input
+                                                id="exampleFormControlTextarea1"
+                                                style={{margin:32,boxSizing: "border-box"}}
+                                                placeholder="내용을 입력하세요."
+                                                rows="25"
+                                                cols="20"
+                                                type="textarea"
+                                            />
+                                            <hr class="hr hr-blurry" style={{marginLeft:50,width:500}}/>
+                                            <Input
+                                                id="exampleFormControlTextarea2"
+                                                style={{margin:32,boxSizing: "border-box"}}
+                                                placeholder="내용을 입력하세요."
+                                                cols="20"
+                                                type="textarea"
+                                                disabled
+                                            />
+                                        </Col>
+                                    </Row>
+                                </InputGroup>
+                            </FormGroup>
+                        </Col>
+
+
+
+
+
+
+
+                        <Col md="6" >
+                     
+                            <FormGroup >
+                                <InputGroup className="input-group-alternative">
+                                    <InputGroupAddon addonType="prepend">
+                                        {/* 애드온 */}
+                                    </InputGroupAddon>
+                                    <Row>
+                                        <Col md="50">
+                                            <Input
+                                                id="exampleFormControlTextarea2"
+                                                style={{margin:22,boxSizing: "border-box", fontSize:30}}
+                                                placeholder="제목을 입력하세요."
+                                                cols="10"
+                                                rows="1"
+                                                type="textarea"
+                                            />
+                                            <hr class="hr hr-blurry" style={{marginLeft:50,width:500}}/>
+                                            <Input
+                                                id="exampleFormControlTextarea1"
+                                                style={{margin:32,boxSizing: "border-box"}}
+                                                placeholder="내용을 입력하세요."
+                                                rows="25"
+                                                cols="20"
+                                                type="textarea"
+                                            />
+                                            <hr class="hr hr-blurry" style={{marginLeft:50,width:500}}/>
+                                            <Input
+                                                id="exampleFormControlTextarea2"
+                                                style={{margin:32,boxSizing: "border-box"}}
+                                                placeholder="내용을 입력하세요."
+                                                cols="20"
+                                                type="textarea"
+                                                disabled
+                                            />
+                                        </Col>
+                                    </Row>
+                                </InputGroup>
+                            </FormGroup>
+
+                            
+                        </Col>
+
+
+
+
+
+                    </Row>
                 </CardFooter>
               </Card>
+
+
+
+              
+
+              
+
+
+
+
+
+
             </div>
           </Row>
+          
         </Container>
       </>
     );
