@@ -11,8 +11,12 @@ import {
   import Header from "components/Headers/Header.js";
   import React, {useState,useEffect} from "react";
   import { useParams } from 'react-router-dom';
-  import Accordion from 'react-bootstrap/Accordion';
   import axios from "axios";
+
+  // SMS 템플릿
+  import 'react-chat-elements/dist/main.css'
+  // MessageBox component
+  import { MessageBox } from 'react-chat-elements'
   
   
   const SendSms = () => {
@@ -65,6 +69,24 @@ import {
           number.slice(3,7) + "-" +
           number.slice(7,11)
     }
+  
+    
+
+    // const a = "asdf"
+    // const b = "123123"
+
+    // const test2 = ()=>
+    // {
+    //   <span>
+    //             {a}
+    //             <br />
+    //             {b}
+    //           </span>
+    // }
+  
+    
+    const [messageContext, setMessageContext] = useState("메시지를 입력해주새요")
+    const [blocknumber, setBlockNumber] = useState(false);
   
     // 연락처 모두 불러오기
     useState(async () => {
@@ -128,7 +150,6 @@ import {
         setFilter(true)
         setSearchInput(value)
       }
-  
       if (filter == true){
         setSearchInput(value)
       }
@@ -311,31 +332,39 @@ import {
                         <h3 className="mb-0" style={{paddingTop:10}}>SMS 발송 &nbsp;&nbsp;
                         </h3>
                       </Col>
-                      <Col>
-                        <h3 className="mb-0" style={{paddingTop:10}}>SMS 미리보기 &nbsp;&nbsp;</h3>
-                      </Col>
                   </Row>
                 </CardHeader>
                 
                 <CardFooter className="py-4">
                     <Row>
+                        <Col md="10">
+                        <div className="d-flex justify-content-between" style={{paddingBottom:20, flexDirection: "row"}} align="center" >
+                                      <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}}>
+                                      사진
+                                      </Button>
+                                      <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}}>
+                                      발신자
+                                      </Button>
+                                      <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}} onClick={(e)=> blocknumber==true?setBlockNumber(false):setBlockNumber(true)}>
+                                      수신거부
+                                      </Button>
+                                      <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}}>
+                                      템플릿
+                                      </Button>
+                                      <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}}>
+                                      발송설정
+                                      </Button>
+                                      <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}}>
+                                      수신자
+                                      </Button>
+                                  </div>
+                        </Col>
+                                  
+                             
                         <Col md="6">
-                            <FormGroup>
-                                <div className="d-flex justify-content-between" style={{paddingBottom:20, flexDirection: "row"}} align="center" >
-                                    <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}}>
-                                    사진
-                                    </Button>
-                                    <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}}>
-                                    발신자
-                                    </Button>
-                                    <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:15}}>
-                                    수신거부번호
-                                    </Button>
-                                    <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}}>
-                                    템플릿
-                                    </Button>
-                                </div>
-                                <InputGroup className="input-group-alternative">
+                              <FormGroup>
+                                
+                                <InputGroup className="input-group-alternative" style={{boxShadow: '1px 2px 9px #8c8c8c'}}>
                                     <InputGroupAddon addonType="prepend">
                                         {/* 애드온 */}
                                     </InputGroupAddon>
@@ -357,19 +386,30 @@ import {
                                                 rows="25"
                                                 cols="20"
                                                 type="textarea"
+                                                onChange={(e)=>setMessageContext(e.target.value)}
                                             />
-                                            <hr class="hr hr-blurry" style={{marginLeft:50,width:500}}/>
-                                            <Input
-                                                id="exampleFormControlTextarea2"
-                                                style={{margin:32,boxSizing: "border-box"}}
-                                                placeholder="내용을 입력하세요."
-                                                cols="20"
-                                                type="textarea"
-                                                disabled
-                                            />
+
+                                            {blocknumber==true? 
+                                            <div>
+                                              <hr style={{marginLeft:50,width:500}}/>
+                                              <Input
+                                                  id="exampleFormControlTextarea2"
+                                                  style={{margin:32,boxSizing: "border-box"}}
+                                                  placeholder="내용을 입력하세요."
+                                                  cols="20"
+                                                  type="textarea"
+                                                  disabled
+                                              />
+                                            </div>
+
+                                            :null}
+                                            
+
+                                            
+                                            
                                         </Col>
                                     </Row>
-                                </InputGroup>
+                                  </InputGroup>
                             </FormGroup>
                         </Col>
 
@@ -378,53 +418,29 @@ import {
 
 
 
-
+                      {/* 미리 보기 / Bubble */}
                         <Col md="6" >
-                     
-                            <FormGroup >
-                                <InputGroup className="input-group-alternative">
+                            <FormGroup style={{position: "relative"}}>
+                                <InputGroup className="input-group-alternative" style={{boxShadow: '1px 2px 9px #8c8c8c'}}>
                                     <InputGroupAddon addonType="prepend">
                                         {/* 애드온 */}
                                     </InputGroupAddon>
-                                    <Row>
-                                        <Col md="50">
-                                            <Input
-                                                id="exampleFormControlTextarea2"
-                                                style={{margin:22,boxSizing: "border-box", fontSize:30}}
-                                                placeholder="제목을 입력하세요."
-                                                cols="10"
-                                                rows="1"
-                                                type="textarea"
-                                            />
-                                            <hr class="hr hr-blurry" style={{marginLeft:50,width:500}}/>
-                                            <Input
-                                                id="exampleFormControlTextarea1"
-                                                style={{margin:32,boxSizing: "border-box"}}
-                                                placeholder="내용을 입력하세요."
-                                                rows="25"
-                                                cols="20"
-                                                type="textarea"
-                                            />
-                                            <hr class="hr hr-blurry" style={{marginLeft:50,width:500}}/>
-                                            <Input
-                                                id="exampleFormControlTextarea2"
-                                                style={{margin:32,boxSizing: "border-box"}}
-                                                placeholder="내용을 입력하세요."
-                                                cols="20"
-                                                type="textarea"
-                                                disabled
-                                            />
-                                        </Col>
-                                    </Row>
+                                 
+                                    <div style={{height:816, paddingTop:60, margin:30,whiteSpace: "pre-wrap"}}>
+                                      <MessageBox
+                                        position={'left'}
+                                        type={'text'}
+                                        text={messageContext}
+                                    />
+
+                                    </div>
+
+                                   
+
                                 </InputGroup>
                             </FormGroup>
-
-                            
+    
                         </Col>
-
-
-
-
 
                     </Row>
                 </CardFooter>
