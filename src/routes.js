@@ -9,6 +9,7 @@ import SenderNumber from "./views/admin/SenderNumber";
 import ContactNumber from "views/examples/Contact.js";
 import ContactGroup from "./views/admin/ContactGroup";
 import SendSms from "./views/admin/SendSms"
+import MakeTemplate from "./views/admin/MakeTemplate";
 
 var routes = [
   {
@@ -72,6 +73,14 @@ var routes = [
     name: "SMS 발송",
     icon: "ni ni-email-83",
     component: SendSms,
+    layout: "/admin",
+    sidebar:true
+  },
+  {
+    path: "/template/:page",
+    name: "탬플릿 관리",
+    icon: "ni ni-email-83",
+    component: MakeTemplate,
     layout: "/admin",
     sidebar:true
   }
