@@ -366,26 +366,26 @@ const ContactNumber = () => {
                     <i className="ni ni-circle-08" />
                   </InputGroupText>
                 </InputGroupAddon>
-                <Input
-                    className="form-control-alternative"
-                    placeholder="그룹을 선택하세요"
-                    value={newGroupName!=null?newGroupName:""}
-                    type="text"
-                />
-               <DropdownButton
-                variant="outline-secondary"
-                id="input-group-dropdown-2"
-                title=""
-                align="end"
-                onSelect={(contactGroup)=> newDropDownSelectController((contactGroup))}
-              >
-                <Dropdown.Item eventKey="(그룹 없음)" className="text-lead text-light">(그룹 없음)</Dropdown.Item>
-                {contactGroupList.map(
-                  contactGroup =>{
-                    return <Dropdown.Item eventKey={JSON.stringify(contactGroup)}>{contactGroup.name}</Dropdown.Item>
-                    }
-                  )}
-              </DropdownButton>
+                  <Input
+                      className="form-control-alternative"
+                      placeholder="그룹을 선택하세요"
+                      value={newGroupName!=null?newGroupName:""}
+                      type="text"
+                  />
+                  <DropdownButton
+                    variant="outline-secondary"
+                    id="input-group-dropdown-2"
+                    title=""
+                    align="end"
+                    onSelect={(contactGroup)=> newDropDownSelectController((contactGroup))}
+                  >
+                    <Dropdown.Item eventKey="(그룹 없음)" className="text-lead text-light">(그룹 없음)</Dropdown.Item>
+                    {contactGroupList.map(
+                      contactGroup =>{
+                        return <Dropdown.Item eventKey={JSON.stringify(contactGroup)}>{contactGroup.name}</Dropdown.Item>
+                        }
+                      )}
+                  </DropdownButton>
             </InputGroup>
           </FormGroup>
         </div>

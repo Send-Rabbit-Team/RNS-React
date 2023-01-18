@@ -2,22 +2,21 @@ import {
     Card,
     CardHeader,
     CardFooter,
-    Pagination,
-    PaginationItem,
-    PaginationLink,
-    Table,
     Container,
     Row,
     Col,
     Button,
     Modal, Input, FormGroup, InputGroup, InputGroupText, InputGroupAddon
   } from "reactstrap";
-  import Dropdown from 'react-bootstrap/Dropdown';
-  import DropdownButton from 'react-bootstrap/DropdownButton';
   import Header from "components/Headers/Header.js";
   import React, {useState,useEffect} from "react";
   import { useParams } from 'react-router-dom';
   import axios from "axios";
+
+  // SMS 템플릿
+  import 'react-chat-elements/dist/main.css'
+  // MessageBox component
+  import { MessageBox } from 'react-chat-elements'
   
   
   const SendSms = () => {
@@ -70,6 +69,24 @@ import {
           number.slice(3,7) + "-" +
           number.slice(7,11)
     }
+  
+    
+
+    // const a = "asdf"
+    // const b = "123123"
+
+    // const test2 = ()=>
+    // {
+    //   <span>
+    //             {a}
+    //             <br />
+    //             {b}
+    //           </span>
+    // }
+  
+    
+    const [messageContext, setMessageContext] = useState("메시지를 입력해주새요")
+    const [blocknumber, setBlockNumber] = useState(false);
   
     // 연락처 모두 불러오기
     useState(async () => {
@@ -133,7 +150,6 @@ import {
         setFilter(true)
         setSearchInput(value)
       }
-  
       if (filter == true){
         setSearchInput(value)
       }
@@ -304,10 +320,7 @@ import {
   
     return (
       <>
-  
-  
         <Header />
-        {/* Page content */}
         <Container className="mt--7" fluid>
           {/* Table */}
           <Row>
@@ -317,18 +330,136 @@ import {
                   <Row>
                       <Col>
                         <h3 className="mb-0" style={{paddingTop:10}}>SMS 발송 &nbsp;&nbsp;
-                          <a href="#"><i className="fas fa-plus-circle" onClick={(e) => {setCreateModal(true)}}/></a>
                         </h3>
                       </Col>
                   </Row>
                 </CardHeader>
                 
                 <CardFooter className="py-4">
-               
+                    <Row>
+                        <Col md="10">
+                        <div className="d-flex justify-content-between" style={{paddingBottom:20, flexDirection: "row"}} align="center" >
+                                      <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}}>
+                                      사진
+                                      </Button>
+                                      <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}}>
+                                      발신자
+                                      </Button>
+                                      <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}} onClick={(e)=> blocknumber==true?setBlockNumber(false):setBlockNumber(true)}>
+                                      수신거부
+                                      </Button>
+                                      <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}}>
+                                      템플릿
+                                      </Button>
+                                      <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}}>
+                                      발송설정
+                                      </Button>
+                                      <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}}>
+                                      수신자
+                                      </Button>
+                                  </div>
+                        </Col>
+                                  
+                             
+                        <Col md="6">
+                              <FormGroup>
+                                
+                                <InputGroup className="input-group-alternative" style={{boxShadow: '1px 2px 9px #8c8c8c'}}>
+                                    <InputGroupAddon addonType="prepend">
+                                        {/* 애드온 */}
+                                    </InputGroupAddon>
+                                    <Row>
+                                        <Col md="50">
+                                            <Input
+                                                id="exampleFormControlTextarea2"
+                                                style={{margin:22,boxSizing: "border-box", fontSize:30}}
+                                                placeholder="제목을 입력하세요."
+                                                cols="10"
+                                                rows="1"
+                                                type="textarea"
+                                            />
+                                            <hr class="hr hr-blurry" style={{marginLeft:50,width:500}}/>
+                                            <Input
+                                                id="exampleFormControlTextarea1"
+                                                style={{margin:32,boxSizing: "border-box"}}
+                                                placeholder="내용을 입력하세요."
+                                                rows="25"
+                                                cols="20"
+                                                type="textarea"
+                                                onChange={(e)=>setMessageContext(e.target.value)}
+                                            />
+
+                                            {blocknumber==true? 
+                                            <div>
+                                              <hr style={{marginLeft:50,width:500}}/>
+                                              <Input
+                                                  id="exampleFormControlTextarea2"
+                                                  style={{margin:32,boxSizing: "border-box"}}
+                                                  placeholder="내용을 입력하세요."
+                                                  cols="20"
+                                                  type="textarea"
+                                                  disabled
+                                              />
+                                            </div>
+
+                                            :null}
+                                            
+
+                                            
+                                            
+                                        </Col>
+                                    </Row>
+                                  </InputGroup>
+                            </FormGroup>
+                        </Col>
+
+
+
+
+
+
+                      {/* 미리 보기 / Bubble */}
+                        <Col md="6" >
+                            <FormGroup style={{position: "relative"}}>
+                                <InputGroup className="input-group-alternative" style={{boxShadow: '1px 2px 9px #8c8c8c'}}>
+                                    <InputGroupAddon addonType="prepend">
+                                        {/* 애드온 */}
+                                    </InputGroupAddon>
+                                 
+                                    <div style={{height:816, paddingTop:60, margin:30,whiteSpace: "pre-wrap"}}>
+                                      <MessageBox
+                                        position={'left'}
+                                        type={'text'}
+                                        text={messageContext}
+                                    />
+
+                                    </div>
+
+                                   
+
+                                </InputGroup>
+                            </FormGroup>
+    
+                        </Col>
+
+                    </Row>
                 </CardFooter>
               </Card>
+
+
+
+              
+
+              
+
+
+
+
+
+
             </div>
           </Row>
+          
         </Container>
       </>
     );
