@@ -8,7 +8,17 @@ import {
     PaginationItem,
     PaginationLink,
     Row,
-    CardBody, Button, Input
+    CardBody,
+    Button,
+    Input,
+    Form,
+    UncontrolledDropdown,
+    Dropdown,
+    DropdownItem,
+    DropdownToggle,
+    DropdownMenu,
+    FormGroup,
+    InputGroup
 } from "reactstrap";
 import React, {useState} from "react";
 import {useParams} from "react-router-dom";
@@ -33,7 +43,9 @@ const MakeTemplate = () => {
 
     const [newTitle, setNewTitle] = useState();
     const [newContent, setNewContent] = useState("");
-    const [newTemplateType, setNewTemplateType] = useState();
+    const [newTemplateType, setNewTemplateType] = useState("SMS");
+
+    let patchTemplateReq = {}
 
     // 탬플릿 불러오기
     useState(async () => {
@@ -53,8 +65,8 @@ const MakeTemplate = () => {
 
     // 탬플릿 생성하기
     const registerTemplate = async () => {
-        newTitle == null ?  window.alert("탬플릿 제목을 입력하세요") :
-            newContent == null ? window.alert("탬플릿 내용을 입력하세요") :
+        newTitle == "" ?  window.alert("탬플릿 제목을 입력하세요") :
+            newContent == "" ? window.alert("탬플릿 내용을 입력하세요") :
                 await axios.post("/template/register", {
                     "title" : newTitle,
                     "content" : newContent,
@@ -74,14 +86,20 @@ const MakeTemplate = () => {
     }
 
     // 탬플릿 수정하기
-    const editTemplate = async (templateId, title, content) => {
-        title == null ?  window.alert("탬플릿 제목을 입력하세요") :
-            content == null ?  window.alert("탬플릿 내용을 입력하세요") :
-                await axios.patch("/template/edit", {
+    const editTemplate = async (templateId) => {
+        templateList.map((t) => {
+            if (t.templateId === templateId) {
+                patchTemplateReq = {
                     "templateId" : templateId,
-                    "title" : title,
-                    "content" : content
-                })
+                    "title" : t.title,
+                    "content" : t.content,
+                    "templateType" : t.templateType
+                }
+            }
+        })
+        patchTemplateReq.title == "" ?  window.alert("탬플릿 제목을 입력하세요") :
+            patchTemplateReq.content == "" ?  window.alert("탬플릿 내용을 입력하세요") :
+                await axios.patch("/template/edit", patchTemplateReq)
                     .then((response) => {
                         if (response.data.isSuccess) {
                             window.alert(response.data.message)
@@ -131,19 +149,43 @@ const MakeTemplate = () => {
                             <div className="m-3">
                                 <Card>
                                     <CardBody>
+                                        <UncontrolledDropdown className="mb-3">
+                                            <DropdownToggle
+                                                caret
+                                                outline
+                                                color="secondary"
+                                                type="button"
+                                                size="sm"
+                                            >
+                                                {newTemplateType == "SMS" ? "문자" : "알림톡"}
+                                            </DropdownToggle>
+
+                                            <DropdownMenu aria-labelledby="dropdownMenuButton">
+                                                <DropdownItem onClick={(e) => setNewTemplateType("SMS")}>
+                                                    문자
+                                                </DropdownItem>
+
+                                                <DropdownItem onClick={(e) => setNewTemplateType("KAKAO")}>
+                                                    알림톡
+                                                </DropdownItem>
+                                            </DropdownMenu>
+                                        </UncontrolledDropdown>
                                         <button
                                             className="close mb-3"
                                             onClick={(e) => {setNewTitle(""); setNewContent("")}}
                                         >
-                                            <span aria-hidden={true}>×</span>
+                                            <span aria-hidden={true} style={{fontSize:"25px"}}>×</span>
                                         </button>
-                                        <Input
-                                            value={newTitle}
-                                            className="mb-3"
-                                            placeholder="탬플릿 제목"
-                                            type="text"
-                                            onChange={(e) => {setNewTitle(e.target.value)}}
-                                        />
+                                        <InputGroup>
+                                            <Input
+                                                value={newTitle}
+                                                className="mb-3"
+                                                placeholder="탬플릿 제목"
+                                                type="text"
+                                                onChange={(e) => {setNewTitle(e.target.value)}}
+                                            />
+                                        </InputGroup>
+
                                         <Input
                                             value={newContent}
                                             className="mb-1"
@@ -154,6 +196,7 @@ const MakeTemplate = () => {
                                         />
                                         <p align="right">{newContent != null ? newContent.length * 2 : 0}자</p>
                                         <Button
+                                            block
                                             color="primary"
                                             onClick={registerTemplate}
                                         >
@@ -177,11 +220,44 @@ const MakeTemplate = () => {
                                         <div className="m-3">
                                             <Card>
                                                 <CardBody>
+                                                    <UncontrolledDropdown className="mb-3">
+                                                        <DropdownToggle
+                                                            caret
+                                                            outline
+                                                            color="secondary"
+                                                            type="button"
+                                                            size="sm"
+                                                        >
+                                                            {template.templateType == "SMS" ? "문자" : "알림톡"}
+                                                        </DropdownToggle>
+
+                                                        <DropdownMenu aria-labelledby="dropdownMenuButton">
+                                                            <DropdownItem onClick={(e) =>
+                                                                setTemplateList(
+                                                                    templateList.map((t) =>
+                                                                        t.templateId === template.templateId ? { ...t, templateType: "SMS" } : t
+                                                                    )
+                                                                )
+                                                            }>
+                                                                문자
+                                                            </DropdownItem>
+
+                                                            <DropdownItem onClick={(e) =>
+                                                                setTemplateList(
+                                                                    templateList.map((t) =>
+                                                                        t.templateId === template.templateId ? { ...t, templateType: "KAKAO" } : t
+                                                                    )
+                                                                )
+                                                            }>
+                                                                알림톡
+                                                            </DropdownItem>
+                                                        </DropdownMenu>
+                                                    </UncontrolledDropdown>
                                                     <button
                                                         className="close mb-3"
                                                         onClick={(e) => {deleteTemplate(template.templateId)}}
                                                     >
-                                                        <span aria-hidden={true}>×</span>
+                                                        <span aria-hidden={true} style={{fontSize:"25px"}}>×</span>
                                                     </button>
                                                     <Input
                                                         value={template.title}
@@ -212,8 +288,9 @@ const MakeTemplate = () => {
                                                     />
                                                     <p align="right">{template.content.length * 2}자</p>
                                                     <Button
+                                                        block
                                                         color="primary"
-                                                        onClick={(e) => {editTemplate(template.templateId, template.title, template.content)}}
+                                                        onClick={(e) => {editTemplate(template.templateId)}}
                                                     >
                                                         수정
                                                     </Button>
