@@ -52,7 +52,6 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
     return p.phoneNumber.includes(searchInput)
   })
 
-
   // 컴포넌트
   const searchContactNumberListComponent = searchContactNumber.map((searchContactNumber, index) => (
     <tr>
@@ -122,12 +121,11 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
   // axios
   // 연락처 모두 불러오기
   useState(async () => {
-    await axios.get(`/contact/list/${nowPage}`)
+    await axios.get(`/contact/list`)
       .then((response) => {
         if (response.data.isSuccess) {
-          setPageData(pageData => ({ ...pageData, ...response.data.result, page: nowPage }))
-          setContactNumberList(response.data.result.dtoList)
-          console.log('전체 연락처 불러오기 성공: ', response.data.result.dtoList)
+          setContactNumberList(response.data.result.contacts)
+          console.log('전체 연락처 불러오기 성공: ', response.data.result.contacts)
         } else {
           window.alert(response.data.message)
           console.log('전체 연락처 불러오기 실패: ', response.data)
@@ -193,7 +191,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
           <span aria-hidden={true}>×</span>
         </div>
 
-
+        
         <Row style={{
           display: "flex",
           flexDirection: "Row"
@@ -201,7 +199,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
 
           <Col sm={6} md={6}>
             <div className="col">
-              <Card className="shadow">
+              <Card className="shadow" style={{height:400}}>
                 <CardHeader className="border-0">
                   <Row>
                     {/* 연락처 검색 */}
@@ -213,7 +211,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
                           </InputGroupText>
                         </InputGroupAddon>
                         <Input
-                          placeholder="Search"
+                          placeholder="연락처 검색하기"
                           type="text"
                           onChange={(e) => { searchController(e.target.value) }}
                           value={searchInput}
@@ -222,60 +220,23 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
                     </Col>
                   </Row>
                 </CardHeader>
-                <Table className="align-items-center table-flush" responsive>
+                <Table className="align-items-center table-flush">
                   <thead>
                     <tr>
-                      <th scope="col">전화번호</th>
-                      <th scope="col">추가</th>
+                      <th scope="col" style={{paddingLeft:50}}>전화번호</th>
+                      <th scope="col" style={{float: "right", paddingRight:66}}>추가</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  </Table>
+
+                <Table className="align-items-center table-flush" responsive>
+                 
+           
+                  <tbody style={{overflowY: "scroll"}}>
                     {filter == true ? searchContactNumberListComponent : contactNumberListComponent}
                   </tbody>
                 </Table>
 
-                <CardBody className="py-2">
-                  <nav aria-label="...">
-
-                    <Pagination
-                      className="pagination justify-content-end mb-0"
-                      listClassName="justify-content-end mb-0"
-                    >
-
-                      <PaginationItem className={pageData.prev ? "active" : "disabled"}>
-                        <PaginationLink
-                          href={"/admin/contact/" + (pageData.start - 1).toString()}
-                          tabIndex="-1"
-                        >
-                          <i className="fas fa-angle-left" />
-                          <span className="sr-only">Previous</span>
-                        </PaginationLink>
-                      </PaginationItem>
-
-
-                      {pageData.pageList.map(item => (
-                        <PaginationItem className={item == parseInt(nowPage) ? "active" : "inactive"}>
-                          <PaginationLink
-                            href={"/admin/contact/" + item}
-                          >
-                            {item}
-                          </PaginationLink>
-                        </PaginationItem>
-                      ))}
-
-
-                      <PaginationItem className={pageData.next ? "active" : "disabled"} style={{ paddingBottom: 20 }}>
-                        <PaginationLink
-                          href={"/admin/contact/" + (pageData.end + 1).toString()}
-                        >
-                          <i className="fas fa-angle-right" />
-                          <span className="sr-only">Next</span>
-                        </PaginationLink>
-                      </PaginationItem>
-
-                    </Pagination>
-                  </nav>
-                </CardBody>
               </Card>
             </div>
           </Col>
@@ -283,7 +244,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
           {/* 그룹 목록 */}
           <Col sm={6} md={6}>
             <div className="col">
-              <Card className="shadow">
+              <Card className="shadow" style={{height:400}}>
                 <CardHeader className="border-0">
                   <Row>
 
@@ -295,7 +256,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
                           </InputGroupText>
                         </InputGroupAddon>
                         <Input
-                          placeholder="Search"
+                          placeholder="그룹 검색하기"
                           type="text"
                           // 검색 수정중
                           // onChange={(e) => {ㄴㄴㄴ}} 
@@ -305,14 +266,17 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
                     </Col>
                   </Row>
                 </CardHeader>
-                <Table className="align-items-center table-flush" responsive>
+                <Table className="align-items-center table-flush">
                   <thead>
                     <tr>
-                      <th scope="col">그룹이름</th>
-                      <th scope="col">추가</th>
+                      <th scope="col" style={{paddingLeft:50}}>전화번호</th>
+                      <th scope="col" style={{float: "right", paddingRight:62}}>추가</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  </Table>
+                <Table className="align-items-center table-flush" responsive>
+               
+                <tbody style={{overflowY: "scroll"}}>
                     {contactGroupListComponent}
                   </tbody>
                 </Table>
