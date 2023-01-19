@@ -49,7 +49,7 @@ const MakeTemplate = () => {
 
     // 탬플릿 불러오기
     useState(async () => {
-        await axios.get(`/template/all/${nowPage}`)
+        await axios.get(`/templates/${nowPage}`)
             .then((response) => {
                 if (response.data.isSuccess) {
                     setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
@@ -75,7 +75,7 @@ const MakeTemplate = () => {
                     .then((response) => {
                         if (response.data.isSuccess) {
                             window.alert(response.data.message)
-                            window.location.reload()
+                            window.location.replace("/admin/template/1")
                         } else {
                             window.alert(response.data.message)
                         }
