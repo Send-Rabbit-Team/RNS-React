@@ -6,7 +6,7 @@ import {
   Row,
   Col,
   Button,
-  Input, FormGroup, InputGroup, InputGroupAddon, Badge,
+  Input, FormGroup, InputGroup, InputGroupAddon, Badge, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem
 } from "reactstrap";
 import Header from "components/Headers/Header.js";
 import React, { useState } from "react";
@@ -20,7 +20,7 @@ import useModal from "utils/useModal";
 
 const SendSms = () => {
 
-  // Modal 
+  // Modal
   const useModalMessageRule = () => {
     const [isShowingMessageRule, setIsShowingMessageRule] = useState(false);
 
@@ -49,8 +49,8 @@ const SendSms = () => {
   const { isShowingReceiver, toggleReceiver } = useModalReceiver();
 
   // 발신자 번호 변수
-  const [senderNumber, setSenderNumber] = useState('01091908201');
-  const [senderId, setSenderId] = useState(1);
+  const [senderNumber, setSenderNumber] = useState();
+  const [blockNumber, setBlockNumber] = useState();
 
   // 수신자 모달 -> 메인페이지 데이타 전달
   const [ContactNumberList, setContactNumberList] = useState([])
@@ -60,7 +60,7 @@ const SendSms = () => {
   const [selectContactList, setSelectContactList] = useState([]);
   const [selectContactGroupList, setSelectContactGroupList] = useState([]);
 
-  
+
   const onDeleteContactGroupHandler = (v) => {
     const newContactGroupList = selectContactGroupList.filter((item) => item !== v);
     setSelectContactGroupList(newContactGroupList)
@@ -76,7 +76,6 @@ const SendSms = () => {
   // 미리보기화면
   const [messageContext, setMessageContext] = useState("메시지를 입력해주새요")
   const [isBlock, setIsBlock] = useState(false);
-  const [blockNumber, setBlockNumber] = useState("01091908201");
 
   // 미리보기 화면에서 수신자 제거
   const onDeleteContactHandler = (v) => {
@@ -87,20 +86,20 @@ const SendSms = () => {
   // 수신거부
   const messageWithBlockNumber = `${messageContext} \n\n\n무료수신거부: ${blockNumber}`
 
-
-  // BlockNumber 불러오기 - 제거 예정
+  // SenderNumber 불러오기
+  const [senderNumberList, setSenderNumberList] = useState([]);
   useState(async () => {
-    await axios.get(`/sender/block/${senderId}`)
-      .then((response) => {
-        if (response.data.isSuccess) {
-          setBlockNumber(response.data.result)
-        } else {
-          window.alert(response.data.message)
-        }
-      })
-      .catch((error) => {
-        window.alert(error.response.data.message)
-      })
+    await axios.get('/sender/all')
+        .then((response) => {
+          if (response.data.isSuccess) {
+            setSenderNumberList(response.data.result)
+          } else {
+            window.alert(response.data.message)
+          }
+        })
+        .catch((error) => {
+          window.alert(error.response.data.message)
+        })
   })
 
   // 테스트 중
@@ -140,10 +139,31 @@ const SendSms = () => {
                       <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }}>
                         사진
                       </Button>
-                      <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }}>
-                        발신자
-                      </Button>
-                      <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => isBlock == true ? setIsBlock(false) : setIsBlock(true)}>
+                      <UncontrolledDropdown>
+                        <DropdownToggle
+                            size="lg"
+                            caret
+                            color="secondary"
+                            type="button"
+                            style={{ width:150, height: 60, fontSize:16}}
+                        >
+                          발신자
+                        </DropdownToggle>
+
+                        <DropdownMenu aria-labelledby="dropdownMenuButton">
+                          {senderNumberList.map(sn => (
+                              <DropdownItem onClick={(e) => {
+                                setSenderNumber(makeHyphen(sn.phoneNumber))
+                                setBlockNumber(makeHyphen(sn.blockNumber))
+                              }}>
+                                { "[" + sn.memo + "] " + makeHyphen(sn.phoneNumber)}
+                              </DropdownItem>
+                          ))}
+                        </DropdownMenu>
+                      </UncontrolledDropdown>
+                      <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}} onClick={(e)=>
+                      {blockNumber==null ? window.alert("발신번호를 선택하세요") :
+                          isBlock==true?setIsBlock(false):setIsBlock(true)}}>
                         수신거부
                       </Button>
                       <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }}>
