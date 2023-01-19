@@ -3,8 +3,6 @@ import React, {useState} from "react";
 import {forEach} from "react-bootstrap/ElementChildren";
 
 const ImageUpload = (props) => {
-    // const [isModal, setIsModal] = useState(true)
-
     const [imgFile, setImgFile] = useState(null);	//파일
     const [imgBase64, setImgBase64] = useState([]); // 파일 base64
 
@@ -64,7 +62,7 @@ const ImageUpload = (props) => {
                 </Form>
                 <Row className="mt-3">
                     {imgBase64.map((item, index) => (
-                        <div className="col-md-3" key={index}>
+                        <div className="col-sm-3" key={index}>
                             <Card className="m-1">
                                 <CardBody className="p-2">
                                     <button
@@ -85,7 +83,10 @@ const ImageUpload = (props) => {
                 </Row>
             </div>
             <div className="modal-footer">
-                <Button type="button" color="primary">첨부하기</Button>
+                <Button type="button" color="primary" onClick={(e) => {
+                    props.setSelectImage(imgBase64)
+                    props.hide()
+                }}>첨부하기</Button>
             </div>
         </Modal>
             ):null
