@@ -57,7 +57,7 @@ const SenderNumber = () => {
 
   //발신자 전화번호 목록 불러오기
   useState(async () => {
-    await axios.get(`/sender/list/${nowPage}`)
+    await axios.get(`/sender/${nowPage}`)
         .then((response) => {
           if (response.data.isSuccess) {
             setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
