@@ -25,7 +25,6 @@ import 'react-chat-elements/dist/main.css'
 import { MessageBox } from 'react-chat-elements'
 import MessageRule from './modal/MessageRule'
 import Receiver from "./modal/Receiver";
-import useModal from "utils/useModal";
 import TemplateModal from "./modal/TemplateModal";
 import ImageUpload from "./modal/ImageUpload";
 import {Image} from "react-bootstrap";
@@ -129,12 +128,6 @@ const SendSms = () => {
   const [messageContext, setMessageContext] = useState("")
   const [isBlock, setIsBlock] = useState(false);
 
-  // 미리보기 화면에서 수신자 제거
-  const onDeleteContactHandler = (v) => {
-    const newContactList = selectContactList.filter((item) => item !== v);
-    setSelectContactList(newContactList)
-  }
-
   // 수신거부
   const messageWithBlockNumber = `${messageContext} \n\n\n무료수신거부: ${blockNumber}`
 
@@ -166,17 +159,49 @@ const SendSms = () => {
   const [senderNumberList, setSenderNumberList] = useState([]);
   useState(async () => {
     await axios.get('/sender/all')
-        .then((response) => {
-          if (response.data.isSuccess) {
-            setSenderNumberList(response.data.result)
-          } else {
-            window.alert(response.data.message)
-          }
-        })
-        .catch((error) => {
-          window.alert(error.response.data.message)
-        })
+      .then((response) => {
+        if (response.data.isSuccess) {
+          setSenderNumberList(response.data.result)
+        } else {
+          window.alert(response.data.message)
+        }
+      })
+      .catch((error) => {
+        window.alert(error.response.data.message)
+      })
   })
+
+  // 메시지 전송
+  const sendMessage = async()=>{
+
+    await axios.post('/message/send',{
+      "message":{
+        "from": "오영주",
+        "subject": "테스트 subject",
+        "content": messageContext,
+        "image": "BSAKJNDNKASDJkfetjoi312oiadsioo21basdop",
+        "messageType":"SMS"
+      },
+      "count":10000,
+      "senderNumber":senderNumber,
+      "receivers":selectContactList.map(contact=>contact.phoneNumber)
+    }).then((response) => {
+        if (response.data.isSuccess) {
+          console.log("시간: ",response)
+          window.alert(response.data.message)
+        } else {
+          window.alert(response.data.message)
+        }
+      })
+      .catch((error) => {
+        window.alert(error.response.data.message)
+      })
+    
+    
+  }
+  console.log("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+  console.log("내 번호 : ",senderNumber)
+  console.log("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 
   // 테스트 중
   const selectContactGroupChild = (data) => {
@@ -210,7 +235,7 @@ const SendSms = () => {
         hide={toggleReceiver}
         selectContactListParent={selectContactList}
         selectContactGroupListParent={selectContactGroupList}
-        />
+      />
 
       {/* 메인 페이지 */}
       <Header />
@@ -238,11 +263,11 @@ const SendSms = () => {
                       {/*발신자 드롭다운*/}
                       <UncontrolledDropdown>
                         <DropdownToggle
-                            size="lg"
-                            caret
-                            color="secondary"
-                            type="button"
-                            style={{ width:150, height: 60, fontSize:16}}
+                          size="lg"
+                          caret
+                          color="secondary"
+                          type="button"
+                          style={{ width: 150, height: 60, fontSize: 16 }}
                         >
                           발신자
                         </DropdownToggle>
@@ -259,9 +284,10 @@ const SendSms = () => {
                         </DropdownMenu>
                       </UncontrolledDropdown>
 
-                      <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}} onClick={(e)=>
-                      {blockNumber==null ? window.alert("발신번호를 선택하세요") :
-                          isBlock==true?setIsBlock(false):setIsBlock(true)}}>
+                      <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => {
+                        blockNumber == null ? window.alert("발신번호를 선택하세요") :
+                        isBlock == true ? setIsBlock(false) : setIsBlock(true)
+                      }}>
                         수신거부
                       </Button>
                       <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleTemplate()}>
@@ -277,8 +303,9 @@ const SendSms = () => {
                   </Col>
 
 
-                  <Col sm="6">
-                    <CardBody style={{boxShadow: '1px 2px 9px #8c8c8c'}}>
+
+                  <Col md="6">
+                    <CardBody style={{ boxShadow: '1px 2px 9px #8c8c8c' }}>
                       <FormGroup>
                         <label className="form-control-label">
                           발신자
@@ -356,7 +383,7 @@ const SendSms = () => {
                         </InputGroupAddon>
                         <Row style={{ height: 850 }}>
                           <Col>
-                            <div style={{ height: 816, paddingTop: 60, margin: 30, whiteSpace: "pre-wrap" }}>
+                            <div style={{ height: 816, paddingTop: 60, margin: 30, whiteSpace: "pre-wrap", width: 500 }}>
                               <MessageBox
                                 style={{ whiteSpace: "pre-wrap" }}
                                 position={'left'}
@@ -389,11 +416,24 @@ const SendSms = () => {
                     </FormGroup>
                   </Col>
                 </Row>
+                <Button className="btn-icon btn-3" size="xl" color="primary" type="button" style={{ width: "15%", height: 54, margin: 10, fontSize: 22, float: "right"}} onClick={(e)=> sendMessage()}>
+                  <span className="btn-inner--icon">
+                    <i className="ni ni-send text-white" />
+                  </span>
+                  <span className="btn-inner--text">발송하기</span>
+                </Button>
+
+                <Button className="btn-icon btn-3" size="xl" color="primary" type="button" style={{ width: "15%", height: 54, margin: 10, fontSize: 22, float: "right", }}>
+                  <span className="btn-inner--icon">
+                    <i className="ni ni-time-alarm" />
+                  </span>
+                  <span className="btn-inner--text">예약 발송</span>
+                </Button>
+                <br></br>
               </CardFooter>
             </Card>
           </div>
         </Row>
-
       </Container>
     </>
   );
