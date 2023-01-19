@@ -144,7 +144,7 @@ import {
             </Row>
 
             {(Number(smsKTRate)+Number(smsSKTRate)+Number(smsLGRate)) != 100 ?<p className="text-warning" style={{fontWeight: 'bold'}}>(중계사 비율의 합이 100%가 아닙니다.)</p>:null}
-            <Button color="secondary" size="sm" type="button" style={{ width:150, height: 30, fontSize:16,float: "right", paddingTop:2}} onClick={(e)=>{applySendRule(Number(smsKTRate), Number(smsSKTRate),Number(smsLGRate))}}>
+            <Button color="secondary" size="sm" type="button" style={{ width:150, height: 30, fontSize:13,float: "right", paddingTop:2}} onClick={(e)=>{applySendRule(Number(smsKTRate), Number(smsSKTRate),Number(smsLGRate))}}>
               완료
             </Button>
           </Form>

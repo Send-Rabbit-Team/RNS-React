@@ -236,7 +236,7 @@ const SendSms = () => {
                         </InputGroupAddon>
                         <Row style={{ height: 850 }}>
                           <Col>
-                            <div style={{ height: 816, paddingTop: 60, margin: 30, whiteSpace: "pre-wrap" }}>
+                            <div style={{ height: 816, paddingTop: 60, margin: 30, whiteSpace: "pre-wrap" ,width:500}}>
                               <MessageBox
                                 style={{ whiteSpace: "pre-wrap" }}
                                 position={'left'}
@@ -269,10 +269,27 @@ const SendSms = () => {
                     </FormGroup>
                   </Col>
                 </Row>
+            <Button className="btn-icon btn-3" size="xl" color="primary" type="button" style={{ width:"15%", height:54,margin:10, fontSize:22,float: "right", }}>
+          <span className="btn-inner--icon">
+            <i className="ni ni-send text-white" />
+          </span>
+          <span className="btn-inner--text">발송하기</span>
+        </Button>
+
+        <Button className="btn-icon btn-3" size="xl" color="primary" type="button" style={{ width:"15%", height:54,margin:10, fontSize:22,float: "right", }}>
+          <span className="btn-inner--icon">
+            <i className="ni ni-time-alarm" />
+          </span>
+          <span className="btn-inner--text">예약 발송</span>
+        </Button>
+            <br></br>
               </CardFooter>
+              
             </Card>
           </div>
+          
         </Row>
+       
 
       </Container>
     </>

@@ -223,8 +223,8 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
                 <Table className="align-items-center table-flush">
                   <thead>
                     <tr>
-                      <th scope="col" style={{paddingLeft:50}}>전화번호</th>
-                      <th scope="col" style={{float: "right", paddingRight:66}}>추가</th>
+                      <th scope="col" style={{fontSize:13,paddingLeft:50}}>전화번호</th>
+                      <th scope="col" style={{fontSize:13,float: "right", paddingRight:66}}>추가</th>
                     </tr>
                   </thead>
                   </Table>
@@ -269,8 +269,8 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
                 <Table className="align-items-center table-flush">
                   <thead>
                     <tr>
-                      <th scope="col" style={{paddingLeft:50}}>전화번호</th>
-                      <th scope="col" style={{float: "right", paddingRight:62}}>추가</th>
+                      <th scope="col" style={{fontSize:13, paddingLeft:50}}>그룹</th>
+                      <th scope="col" style={{fontSize:13, float: "right", paddingRight:62}}>추가</th>
                     </tr>
                   </thead>
                   </Table>
@@ -310,8 +310,16 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
                 )
               })}
             </Card>
+            <br></br>
+            <Button color="secondary" size="sm" type="button" style={{ margin:10,width:150, height: 30, fontSize:14,float: "right", paddingTop:2}} onClick={(e)=>{hide()}}>
+              완료
+            </Button>
           </div>
+          
         </Row>
+        <div>
+          hi
+        </div>
 
 
       </Modal> : null
