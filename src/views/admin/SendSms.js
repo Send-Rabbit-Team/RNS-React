@@ -274,12 +274,12 @@ const SendSms = () => {
 
                         <DropdownMenu aria-labelledby="dropdownMenuButton">
                           {senderNumberList.map(sn => (
-                              <DropdownItem onClick={(e) => {
-                                setSenderNumber(sn.phoneNumber)
-                                setBlockNumber(sn.blockNumber)
-                              }}>
-                                { "[" + sn.memo + "] " + makeHyphen(sn.phoneNumber)}
-                              </DropdownItem>
+                            <DropdownItem onClick={(e) => {
+                              setSenderNumber(sn.phoneNumber)
+                              setBlockNumber(sn.blockNumber)
+                            }}>
+                              {"[" + sn.memo + "] " + makeHyphen(sn.phoneNumber)}
+                            </DropdownItem>
                           ))}
                         </DropdownMenu>
                       </UncontrolledDropdown>
