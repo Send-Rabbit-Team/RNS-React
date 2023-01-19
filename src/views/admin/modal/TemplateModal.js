@@ -23,6 +23,7 @@ const TemplateModal = (props) => {
     })
 
     return (
+        props.isShowingTemplate?(
         <Modal
             className="modal-dialog-centered"
             size="lg"
@@ -56,6 +57,7 @@ const TemplateModal = (props) => {
                 </Row>
             </div>
         </Modal>
+        ):null
     )
 
 }
