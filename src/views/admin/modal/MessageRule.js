@@ -1,31 +1,15 @@
 import {
-    Card,
-    CardHeader,
-    CardFooter,
-    CardTitle,
-    Container,
     Row,
     Col,
     Button,
-    Modal, Input, FormGroup, InputGroup, InputGroupText, InputGroupAddon, Badge,  CardBody,
-    Pagination,
-    PaginationItem,
-    PaginationLink,
-    Table,
+    Modal, Input, FormGroup,
   Form
   } from "reactstrap";
-  import Header from "components/Headers/Header.js";
   import React, {useState,useEffect} from "react";
-  import { useParams } from 'react-router-dom';
   import axios from "axios";
-  // SMS 템플릿
-  import 'react-chat-elements/dist/main.css'
-  // MessageBox component
-  import { MessageBox } from 'react-chat-elements'
 
   const MessageRule = (props) =>{
     
-    const [isSendRule,setIsSendRule] = useState(props.isSendRule);
     const [smsKTRate, setSmsKTRate] = useState(33);
     const [smsSKTRate, setSmsSKTRate] = useState(33);
     const [smsLGRate, setSmsLGRate] = useState(34);
@@ -80,13 +64,13 @@ import {
         .catch((error) => {
           window.alert(error.response.data.message)
         })
-      },[isSendRule])
+      },[])
 
     return(
-        
+    props.isShowingMessageRule?
     <Modal
           className="modal-dialog-centered"
-          isOpen={isSendRule}
+          isOpen={true}
           size="sm"
       >
         <div className="modal-header">
@@ -98,7 +82,7 @@ import {
               className="close"
               data-dismiss="modal"
               type="button"
-              onClick={(e) => setIsSendRule(false)}
+              onClick={(e) => props.hide()}
           ></button>
           <span aria-hidden={true}>×</span>
           </div>
@@ -165,10 +149,8 @@ import {
             </Button>
           </Form>
           </div>
-      </Modal>
-      
-
-    );
+      </Modal>:null
+    )
     
   };
 
