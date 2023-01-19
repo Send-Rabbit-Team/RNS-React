@@ -3,8 +3,6 @@ import React, {useState} from "react";
 import axios from "axios";
 
 const TemplateModal = (props) => {
-    const [isModal, setIsModal] = useState(true)
-
     const [templateList, setTemplateList] = useState([]);
 
     // 탬플릿 불러오기
@@ -43,9 +41,11 @@ const TemplateModal = (props) => {
             <div className="modal-body">
                 <Row>
                     {templateList.map((template) => (
-                        <div className="col-md-4 mb-3">
+                        <div className="col-sm-4 mb-3">
                             <h4>{template.title}</h4>
-                            <Button block outline className="lg" color="default" style={{textAlign : "left"}}>
+                            <Button block outline className="lg" color="default" style={{textAlign : "left"}}
+                                onClick={(e) => {props.setSelectTemplate(template.content); props.hide()}}
+                            >
                                 {template.content.split('\n').map( line => (
                                     <span>{line}<br/></span>
                                 ))}

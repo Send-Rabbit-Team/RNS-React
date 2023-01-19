@@ -1,22 +1,34 @@
 import {
-  Card, CardBody,
+  Card,
+  CardBody,
   CardHeader,
   CardFooter,
   Container,
   Row,
   Col,
   Button,
-  Input, FormGroup, InputGroup, InputGroupAddon, Badge, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem
+  Input,
+  FormGroup,
+  InputGroup,
+  InputGroupAddon,
+  Badge,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  CardImg
 } from "reactstrap";
 import Header from "components/Headers/Header.js";
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
 import 'react-chat-elements/dist/main.css'
 import { MessageBox } from 'react-chat-elements'
 import MessageRule from './modal/MessageRule'
 import Receiver from "./modal/Receiver";
+import useModal from "utils/useModal";
 import TemplateModal from "./modal/TemplateModal";
 import ImageUpload from "./modal/ImageUpload";
+import {Image} from "react-bootstrap";
 
 
 const SendSms = () => {
@@ -87,6 +99,19 @@ const SendSms = () => {
   const [selectContactList, setSelectContactList] = useState([]);
   const [selectContactGroupList, setSelectContactGroupList] = useState([]);
 
+  // 탬플릿 모달 -> 메인페이지 데이터 전달
+  const [selectTemplate, setSelectTemplate] = useState();
+  const getSelectTemplate = (data) => {
+    setSelectTemplate(data);
+    setMessageContext(messageContext + data)
+  }
+
+  // 이미지 모달 -> 메인페이지 데이터 전달
+  const [selectImage, setSelectImage] = useState([]);
+  const getSelectImage = (data) => {
+    setSelectImage([...data])
+  }
+
 
   const onDeleteContactGroupHandler = (v) => {
     const newContactGroupList = selectContactGroupList.filter((item) => item !== v);
@@ -101,11 +126,41 @@ const SendSms = () => {
   }
 
   // 미리보기화면
-  const [messageContext, setMessageContext] = useState("메시지를 입력해주새요")
+  const [messageContext, setMessageContext] = useState("")
   const [isBlock, setIsBlock] = useState(false);
+
+  // 미리보기 화면에서 수신자 제거
+  const onDeleteContactHandler = (v) => {
+    const newContactList = selectContactList.filter((item) => item !== v);
+    setSelectContactList(newContactList)
+  }
 
   // 수신거부
   const messageWithBlockNumber = `${messageContext} \n\n\n무료수신거부: ${blockNumber}`
+
+  // 메시지 타입 지정
+  const [messageType, setMessageType] = useState()
+  useEffect(() => {
+    selectImage.length != 0 ? setMessageType("MMS") :
+        messageByte > 80 ?
+            setMessageType("LMS") : setMessageType("SMS")
+  });
+
+  // 메시지 바이트 변환
+  const [messageByte, setMessageByte] = useState()
+  useEffect(() => {
+    var l= 0;
+
+    for(var idx=0; idx < messageContext.length; idx++) {
+      var c = escape(messageContext.charAt(idx));
+
+      if( c.length==1 ) l ++;
+      else if( c.indexOf("%u")!=-1 ) l += 2;
+      else if( c.indexOf("%")!=-1 ) l += c.length/3;
+    }
+
+    isBlock ? setMessageByte(l+29) : setMessageByte(l)
+  });
 
   // SenderNumber 불러오기
   const [senderNumberList, setSenderNumberList] = useState([]);
@@ -148,8 +203,8 @@ const SendSms = () => {
       .catch((error) => {
         window.alert(error.response.data.message)
       })
-    
-    
+
+
   }
   console.log("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
   console.log("내 번호 : ",senderNumber)
@@ -168,8 +223,18 @@ const SendSms = () => {
     <>
       {/* 발송 설정 모달 */}
       <MessageRule isShowingMessageRule={isShowingMessageRule} hide={toggleMessageRule} />
-      <TemplateModal isShowingTemplate={isShowingTemplate} hide={toggleTemplate} />
-      <ImageUpload isShowingTemplate={isShowingImageUpload} hide={toggleImageUpload} />
+      <TemplateModal
+          isShowingTemplate={isShowingTemplate}
+          hide={toggleTemplate}
+          selectTemplate={selectTemplate}
+          setSelectTemplate={getSelectTemplate}
+      />
+      <ImageUpload
+          isShowingTemplate={isShowingImageUpload}
+          hide={toggleImageUpload}
+          selectImage={selectImage}
+          setSelectImage={getSelectImage}
+      />
       <Receiver
         isShowingReceiver={isShowingReceiver}
         selectContactChild={selectContactChild}
@@ -196,7 +261,7 @@ const SendSms = () => {
 
               <CardFooter className="py-3" >
                 <Row >
-                  <Col md="10">
+                  <Col sm="10">
                     <div className="d-flex justify-content-between" style={{ paddingBottom: 20, flexDirection: "row" }} align="center" >
                       <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleImageUpload()}>
                         사진
@@ -216,12 +281,12 @@ const SendSms = () => {
 
                         <DropdownMenu aria-labelledby="dropdownMenuButton">
                           {senderNumberList.map(sn => (
-                            <DropdownItem onClick={(e) => {
-                              setSenderNumber(sn.phoneNumber)
-                              setBlockNumber(sn.blockNumber)
-                            }}>
-                              {"[" + sn.memo + "] " + makeHyphen(sn.phoneNumber)}
-                            </DropdownItem>
+                              <DropdownItem onClick={(e) => {
+                                setSenderNumber(sn.phoneNumber)
+                                setBlockNumber(sn.blockNumber)
+                              }}>
+                                { "[" + sn.memo + "] " + makeHyphen(sn.phoneNumber)}
+                              </DropdownItem>
                           ))}
                         </DropdownMenu>
                       </UncontrolledDropdown>
@@ -245,15 +310,15 @@ const SendSms = () => {
                   </Col>
 
 
-                  <Col md="6">
-                    <CardBody style={{ boxShadow: '1px 2px 9px #8c8c8c' }}>
+                  <Col sm="6">
+                    <CardBody style={{boxShadow: '1px 2px 9px #8c8c8c'}}>
                       <FormGroup>
                         <label className="form-control-label">
                           발신자
                         </label>
                         <Container>
                           <Row>
-                            <Badge className="badge-md" color="primary">{senderNumber}</Badge>
+                            <Badge className="badge-md" color="primary">{senderNumber != null ? makeHyphen(senderNumber) : null}</Badge>
                           </Row>
                         </Container>
                       </FormGroup>
@@ -262,41 +327,53 @@ const SendSms = () => {
                           수신자
                         </label>
                         <Container>
+                          {selectContactList.map(v => (
+                              <Badge className="badge-md" color="primary">{makeHyphen(v.phoneNumber)}</Badge>
+                            )
+                          )}
+                          {selectContactGroupList.map(v => (
+                              <Badge className="badge-md" color="info">{makeHyphen(v.phoneNumber)}</Badge>
+                            )
+                          )}
                         </Container>
                       </FormGroup>
                       <FormGroup>
                         <label className="form-control-label">
                           첨부 이미지
                         </label>
-                        <Input
-                          type="text"
-                        ></Input>
+                        <Container>
+                          <Row>
+                            {selectImage.map((item, index) => (
+                                <div className="col-sm-3" key={index}>
+                                  <Image className="d-block w-100 m-1"
+                                       src={item}/>
+                                </div>
+                            ))}
+                          </Row>
+                        </Container>
                       </FormGroup>
                       <FormGroup>
                         <label className="form-control-label">
                           메시지 내용
                         </label>
                         <Input
-                          placeholder={messageContext}
-                          rows="7"
-                          type="textarea"
-                          onChange={(e) => setMessageContext(e.target.value)}
+                            value={messageContext}
+                            rows="10"
+                            type="textarea"
+                            onChange={(e)=>{setMessageContext(e.target.value)}}
                         ></Input>
-                        <p align="right">{messageContext != null ? messageContext.length * 2 : 0}자</p>
+                        <p align="right">{messageType}&nbsp;{messageByte}byte</p>
                       </FormGroup>
                       <FormGroup>
                         <label className="form-control-label">
                           수신차단번호
                         </label>
                         <Container>
-                          {isBlock ?
-                            <Row>
-                              <Badge className="badge-md" color="primary">{blockNumber}</Badge>
-                              <button className="close" onClick={(e) => { setIsBlock(false) }}>
-                                <span aria-hidden={true}>×</span>
-                              </button>
-                            </Row>
-                            : null}
+                          {isBlock?
+                              <Row>
+                                <Badge className="badge-md" color="primary">{blockNumber != null ? makeHyphen(blockNumber) : null}</Badge>
+                              </Row>
+                              :null}
                         </Container>
                       </FormGroup>
                     </CardBody>
@@ -343,7 +420,7 @@ const SendSms = () => {
 
 
                   {/* 미리 보기 / Bubble */}
-                  <Col md="6" >
+                  <Col sm="6" >
                     <FormGroup style={{ position: "relative" }}>
                       <InputGroup className="input-group-alternative" style={{ boxShadow: '1px 2px 9px #8c8c8c' }}>
                         <InputGroupAddon addonType="prepend">
@@ -402,6 +479,7 @@ const SendSms = () => {
             </Card>
           </div>
         </Row>
+
       </Container>
     </>
   );
