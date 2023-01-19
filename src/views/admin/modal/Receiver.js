@@ -317,9 +317,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
           </div>
           
         </Row>
-        <div>
-          hi
-        </div>
+        
 
 
       </Modal> : null
