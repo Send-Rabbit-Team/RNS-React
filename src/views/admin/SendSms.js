@@ -1,5 +1,5 @@
 import {
-  Card,
+  Card, CardBody,
   CardHeader,
   CardFooter,
   Container,
@@ -16,6 +16,8 @@ import { MessageBox } from 'react-chat-elements'
 import MessageRule from './modal/MessageRule'
 import Receiver from "./modal/Receiver";
 import useModal from "utils/useModal";
+import TemplateModal from "./modal/TemplateModal";
+import ImageUpload from "./modal/ImageUpload";
 
 
 const SendSms = () => {
@@ -45,8 +47,34 @@ const SendSms = () => {
     };
   };
 
+  const useModalTemplate = () => {
+    const [isShowingTemplate, setIsShowingTemplate] = useState(false);
+
+    function toggleTemplate() {
+      setIsShowingTemplate(!isShowingTemplate);
+    }
+    return {
+      isShowingTemplate,
+      toggleTemplate
+    };
+  };
+
+  const useModalImageUpload = () => {
+    const [isShowingImageUpload, setIsShowingImageUpload] = useState(false);
+
+    function toggleImageUpload() {
+      setIsShowingImageUpload(!isShowingImageUpload);
+    }
+    return {
+      isShowingImageUpload,
+      toggleImageUpload
+    };
+  };
+
   const { isShowingMessageRule, toggleMessageRule } = useModalMessageRule();
   const { isShowingReceiver, toggleReceiver } = useModalReceiver();
+  const { isShowingTemplate, toggleTemplate } = useModalTemplate();
+  const { isShowingImageUpload, toggleImageUpload } = useModalImageUpload();
 
   // 발신자 번호 변수
   const [senderNumber, setSenderNumber] = useState();
@@ -115,10 +143,12 @@ const SendSms = () => {
     <>
       {/* 발송 설정 모달 */}
       <MessageRule isShowingMessageRule={isShowingMessageRule} hide={toggleMessageRule} />
-      <Receiver 
-        isShowingReceiver={isShowingReceiver} 
-        selectContactChild={selectContactChild} 
-        selectContactGroupChild={selectContactGroupChild} 
+      <TemplateModal isShowingTemplate={isShowingTemplate} hide={toggleTemplate}/>
+      <ImageUpload isShowingTemplate={isShowingImageUpload} hide={toggleImageUpload}/>
+      <Receiver
+        isShowingReceiver={isShowingReceiver}
+        selectContactChild={selectContactChild}
+        selectContactGroupChild={selectContactGroupChild}
         hide={toggleReceiver}
         selectContactListParent={selectContactList}
         selectContactGroupListParent={selectContactGroupList}
@@ -143,9 +173,11 @@ const SendSms = () => {
                 <Row >
                   <Col md="10">
                     <div className="d-flex justify-content-between" style={{ paddingBottom: 20, flexDirection: "row" }} align="center" >
-                      <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }}>
+                      <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleImageUpload()}>
                         사진
                       </Button>
+
+                      {/*발신자 드롭다운*/}
                       <UncontrolledDropdown>
                         <DropdownToggle
                             size="lg"
@@ -168,12 +200,13 @@ const SendSms = () => {
                           ))}
                         </DropdownMenu>
                       </UncontrolledDropdown>
+
                       <Button color="secondary" size="lg" type="button" style={{ width:150, height: 60, fontSize:16}} onClick={(e)=>
                       {blockNumber==null ? window.alert("발신번호를 선택하세요") :
                           isBlock==true?setIsBlock(false):setIsBlock(true)}}>
                         수신거부
                       </Button>
-                      <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }}>
+                      <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleTemplate()}>
                         템플릿
                       </Button>
                       <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleMessageRule()}>
@@ -187,6 +220,62 @@ const SendSms = () => {
 
 
                   <Col md="6">
+                    <CardBody style={{boxShadow: '1px 2px 9px #8c8c8c'}}>
+                      <FormGroup>
+                        <label className="form-control-label">
+                          발신자
+                        </label>
+                        <Container>
+                          <Row>
+                            <Badge className="badge-md" color="primary">{senderNumber}</Badge>
+                          </Row>
+                        </Container>
+                      </FormGroup>
+                      <FormGroup>
+                        <label className="form-control-label">
+                          수신자
+                        </label>
+                        <Container>
+                        </Container>
+                      </FormGroup>
+                      <FormGroup>
+                        <label className="form-control-label">
+                          첨부 이미지
+                        </label>
+                        <Input
+                            type="text"
+                        ></Input>
+                      </FormGroup>
+                      <FormGroup>
+                        <label className="form-control-label">
+                          메시지 내용
+                        </label>
+                        <Input
+                            placeholder={messageContext}
+                            rows="7"
+                            type="textarea"
+                            onChange={(e)=>setMessageContext(e.target.value)}
+                        ></Input>
+                        <p align="right">{messageContext != null ? messageContext.length * 2 : 0}자</p>
+                      </FormGroup>
+                      <FormGroup>
+                        <label className="form-control-label">
+                          수신차단번호
+                        </label>
+                        <Container>
+                          {isBlock?
+                              <Row>
+                                <Badge className="badge-md" color="primary">{blockNumber}</Badge>
+                                <button className="close" onClick={(e) => {setIsBlock(false)}}>
+                                  <span aria-hidden={true}>×</span>
+                                </button>
+                              </Row>
+                              :null}
+                        </Container>
+                      </FormGroup>
+                    </CardBody>
+
+
                     <FormGroup >
                       <InputGroup className="input-group-alternative" style={{ boxShadow: '1px 2px 9px #8c8c8c' }}>
                         <InputGroupAddon addonType="prepend">
@@ -253,7 +342,7 @@ const SendSms = () => {
                             return (
                               <Button color="primary" type="button" style={{ margin: 2 }}>
                                 <span>{makeHyphen(v.phoneNumber)}</span>
-                             
+
                               </Button>
                             )
                           })}
