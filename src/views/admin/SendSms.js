@@ -351,10 +351,10 @@ const SendSms = () => {
                           메시지 내용
                         </label>
                         <Input
-                          placeholder={messageContext}
-                          rows="7"
-                          type="textarea"
-                          onChange={(e) => setMessageContext(e.target.value)}
+                            value={messageContext}
+                            rows="10"
+                            type="textarea"
+                            onChange={(e)=>{setMessageContext(e.target.value)}}
                         ></Input>
                         <p align="right">{messageType}&nbsp;{messageByte}byte</p>
                       </FormGroup>
