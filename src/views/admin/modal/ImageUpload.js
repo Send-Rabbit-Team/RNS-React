@@ -2,7 +2,7 @@ import {Modal, Form, Button, Row, Card, CardBody, CardHeader, CardImg} from "rea
 import React, {useState} from "react";
 import {forEach} from "react-bootstrap/ElementChildren";
 
-const ImageModal = () => {
+const ImageUpload = (props) => {
     // const [isModal, setIsModal] = useState(true)
 
     const [imgFile, setImgFile] = useState(null);	//파일
@@ -31,12 +31,11 @@ const ImageModal = () => {
     };
 
     return (
-        console.log(imgBase64),
+        props.isShowingTemplate?(
         <Modal
             className="modal-dialog-centered"
             size="lg"
             isOpen={true}
-            // onClick={(e) => setIsModal(false)}
         >
             <div className="modal-header">
                 <h3 className="modal-title">이미지 첨부하기</h3>
@@ -44,6 +43,7 @@ const ImageModal = () => {
                     className="close"
                     data-dismiss="modal"
                     type="button"
+                    onClick={(e) => props.hide()}
                 >
                     <span aria-hidden={true}>×</span>
                 </button>
@@ -88,7 +88,8 @@ const ImageModal = () => {
                 <Button type="button" color="primary">첨부하기</Button>
             </div>
         </Modal>
+            ):null
     )
 
 }
-export default ImageModal
+export default ImageUpload
