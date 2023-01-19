@@ -371,45 +371,6 @@ const SendSms = () => {
                         </Container>
                       </FormGroup>
                     </CardBody>
-
-
-                    <FormGroup >
-                      <InputGroup className="input-group-alternative" style={{ boxShadow: '1px 2px 9px #8c8c8c' }}>
-                        <InputGroupAddon addonType="prepend">
-                          {/* 애드온 */}
-                        </InputGroupAddon>
-                        <Row style={{ height: 850 }}>
-                          <Col md="50">
-                            <Input
-                              id="exampleFormControlTextarea2"
-                              style={{ margin: 22, boxSizing: "border-box", fontSize: 30 }}
-                              placeholder="제목을 입력하세요."
-                              cols="10"
-                              rows="1"
-                              type="textarea"
-                            />
-                            <hr class="hr hr-blurry" style={{ marginLeft: 50, width: 500 }} />
-
-                            <Input
-                              id="exampleFormControlTextarea1"
-                              style={{ margin: 32, boxSizing: "border-box" }}
-                              placeholder="내용을 입력하세요."
-                              rows="25"
-                              cols="20"
-                              type="textarea"
-                              onChange={(e) => setMessageContext(e.target.value)}
-                            />
-
-                            {/* 수신 거부 */}
-                            {isBlock == true ?
-                              <Button color="primary" type="button" style={{ margin: 30, boxSizing: "border-box", fontSize: 15 }}>
-                                <span style={{ paddingRight: 10 }}>무료 수신 거부: {blockNumber}</span>
-                                <i className="fas fa-minus" />
-                              </Button> : null}
-                          </Col>
-                        </Row>
-                      </InputGroup>
-                    </FormGroup>
                   </Col>
 
 
