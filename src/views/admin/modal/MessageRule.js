@@ -136,7 +136,7 @@ import {
                   placeholder={smsLGRate}
                   type="number" 
                   value={smsLGRate}
-                  onChange={(e)=> setSmsSKTRate(e.target.value)}
+                  onChange={(e)=> setSmsLGRate(e.target.value)}
                 />
                  <p style={{margin:9, paddingRight:20, paddingTop:5, fontSize:17}}>%</p>
               </FormGroup>
