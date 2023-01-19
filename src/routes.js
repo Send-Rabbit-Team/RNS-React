@@ -14,24 +14,16 @@ import MakeTemplate from "./views/admin/MakeTemplate";
 var routes = [
   {
     path: "/register",
-    name: "메시지 전송",
-    icon: "ni ni-send text-blue",
-    component: Register,
-    layout: "/auth",
-    sidebar:true
-  },
-  {
-    path: "/register",
     name: "메시지 관리",
-    icon: "ni ni-email-83 text-green",
+    icon: "ni ni-email-83",
     component: Register,
     layout: "/auth",
-    sidebar:true
+    sidebar:false
   },
   {
     path: "/group/:page",
     name: "수신자 그룹 관리",
-    icon: "ni ni-circle-08 text-red",
+    icon: "fas fa-users",
     component: ContactGroup,
     layout: "/admin",
     sidebar:true
@@ -63,7 +55,7 @@ var routes = [
   {
     path: "/contact/:page",
     name: "연락처 관리",
-    icon: "ni ni-collection",
+    icon: "fas fa-book",
     component: ContactNumber,
     layout: "/admin",
     sidebar:true
@@ -71,7 +63,7 @@ var routes = [
   {
     path: "/sms",
     name: "SMS 발송",
-    icon: "ni ni-email-83",
+    icon: "ni ni-send",
     component: SendSms,
     layout: "/admin",
     sidebar:true
@@ -79,7 +71,7 @@ var routes = [
   {
     path: "/template/:page",
     name: "탬플릿 관리",
-    icon: "ni ni-email-83",
+    icon: "fas fa-cog",
     component: MakeTemplate,
     layout: "/admin",
     sidebar:true
