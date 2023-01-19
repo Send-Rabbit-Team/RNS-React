@@ -105,18 +105,25 @@ const SendSms = () => {
 
   // 테스트 중
   const selectContactGroupChild = (data) => {
-    setSelectContactGroupList(data)
+    setSelectContactGroupList([...data])
   }
 
   const selectContactChild = (data) => {
-    setSelectContactList(data)
+    setSelectContactList([...data])
   }
 
   return (
     <>
       {/* 발송 설정 모달 */}
       <MessageRule isShowingMessageRule={isShowingMessageRule} hide={toggleMessageRule} />
-      <Receiver isShowingReceiver={isShowingReceiver} selectContactChild={selectContactChild} selectContactGroupChild={selectContactGroupChild} hide={toggleReceiver}></Receiver>
+      <Receiver 
+        isShowingReceiver={isShowingReceiver} 
+        selectContactChild={selectContactChild} 
+        selectContactGroupChild={selectContactGroupChild} 
+        hide={toggleReceiver}
+        selectContactListParent={selectContactList}
+        selectContactGroupListParent={selectContactGroupList}
+        />
 
       {/* 메인 페이지 */}
       <Header />
@@ -224,17 +231,16 @@ const SendSms = () => {
                           {/* 수신자 불러오기 */}
                           {selectContactList.map(v => {
                             return (
-                              <Button color="primary" type="button" style={{ margin: 2 }} onClick={(e) => onDeleteContactHandler(v)}>
+                              <Button color="primary" type="button" style={{ margin: 2 }}>
                                 <span>{makeHyphen(v.phoneNumber)}</span>
-                                <Badge className="badge-black" color="black" style={{ width: 10 }}>X</Badge>
+                             
                               </Button>
                             )
                           })}
                           {selectContactGroupList.map(v => {
                             return (
-                              <Button color="info" type="button" style={{ margin: 2 }} onClick={(e) => onDeleteContactGroupHandler(v)}>
+                              <Button color="info" type="button" style={{ margin: 2 }}>
                                 <span>{v.name}</span>
-                                <Badge className="badge-black" color="black" style={{ width: 10 }}>X</Badge>
                               </Button>
                             )
                           })}
