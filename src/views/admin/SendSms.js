@@ -25,7 +25,6 @@ import 'react-chat-elements/dist/main.css'
 import { MessageBox } from 'react-chat-elements'
 import MessageRule from './modal/MessageRule'
 import Receiver from "./modal/Receiver";
-import useModal from "utils/useModal";
 import TemplateModal from "./modal/TemplateModal";
 import ImageUpload from "./modal/ImageUpload";
 import {Image} from "react-bootstrap";
@@ -129,12 +128,6 @@ const SendSms = () => {
   const [messageContext, setMessageContext] = useState("")
   const [isBlock, setIsBlock] = useState(false);
 
-  // 미리보기 화면에서 수신자 제거
-  const onDeleteContactHandler = (v) => {
-    const newContactList = selectContactList.filter((item) => item !== v);
-    setSelectContactList(newContactList)
-  }
-
   // 수신거부
   const messageWithBlockNumber = `${messageContext} \n\n\n무료수신거부: ${blockNumber}`
 
@@ -203,8 +196,8 @@ const SendSms = () => {
       .catch((error) => {
         window.alert(error.response.data.message)
       })
-
-
+    
+    
   }
   console.log("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
   console.log("내 번호 : ",senderNumber)
@@ -223,6 +216,10 @@ const SendSms = () => {
     <>
       {/* 발송 설정 모달 */}
       <MessageRule isShowingMessageRule={isShowingMessageRule} hide={toggleMessageRule} />
+<<<<<<<<< Temporary merge branch 1
+      <TemplateModal isShowingTemplate={isShowingTemplate} hide={toggleTemplate} />
+      <ImageUpload isShowingTemplate={isShowingImageUpload} hide={toggleImageUpload} />
+=========
       <TemplateModal
           isShowingTemplate={isShowingTemplate}
           hide={toggleTemplate}
@@ -235,6 +232,7 @@ const SendSms = () => {
           selectImage={selectImage}
           setSelectImage={getSelectImage}
       />
+>>>>>>>>> Temporary merge branch 2
       <Receiver
         isShowingReceiver={isShowingReceiver}
         selectContactChild={selectContactChild}
@@ -281,12 +279,21 @@ const SendSms = () => {
 
                         <DropdownMenu aria-labelledby="dropdownMenuButton">
                           {senderNumberList.map(sn => (
+<<<<<<<<< Temporary merge branch 1
+                            <DropdownItem onClick={(e) => {
+                              setSenderNumber(sn.phoneNumber)
+                              setBlockNumber(sn.blockNumber)
+                            }}>
+                              {"[" + sn.memo + "] " + makeHyphen(sn.phoneNumber)}
+                            </DropdownItem>
+=========
                               <DropdownItem onClick={(e) => {
                                 setSenderNumber(sn.phoneNumber)
                                 setBlockNumber(sn.blockNumber)
                               }}>
                                 { "[" + sn.memo + "] " + makeHyphen(sn.phoneNumber)}
                               </DropdownItem>
+>>>>>>>>> Temporary merge branch 2
                           ))}
                         </DropdownMenu>
                       </UncontrolledDropdown>
@@ -310,8 +317,9 @@ const SendSms = () => {
                   </Col>
 
 
-                  <Col sm="6">
-                    <CardBody style={{boxShadow: '1px 2px 9px #8c8c8c'}}>
+
+                  <Col md="6">
+                    <CardBody style={{ boxShadow: '1px 2px 9px #8c8c8c' }}>
                       <FormGroup>
                         <label className="form-control-label">
                           발신자
@@ -341,6 +349,11 @@ const SendSms = () => {
                         <label className="form-control-label">
                           첨부 이미지
                         </label>
+<<<<<<<<< Temporary merge branch 1
+                        <Input
+                          type="text"
+                        ></Input>
+=========
                         <Container>
                           <Row>
                             {selectImage.map((item, index) => (
@@ -351,16 +364,24 @@ const SendSms = () => {
                             ))}
                           </Row>
                         </Container>
+>>>>>>>>> Temporary merge branch 2
                       </FormGroup>
                       <FormGroup>
                         <label className="form-control-label">
                           메시지 내용
                         </label>
                         <Input
+<<<<<<<<< Temporary merge branch 1
+                          placeholder={messageContext}
+                          rows="7"
+                          type="textarea"
+                          onChange={(e) => setMessageContext(e.target.value)}
+=========
                             value={messageContext}
                             rows="10"
                             type="textarea"
                             onChange={(e)=>{setMessageContext(e.target.value)}}
+>>>>>>>>> Temporary merge branch 2
                         ></Input>
                         <p align="right">{messageType}&nbsp;{messageByte}byte</p>
                       </FormGroup>
@@ -479,7 +500,6 @@ const SendSms = () => {
             </Card>
           </div>
         </Row>
-
       </Container>
     </>
   );
