@@ -16,7 +16,6 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  CardImg
 } from "reactstrap";
 import Header from "components/Headers/Header.js";
 import React, {useEffect, useState} from "react";
@@ -89,6 +88,7 @@ const SendSms = () => {
   // 발신자 번호 변수
   const [senderNumber, setSenderNumber] = useState();
   const [blockNumber, setBlockNumber] = useState();
+  const [senderMemo, setSenderMemo] = useState();
 
   // 수신자 모달 -> 메인페이지 데이타 전달
   const [ContactNumberList, setContactNumberList] = useState([])
@@ -171,10 +171,10 @@ const SendSms = () => {
 
     await axios.post('/message/send',{
       "message":{
-        "from": "오영주",
-        "subject": "테스트 subject",
+        "from": senderMemo,
+        "subject": "테스트 subject", // 예나가 주제를 구현하고 추가하는 부분
         "content": messageContext,
-        // "image": selectImage,
+        "image": selectImage,
         "messageType":"SMS"
       },
       "count":10000,
@@ -191,8 +191,6 @@ const SendSms = () => {
       .catch((error) => {
         window.alert(error.response.data.message)
       })
-    
-    
   }
 
   // 테스트 중
@@ -267,6 +265,7 @@ const SendSms = () => {
                         <DropdownMenu aria-labelledby="dropdownMenuButton">
                           {senderNumberList.map(sn => (
                             <DropdownItem onClick={(e) => {
+                              setSenderMemo(sn.memo)
                               setSenderNumber(sn.phoneNumber)
                               setBlockNumber(sn.blockNumber)
                             }}>
@@ -304,6 +303,7 @@ const SendSms = () => {
                         </label>
                         <Container>
                           <Row>
+                            <Badge className="badge-md" color="warning">{senderNumber != null ? senderMemo : null}</Badge>
                             <Badge className="badge-md" color="primary">{senderNumber != null ? makeHyphen(senderNumber) : null}</Badge>
                           </Row>
                         </Container>
