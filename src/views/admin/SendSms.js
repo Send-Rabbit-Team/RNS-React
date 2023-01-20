@@ -112,11 +112,6 @@ const SendSms = () => {
   }
 
 
-  const onDeleteContactGroupHandler = (v) => {
-    const newContactGroupList = selectContactGroupList.filter((item) => item !== v);
-    setSelectContactGroupList(newContactGroupList)
-  }
-
   // 연락처 format 수정 메소드
   const makeHyphen = (number) => {
     return number.slice(0, 3) + "-" +
@@ -179,7 +174,7 @@ const SendSms = () => {
         "from": "오영주",
         "subject": "테스트 subject",
         "content": messageContext,
-        "image": "BSAKJNDNKASDJkfetjoi312oiadsioo21basdop",
+        // "image": selectImage,
         "messageType":"SMS"
       },
       "count":10000,
@@ -199,9 +194,6 @@ const SendSms = () => {
     
     
   }
-  console.log("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-  console.log("내 번호 : ",senderNumber)
-  console.log("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 
   // 테스트 중
   const selectContactGroupChild = (data) => {
@@ -322,11 +314,11 @@ const SendSms = () => {
                         </label>
                         <Container>
                           {selectContactList.map(v => (
-                              <Badge className="badge-md" color="primary">{makeHyphen(v.phoneNumber)}</Badge>
+                              <Badge className="badge-md" color="primary">{v.phoneNumber}</Badge>
                             )
                           )}
                           {selectContactGroupList.map(v => (
-                              <Badge className="badge-md" color="info">{makeHyphen(v.phoneNumber)}</Badge>
+                              <Badge className="badge-md" color="info">{v.phoneNumber}</Badge>
                             )
                           )}
                         </Container>
@@ -381,7 +373,7 @@ const SendSms = () => {
                         <InputGroupAddon addonType="prepend">
                           {/* 애드온 */}
                         </InputGroupAddon>
-                        <Row style={{ height: 850 }}>
+                        <Row style={{ height: 530 }}>
                           <Col>
                             <div style={{ height: 816, paddingTop: 60, margin: 30, whiteSpace: "pre-wrap", width: 500 }}>
                               <MessageBox
