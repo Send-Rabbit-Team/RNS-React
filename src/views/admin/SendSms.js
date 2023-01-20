@@ -121,10 +121,15 @@ const SendSms = () => {
 
   // 미리보기화면
   const [messageContext, setMessageContext] = useState("")
+  const [messageTitle, setMessageTitle] = useState("")
   const [isBlock, setIsBlock] = useState(false);
+  const [isTitle, setIstitle] = useState(false);
+  const [message, setMessage] = useState("");
 
   // 수신거부
   const messageWithBlockNumber = `${messageContext} \n\n\n무료수신거부: ${blockNumber}`
+  const messageWithTitle = `${messageTitle} \n\n\n${messageContext}`
+  const messageWithBlockerNumberAndTitle = `${messageTitle} \n\n\n${messageContext} \n\n\n무료수신거부: ${blockNumber}`
 
   // 메시지 타입 지정
   const [messageType, setMessageType] = useState()
@@ -172,7 +177,7 @@ const SendSms = () => {
     await axios.post('/message/send',{
       "message":{
         "from": senderMemo,
-        "subject": "테스트 subject", // 예나가 주제를 구현하고 추가하는 부분
+        "subject": messageTitle, // 예나가 주제를 구현하고 추가하는 부분
         "content": messageContext,
         "image": selectImage,
         "messageType":"SMS"
@@ -201,6 +206,35 @@ const SendSms = () => {
   const selectContactChild = (data) => {
     setSelectContactList([...data])
   }
+
+  useEffect(()=>
+  {
+      console.log('I am In!')
+      if(isBlock && isTitle){
+        console.log('I am messageWithBlockerNumberAndTitle')
+        setMessage(messageWithBlockerNumberAndTitle)
+      } else if(isBlock){
+        console.log('I am messageWithBlockNumber')
+        setMessage(messageWithBlockNumber)
+      } else if(isTitle){
+        console.log('I am messageWithTitle')
+        setMessage(messageWithTitle)
+      } else {
+        console.log('I am messageContext')
+        setMessage(messageContext)
+      }
+  }
+  ,[messageTitle,isBlock,messageContext])
+
+  const onChangeTitleHandler=(v)=> {
+    if(isTitle){
+      setMessageTitle(v)
+    } else {
+      setIstitle(true)
+      setMessageTitle(v)
+    }
+  }
+
 
   return (
     <>
@@ -340,6 +374,17 @@ const SendSms = () => {
                       </FormGroup>
                       <FormGroup>
                         <label className="form-control-label">
+                          제목
+                        </label>
+                        <Input
+                            value={messageTitle}
+                            rows="1"
+                            type="textarea"
+                            onChange={(e)=>{onChangeTitleHandler(e.target.value)}}
+                        ></Input>
+                      </FormGroup>
+                      <FormGroup>
+                        <label className="form-control-label">
                           메시지 내용
                         </label>
                         <Input
@@ -380,7 +425,7 @@ const SendSms = () => {
                                 style={{ whiteSpace: "pre-wrap" }}
                                 position={'left'}
                                 type={'text'}
-                                text={isBlock ? messageWithBlockNumber : messageContext}
+                                text={message}
                               />
                             </div>
                           </Col>
@@ -392,7 +437,6 @@ const SendSms = () => {
                             return (
                               <Button color="primary" type="button" style={{ margin: 2 }}>
                                 <span>{makeHyphen(v.phoneNumber)}</span>
-
                               </Button>
                             )
                           })}
