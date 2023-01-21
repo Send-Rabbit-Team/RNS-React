@@ -14,7 +14,7 @@ import {
 } from "reactstrap";
 import React, { useState } from "react";
 import axios from "axios";
-import setAuthorizationToken from "../../utils/setAuthorizationToken.js"
+import setAuthorizationToken from "../../utils/authorization/SetAuthorizationToken.js"
 import {GoogleLogin, GoogleOAuthProvider} from "@react-oauth/google";
 
 // Redux 활용을 위한 jwt 라이브러리 - jetpack 요구
@@ -32,6 +32,11 @@ const Login = () => {
 
   const GoogleLoginInfo = {
     email: email
+  }
+  
+  if(localStorage.getItem("bearer") != null){
+    localStorage.clear()
+    window.location.reload();
   }
 
   const login = async ()=>{

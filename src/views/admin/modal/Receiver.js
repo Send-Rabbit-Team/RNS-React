@@ -18,13 +18,20 @@ import axios from "axios";
 const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGroupChild, selectContactListParent, selectContactGroupListParent }) => {
 
   //변수
-  const [searchInput, setSearchInput] = useState();
-  const [filter, setFilter] = useState(false);
+  const [searchContactInput, setSearchContactInput] = useState();
+  const [searchContactGroupInput, setSearchContactGroupInput] = useState();
+
+  // 검색
+  const [contactfilter, setContactFilter] = useState(false);
+  const [contactGroupFilter, setContactGroupFilter] = useState(false);
+  const [searchContactList, setSearchContactList] = useState([]);
+
 
   const [selectContactList, setSelectContactList] = useState([]);
   const [selectContactGroupList, setSelectContactGroupList] = useState([]);
 
-  const [searchContactNumberList, setSearchContactNumberList] = useState([]);
+ 
+
   const [ContactNumberList, setContactNumberList] = useState([])
   const [contactGroupList, setContactGroupList] = useState([])
   const [pageData, setPageData] = useState({
@@ -48,23 +55,64 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
       number.slice(7, 11)
   }
 
-  const searchContactNumber = searchContactNumberList.filter((p) => {
-    return p.phoneNumber.includes(searchInput)
+  const searchContactNumber = searchContactList.filter((p) => {
+    return p.phoneNumber.includes(searchContactInput)
   })
 
+  const searchContactGroup = contactGroupList.filter((p) => {
+    return p.name.includes(searchContactGroupInput)
+  })
+
+  const searchContactController = (value) => {
+    console.log('value', value);
+    if (value.length == 0 && contactfilter == true) {
+      setContactFilter(false)
+    } else if (value.length != 0 && contactfilter == false) {
+      setContactFilter(true)
+      setSearchContactInput(value)
+    }
+    if (contactfilter == true) {
+      setSearchContactInput(value)
+    }
+  }
+
+  const searchContactGroupController = (value) => {
+    console.log('value', value);
+    if (value.length == 0 && contactGroupFilter == true) {
+      setContactGroupFilter(false)
+    } else if (value.length != 0 && contactGroupFilter == false) {
+      setContactGroupFilter(true)
+      setSearchContactGroupInput(value)
+    }
+    if (contactGroupFilter == true) {
+      setSearchContactGroupInput(value)
+    }
+  }
+
+
+
   // 컴포넌트
-  const searchContactNumberListComponent = searchContactNumber.map((searchContactNumber, index) => (
+  const searchContactListComponent = searchContactNumber.map((searchContactNumber, index) => (
     <tr>
       <td>{makeHyphen(searchContactNumber.phoneNumber)}</td>
       <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactHandler(e.target.value)} /></a></td>
     </tr>
   )
   )
+
+  const searchContactGroupListComponent = searchContactGroup.map((searchContactGroup, index) => (
+    <tr>
+      <td>{searchContactGroup.name}</td>
+      <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactGroupHandler(e.target.value)} /></a></td>
+    </tr>
+  )
+  )
+
   const contactGroupListComponent = contactGroupList.map((contactGroup) => {
     return (
       <tr>
         <td>{contactGroup.name}</td>
-        <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactGroupChildtHandler(contactGroup)} /></a></td>
+        <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactGroupHandler(contactGroup)} /></a></td>
       </tr>)
   })
   const contactNumberListComponent = ContactNumberList.map((contactNumber, index) => (
@@ -76,19 +124,10 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
   )
 
 
-  // 검색 컨트롤러
-  const searchController = (value) => {
-    console.log('value', value);
-    if (value.length == 0 && filter == true) {
-      setFilter(false)
-    } else if (value.length != 0 && filter == false) {
-      setFilter(true)
-      setSearchInput(value)
-    }
-    if (filter == true) {
-      setSearchInput(value)
-    }
-  }
+  
+
+
+
 
 
 
@@ -100,18 +139,18 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
   }
 
   const onDeleteContactHandler = (v) => {
-    const newContactList = selectContactList.filter((item) => item !== v);
+    const newContactList = selectContactList.contactfilter((item) => item !== v);
     setSelectContactList(newContactList)
     selectContactChild(newContactList)
   }
 
-  const onSelectContactGroupChildtHandler = (value) => {
+  const onSelectContactGroupHandler = (value) => {
     setSelectContactGroupList([...selectContactGroupList, value])
     selectContactGroupChild([...selectContactGroupList, value]);
   }
 
   const onDeleteContactGroupHandler = (v) => {
-    const newContactGroupList = selectContactGroupList.filter((item) => item !== v);
+    const newContactGroupList = selectContactGroupList.contactfilter((item) => item !== v);
     setSelectContactGroupList(newContactGroupList)
     selectContactGroupChild(newContactGroupList)
   }
@@ -141,11 +180,11 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
   // 연락처 검색하기
   useEffect(
     async () => {
-      await axios.get(`/contact/search/${nowPage}?phoneNumber=${searchInput}`)
+      await axios.get(`/contact/search/${nowPage}?phoneNumber=${searchContactInput}`)
         .then((response) => {
           if (response.data.isSuccess) {
             setPageData(pageData => ({ ...pageData, ...response.data.result, page: nowPage }))
-            setSearchContactNumberList(response.data.result.dtoList)
+            setSearchContactList(response.data.result.dtoList)
           } else {
             window.alert(response.data.message)
           }
@@ -153,7 +192,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
         .catch((error) => {
           window.alert(error.response.data.message)
         })
-    }, [searchInput]
+    }, [searchContactInput]
   )
 
 
@@ -213,8 +252,8 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
                         <Input
                           placeholder="연락처 검색하기"
                           type="text"
-                          onChange={(e) => { searchController(e.target.value) }}
-                          value={searchInput}
+                          onChange={(e) => {searchContactController(e.target.value) }}
+                          value={searchContactInput}
                           onCh />
                       </InputGroup>
                     </Col>
@@ -233,7 +272,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
                  
            
                   <tbody style={{overflowY: "scroll"}}>
-                    {filter == true ? searchContactNumberListComponent : contactNumberListComponent}
+                    {contactfilter == true ? searchContactListComponent : contactNumberListComponent}
                   </tbody>
                 </Table>
 
@@ -258,9 +297,8 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
                         <Input
                           placeholder="그룹 검색하기"
                           type="text"
-                          // 검색 수정중
-                          // onChange={(e) => {ㄴㄴㄴ}} 
-                          // value={searchInput}
+                          onChange={(e) => {searchContactGroupController(e.target.value)}} 
+                          value={searchContactGroupInput}
                           onCh />
                       </InputGroup>
                     </Col>
@@ -276,8 +314,8 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
                   </Table>
                 <Table className="align-items-center table-flush" responsive>
                
-                <tbody style={{overflowY: "scroll"}}>
-                    {contactGroupListComponent}
+                  <tbody style={{overflowY: "scroll"}}>
+                  {contactGroupFilter == true ? searchContactGroupListComponent : contactGroupListComponent} 
                   </tbody>
                 </Table>
               </Card >

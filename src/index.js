@@ -9,18 +9,18 @@ import "assets/scss/argon-dashboard-react.scss";
 import AdminLayout from "layouts/Admin.js";
 import AuthLayout from "layouts/Auth.js";
 import OnboardingLayout from "layouts/Onboarding"
-import setAuthorizationToken from "./utils/setAuthorizationToken.js"
+import setAuthorizationToken from "./utils/authorization/SetAuthorizationToken.js"
+import AuthRoute from "./components/AuthRoute/AuthRoute"
 
 setAuthorizationToken(localStorage.getItem("bearer"))
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <Switch>
-        <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
+        <AuthRoute path="/admin" component={AdminLayout}/>
         <Route path="/auth" render={(props) => <AuthLayout {...props} />} />
         <Route path="/onboarding" render={(props) => <OnboardingLayout {...props} />} />
         <Redirect from="/" to="/onboarding/index" />
-        {/* <Redirect from="/" to="/admin/index" /> */}
       </Switch>
     </BrowserRouter>
   </React.StrictMode>,

@@ -1,22 +1,4 @@
-/*!
-
-=========================================================
-* Argon Dashboard React - v1.2.2
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/argon-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/argon-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import { Link } from "react-router-dom";
-// reactstrap components
+import { Link, Redirect } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownItem,
@@ -30,6 +12,8 @@ import {
   InputGroup,
   Navbar,
   Nav,
+  NavLink,
+  NavItem,
   Container,
   Media
 } from "reactstrap";
@@ -37,6 +21,13 @@ import {
 const AdminNavbar = (props) => {
   const profile_image = localStorage.getItem("profile_image")
   const name = localStorage.getItem("name")
+
+  
+  // const logout = ()=>{
+  //   return(
+      
+  //   )
+  // }
 
   return (
     <>
@@ -98,9 +89,10 @@ const AdminNavbar = (props) => {
                   <span>Support</span>
                 </DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem href="#pablo" onClick={(e) => e.preventDefault()}>
+
+                <DropdownItem to="/auth/login" tag={Link}>
                   <i className="ni ni-user-run" />
-                  <span>Logout</span>
+                  <span>로그아웃</span>
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
