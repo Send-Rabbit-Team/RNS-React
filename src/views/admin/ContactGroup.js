@@ -302,7 +302,7 @@ const ContactGroup = () => {
                       <td>{contactGroup.groupName}</td>
                       <td>{makeDate(contactGroup.createdAt)}</td>
                       <td>{makeDate(contactGroup.updatedAt)}</td>
-                      <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteContactGroup(contactGroup.id)}}/></a></td>
+                      <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteContactGroup(contactGroup.groupId)}}/></a></td>
                       <td><a href="#"><i className="ni ni-settings-gear-65" onClick={(e) => {
                         setIsModModal(true);
                         setEditGroupId(contactGroup.groupId);
