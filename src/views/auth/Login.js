@@ -33,6 +33,11 @@ const Login = () => {
   const GoogleLoginInfo = {
     email: email
   }
+  
+  if(localStorage.getItem("bearer") != null){
+    localStorage.clear()
+    window.location.reload();
+  }
 
   const login = async ()=>{
     await axios.post("/login", GeneralLoginInfo)

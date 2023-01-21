@@ -1,20 +1,3 @@
-/*!
-
-=========================================================
-* Argon Dashboard React - v1.2.2
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/argon-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/argon-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import { Link } from "react-router-dom";
 // reactstrap components
 import {
@@ -30,6 +13,8 @@ import {
 } from "reactstrap";
 
 const AdminNavbar = () => {
+  var token = localStorage.getItem("bearer")
+
   return (
     <>
       <Navbar className="navbar-top navbar-horizontal navbar-dark" expand="md">
@@ -82,7 +67,9 @@ const AdminNavbar = () => {
               <NavItem>
                 <NavLink className="nav-link-icon" to="/auth/login" tag={Link}>
                   <i className="ni ni-key-25" />
-                  <span className="nav-link-inner--text">로그인</span>
+                  {token!=null?
+                  <span className="nav-link-inner--text">로그아웃</span>:
+                  <span className="nav-link-inner--text">로그인</span>}
                 </NavLink>
               </NavItem>
               <NavItem>
