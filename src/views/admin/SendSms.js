@@ -16,7 +16,6 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  CardImg
 } from "reactstrap";
 import Header from "components/Headers/Header.js";
 import React, {useEffect, useState} from "react";
@@ -89,6 +88,7 @@ const SendSms = () => {
   // 발신자 번호 변수
   const [senderNumber, setSenderNumber] = useState();
   const [blockNumber, setBlockNumber] = useState();
+  const [senderMemo, setSenderMemo] = useState();
 
   // 수신자 모달 -> 메인페이지 데이타 전달
   const [ContactNumberList, setContactNumberList] = useState([])
@@ -112,11 +112,6 @@ const SendSms = () => {
   }
 
 
-  const onDeleteContactGroupHandler = (v) => {
-    const newContactGroupList = selectContactGroupList.filter((item) => item !== v);
-    setSelectContactGroupList(newContactGroupList)
-  }
-
   // 연락처 format 수정 메소드
   const makeHyphen = (number) => {
     return number.slice(0, 3) + "-" +
@@ -126,10 +121,15 @@ const SendSms = () => {
 
   // 미리보기화면
   const [messageContext, setMessageContext] = useState("")
+  const [messageTitle, setMessageTitle] = useState("")
   const [isBlock, setIsBlock] = useState(false);
+  const [isTitle, setIstitle] = useState(false);
+  const [message, setMessage] = useState("");
 
   // 수신거부
   const messageWithBlockNumber = `${messageContext} \n\n\n무료수신거부: ${blockNumber}`
+  const messageWithTitle = `${messageTitle} \n\n\n${messageContext}`
+  const messageWithBlockerNumberAndTitle = `${messageTitle} \n\n\n${messageContext} \n\n\n무료수신거부: ${blockNumber}`
 
   // 메시지 타입 지정
   const [messageType, setMessageType] = useState()
@@ -176,10 +176,10 @@ const SendSms = () => {
 
     await axios.post('/message/send',{
       "message":{
-        "from": "오영주",
-        "subject": "테스트 subject",
+        "from": senderMemo,
+        "subject": messageTitle, // 예나가 주제를 구현하고 추가하는 부분
         "content": messageContext,
-        "image": "BSAKJNDNKASDJkfetjoi312oiadsioo21basdop",
+        "image": selectImage,
         "messageType":"SMS"
       },
       "count":10000,
@@ -196,12 +196,7 @@ const SendSms = () => {
       .catch((error) => {
         window.alert(error.response.data.message)
       })
-    
-    
   }
-  console.log("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-  console.log("내 번호 : ",senderNumber)
-  console.log("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 
   // 테스트 중
   const selectContactGroupChild = (data) => {
@@ -211,6 +206,35 @@ const SendSms = () => {
   const selectContactChild = (data) => {
     setSelectContactList([...data])
   }
+
+  useEffect(()=>
+  {
+      console.log('I am In!')
+      if(isBlock && isTitle){
+        console.log('I am messageWithBlockerNumberAndTitle')
+        setMessage(messageWithBlockerNumberAndTitle)
+      } else if(isBlock){
+        console.log('I am messageWithBlockNumber')
+        setMessage(messageWithBlockNumber)
+      } else if(isTitle){
+        console.log('I am messageWithTitle')
+        setMessage(messageWithTitle)
+      } else {
+        console.log('I am messageContext')
+        setMessage(messageContext)
+      }
+  }
+  ,[messageTitle,isBlock,messageContext])
+
+  const onChangeTitleHandler=(v)=> {
+    if(isTitle){
+      setMessageTitle(v)
+    } else {
+      setIstitle(true)
+      setMessageTitle(v)
+    }
+  }
+
 
   return (
     <>
@@ -275,6 +299,7 @@ const SendSms = () => {
                         <DropdownMenu aria-labelledby="dropdownMenuButton">
                           {senderNumberList.map(sn => (
                             <DropdownItem onClick={(e) => {
+                              setSenderMemo(sn.memo)
                               setSenderNumber(sn.phoneNumber)
                               setBlockNumber(sn.blockNumber)
                             }}>
@@ -312,6 +337,7 @@ const SendSms = () => {
                         </label>
                         <Container>
                           <Row>
+                            <Badge className="badge-md" color="warning">{senderNumber != null ? senderMemo : null}</Badge>
                             <Badge className="badge-md" color="primary">{senderNumber != null ? makeHyphen(senderNumber) : null}</Badge>
                           </Row>
                         </Container>
@@ -322,11 +348,11 @@ const SendSms = () => {
                         </label>
                         <Container>
                           {selectContactList.map(v => (
-                              <Badge className="badge-md" color="primary">{makeHyphen(v.phoneNumber)}</Badge>
+                              <Badge className="badge-md" color="primary">{v.phoneNumber}</Badge>
                             )
                           )}
                           {selectContactGroupList.map(v => (
-                              <Badge className="badge-md" color="info">{makeHyphen(v.phoneNumber)}</Badge>
+                              <Badge className="badge-md" color="info">{v.phoneNumber}</Badge>
                             )
                           )}
                         </Container>
@@ -345,6 +371,17 @@ const SendSms = () => {
                             ))}
                           </Row>
                         </Container>
+                      </FormGroup>
+                      <FormGroup>
+                        <label className="form-control-label">
+                          제목
+                        </label>
+                        <Input
+                            value={messageTitle}
+                            rows="1"
+                            type="textarea"
+                            onChange={(e)=>{onChangeTitleHandler(e.target.value)}}
+                        ></Input>
                       </FormGroup>
                       <FormGroup>
                         <label className="form-control-label">
@@ -381,14 +418,14 @@ const SendSms = () => {
                         <InputGroupAddon addonType="prepend">
                           {/* 애드온 */}
                         </InputGroupAddon>
-                        <Row style={{ height: 850 }}>
+                        <Row style={{ height: 530 }}>
                           <Col>
                             <div style={{ height: 816, paddingTop: 60, margin: 30, whiteSpace: "pre-wrap", width: 500 }}>
                               <MessageBox
                                 style={{ whiteSpace: "pre-wrap" }}
                                 position={'left'}
                                 type={'text'}
-                                text={isBlock ? messageWithBlockNumber : messageContext}
+                                text={message}
                               />
                             </div>
                           </Col>
@@ -400,7 +437,6 @@ const SendSms = () => {
                             return (
                               <Button color="primary" type="button" style={{ margin: 2 }}>
                                 <span>{makeHyphen(v.phoneNumber)}</span>
-
                               </Button>
                             )
                           })}
