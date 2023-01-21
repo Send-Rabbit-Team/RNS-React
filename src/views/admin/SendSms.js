@@ -196,8 +196,8 @@ const SendSms = () => {
       .catch((error) => {
         window.alert(error.response.data.message)
       })
-    
-    
+
+
   }
   console.log("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
   console.log("내 번호 : ",senderNumber)
@@ -312,7 +312,7 @@ const SendSms = () => {
                         </label>
                         <Container>
                           <Row>
-                            <Badge className="badge-md" color="primary">{senderNumber != null ? makeHyphen(senderNumber) : null}</Badge>
+                            <Badge className="badge-md m-1" color="primary">{senderNumber != null ? makeHyphen(senderNumber) : null}</Badge>
                           </Row>
                         </Container>
                       </FormGroup>
@@ -321,14 +321,16 @@ const SendSms = () => {
                           수신자
                         </label>
                         <Container>
-                          {selectContactList.map(v => (
-                              <Badge className="badge-md" color="primary">{makeHyphen(v.phoneNumber)}</Badge>
-                            )
-                          )}
-                          {selectContactGroupList.map(v => (
-                              <Badge className="badge-md" color="info">{makeHyphen(v.phoneNumber)}</Badge>
-                            )
-                          )}
+                          <Row>
+                            {selectContactList.map(v => (
+                                    <Badge className="badge-md m-1" color="primary">{makeHyphen(v.phoneNumber)}</Badge>
+                                )
+                            )}
+                            {selectContactGroupList.map(v => (
+                                    <Badge className="badge-md m-1" color="info">{v.name}</Badge>
+                                )
+                            )}
+                          </Row>
                         </Container>
                       </FormGroup>
                       <FormGroup>
@@ -365,7 +367,7 @@ const SendSms = () => {
                         <Container>
                           {isBlock?
                               <Row>
-                                <Badge className="badge-md" color="primary">{blockNumber != null ? makeHyphen(blockNumber) : null}</Badge>
+                                <Badge className="badge-md m-1" color="primary">{blockNumber != null ? makeHyphen(blockNumber) : null}</Badge>
                               </Row>
                               :null}
                         </Container>
