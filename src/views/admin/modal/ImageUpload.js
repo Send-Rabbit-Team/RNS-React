@@ -29,7 +29,7 @@ const ImageUpload = (props) => {
     };
 
     return (
-        props.isShowingTemplate?(
+        props.isShowingImageUpload?(
         <Modal
             className="modal-dialog-centered"
             size="lg"
