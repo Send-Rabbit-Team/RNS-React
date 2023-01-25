@@ -239,6 +239,7 @@ const SendSms = () => {
         setMessage(messageWithBlockNumber)
       } else if(isTitle){
         console.log('I am messageWithTitle')
+        console.log(messageWithTitle)
         setMessage(messageWithTitle)
       } else {
         console.log('I am messageContext')
@@ -248,6 +249,7 @@ const SendSms = () => {
   ,[messageTitle,isBlock,messageContext])
 
   const onChangeTitleHandler=(v)=> {
+    console.log("messageTitle: ",messageTitle)
     if(isTitle){
       setMessageTitle(v)
     } else {
@@ -452,7 +454,7 @@ const SendSms = () => {
                                 style={{ whiteSpace: "pre-wrap" }}
                                 position={'left'}
                                 type={'text'}
-                                text={isBlock ? messageWithBlockNumber : messageContext}
+                                text={message}
                               />
                             </div>
                           </Col>
