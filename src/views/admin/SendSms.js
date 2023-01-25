@@ -27,6 +27,7 @@ import Receiver from "./modal/Receiver";
 import TemplateModal from "./modal/TemplateModal";
 import ImageUpload from "./modal/ImageUpload";
 import {Image} from "react-bootstrap";
+import MessageSchedule from "./modal/MessageSchedule";
 
 
 const SendSms = () => {
@@ -80,10 +81,23 @@ const SendSms = () => {
     };
   };
 
+  const useModalMessageSchedule = () => {
+    const [isShowingMessageSchedule, setIsShowingMessageSchedule] = useState(false);
+
+    function toggleMessageSchedule() {
+      setIsShowingMessageSchedule(!isShowingMessageSchedule);
+    }
+    return {
+      isShowingMessageSchedule,
+      toggleMessageSchedule
+    };
+  };
+
   const { isShowingMessageRule, toggleMessageRule } = useModalMessageRule();
   const { isShowingReceiver, toggleReceiver } = useModalReceiver();
   const { isShowingTemplate, toggleTemplate } = useModalTemplate();
   const { isShowingImageUpload, toggleImageUpload } = useModalImageUpload();
+  const { isShowingMessageSchedule, toggleMessageSchedule } = useModalMessageSchedule();
 
   // 발신자 번호 변수
   const [senderNumber, setSenderNumber] = useState();
@@ -109,6 +123,13 @@ const SendSms = () => {
   const [selectImage, setSelectImage] = useState([]);
   const getSelectImage = (data) => {
     setSelectImage([...data])
+  }
+
+  // 예약발송 모달 -> 메인페이지 데이터 전달
+  const [cron, setCron] = useState("");
+  const getCron = (data) => {
+    setCron(data);
+    console.log(cron)
   }
 
 
@@ -247,7 +268,7 @@ const SendSms = () => {
           setSelectTemplate={getSelectTemplate}
       />
       <ImageUpload
-          isShowingTemplate={isShowingImageUpload}
+          isShowingImageUpload={isShowingImageUpload}
           hide={toggleImageUpload}
           selectImage={selectImage}
           setSelectImage={getSelectImage}
@@ -259,6 +280,11 @@ const SendSms = () => {
         hide={toggleReceiver}
         selectContactListParent={selectContactList}
         selectContactGroupListParent={selectContactGroupList}
+      />
+      <MessageSchedule
+          isShowingMessageSchedule={isShowingMessageSchedule}
+          hide={toggleMessageSchedule}
+          setCron={getCron}
       />
 
       {/* 메인 페이지 */}
@@ -337,8 +363,7 @@ const SendSms = () => {
                         </label>
                         <Container>
                           <Row>
-                            <Badge className="badge-md" color="warning">{senderNumber != null ? senderMemo : null}</Badge>
-                            <Badge className="badge-md" color="primary">{senderNumber != null ? makeHyphen(senderNumber) : null}</Badge>
+                            <Badge className="badge-md m-1" color="primary">{senderNumber != null ? senderMemo + " (" + makeHyphen(senderNumber) + ")" : null}</Badge>
                           </Row>
                         </Container>
                       </FormGroup>
@@ -347,14 +372,16 @@ const SendSms = () => {
                           수신자
                         </label>
                         <Container>
-                          {selectContactList.map(v => (
-                              <Badge className="badge-md" color="primary">{v.phoneNumber}</Badge>
-                            )
-                          )}
-                          {selectContactGroupList.map(v => (
-                              <Badge className="badge-md" color="info">{v.phoneNumber}</Badge>
-                            )
-                          )}
+                          <Row>
+                            {selectContactList.map(v => (
+                                    <Badge className="badge-md m-1" color="primary">{makeHyphen(v.phoneNumber)}</Badge>
+                                )
+                            )}
+                            {selectContactGroupList.map(v => (
+                                    <Badge className="badge-md m-1" color="info">{v.name}</Badge>
+                                )
+                            )}
+                          </Row>
                         </Container>
                       </FormGroup>
                       <FormGroup>
@@ -418,14 +445,14 @@ const SendSms = () => {
                         <InputGroupAddon addonType="prepend">
                           {/* 애드온 */}
                         </InputGroupAddon>
-                        <Row style={{ height: 530 }}>
+                        <Row style={{ height: 850 }}>
                           <Col>
                             <div style={{ height: 816, paddingTop: 60, margin: 30, whiteSpace: "pre-wrap", width: 500 }}>
                               <MessageBox
                                 style={{ whiteSpace: "pre-wrap" }}
                                 position={'left'}
                                 type={'text'}
-                                text={message}
+                                text={isBlock ? messageWithBlockNumber : messageContext}
                               />
                             </div>
                           </Col>
@@ -437,6 +464,7 @@ const SendSms = () => {
                             return (
                               <Button color="primary" type="button" style={{ margin: 2 }}>
                                 <span>{makeHyphen(v.phoneNumber)}</span>
+
                               </Button>
                             )
                           })}
@@ -459,7 +487,7 @@ const SendSms = () => {
                   <span className="btn-inner--text">발송하기</span>
                 </Button>
 
-                <Button className="btn-icon btn-3" size="xl" color="primary" type="button" style={{ width: "15%", height: 54, margin: 10, fontSize: 22, float: "right", }}>
+                <Button className="btn-icon btn-3" size="xl" color="primary" type="button" style={{ width: "15%", height: 54, margin: 10, fontSize: 22, float: "right", }} onClick={(e) => toggleMessageSchedule()}>
                   <span className="btn-inner--icon">
                     <i className="ni ni-time-alarm" />
                   </span>
