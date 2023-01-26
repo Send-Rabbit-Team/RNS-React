@@ -44,12 +44,12 @@ const Auth = (props) => {
         <AuthNavbar />
         <div className="header bg-gradient-info py-7 py-lg-8">
           <Container>
-            <div className="header-body text-center mb-7">
-              <Row className="justify-content-center">
+            <div className="header-body text-center mb-3">
+              <Row className="justify-content-center" >
                 <Col lg="5" md="6">
                   <h1 className="text-white" style={{fontSize: 30}}>Rabbit Notification Service</h1>
                   <p className="text-lead text-light">
-                  대용량의 메시지를 안전하고 빠르게 전달해보세요 - 로그인 화면
+                  대용량의 메시지를 안전하고 빠르게 전달해보세요
                   </p>
                 </Col>
               </Row>

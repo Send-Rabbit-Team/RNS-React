@@ -441,15 +441,15 @@ const SendSms = () => {
 
 
                   {/* 미리 보기 / Bubble */}
-                  <Col sm="6" >
-                    <FormGroup style={{ position: "relative" }}>
+                  <Col sm="6" style={{padding:40}}>
+                    <FormGroup style={{ position: "relative" ,backgroundColor : 'lightblue' }}>
                       <InputGroup className="input-group-alternative" style={{ boxShadow: '1px 2px 9px #8c8c8c' }}>
                         <InputGroupAddon addonType="prepend">
                           {/* 애드온 */}
                         </InputGroupAddon>
-                        <Row style={{ height: 850 }}>
+                        <Row style={{ height: 500, paddingTop: 10, bordingTop:10 }}>
                           <Col>
-                            <div style={{ height: 816, paddingTop: 60, margin: 30, whiteSpace: "pre-wrap", width: 500 }}>
+                            <div style={{ height: 816, paddingTop: 60, margin: 30, whiteSpace: "pre-wrap", width: 400}}>
                               <MessageBox
                                 style={{ whiteSpace: "pre-wrap" }}
                                 position={'left'}
