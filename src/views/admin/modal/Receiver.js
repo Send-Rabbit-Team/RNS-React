@@ -111,8 +111,8 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
   // 컴포넌트
   const searchContactListComponent = searchContactNumber.map((searchContactNumber, index) => (
     <tr>
+      <td>{searchContactNumber.memo}</td>
       <td>{makeHyphen(searchContactNumber.phoneNumber)}</td>
-      {console.log("123123: ",typeof(searchContactNumber.phoneNumber))}
       {
         isFoundContact(searchContactNumber.phoneNumber)==false?
         <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactHandler(searchContactNumber)} /></a></td>:
@@ -138,20 +138,20 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
     return (
       <tr>
         <td>{contactGroup.name}</td>
-        {/* <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactGroupHandler(contactGroup)} /></a></td> */}
         {
-        isFoundContactGroup(contactGroup.name)==false?
-        <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactGroupHandler(contactGroup)} /></a></td>:
-        <td><a href="#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactGroupHandler(contactGroup)} /></a></td>
-      }
+          isFoundContactGroup(contactGroup.name)==false?
+          <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactGroupHandler(contactGroup)} /></a></td>:
+          <td><a href="#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactGroupHandler(contactGroup)} /></a></td>
+        }
       </tr>)
   })
 
   
 
   const contactNumberListComponent = ContactNumberList.map((contactNumber, index) => (
-    
+    // console.log(contactNumber),
     <tr>
+      <td>{contactNumber.memo}</td>
       <td>{makeHyphen(contactNumber.phoneNumber)}</td>
       {
         isFoundContact(contactNumber.phoneNumber)==false?
@@ -293,8 +293,9 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
                 <Table className="align-items-center table-flush">
                   <thead>
                     <tr>
-                      <th scope="col" style={{fontSize:13,paddingLeft:50}}>전화번호</th>
-                      <th scope="col" style={{fontSize:13,float: "right", paddingRight:66}}>추가</th>
+                      <th scope="col" style={{fontSize:13,paddingLeft:30}}>메모</th>
+                      <th scope="col" style={{fontSize:13,paddingLeft:47}}>전화번호</th>
+                      <th scope="col" style={{fontSize:13,float: "right", paddingRight:47}}>추가</th>
                     </tr>
                   </thead>
                   </Table>
