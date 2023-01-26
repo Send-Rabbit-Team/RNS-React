@@ -301,7 +301,11 @@ const SendSms = () => {
                   <Col sm="10">
                     <div className="d-flex justify-content-between" style={{ paddingBottom: 20, flexDirection: "row" }} align="center" >
                       <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleImageUpload()}>
-                        사진
+                        
+                        <span className="btn-inner--icon">
+                          <i className="ni ni-album-2" />
+                        </span>
+                        <span className="btn-inner--text">사진</span>
                       </Button>
 
                       {/*발신자 드롭다운*/}
@@ -313,7 +317,10 @@ const SendSms = () => {
                           type="button"
                           style={{ width: 150, height: 60, fontSize: 16 }}
                         >
-                          발신자
+                          <span className="btn-inner--icon">
+                            <i className="fas fa-phone" />
+                          </span>
+                        <span className="btn-inner--text">발신자</span>
                         </DropdownToggle>
 
                         <DropdownMenu aria-labelledby="dropdownMenuButton">
@@ -333,16 +340,28 @@ const SendSms = () => {
                         blockNumber == null ? window.alert("발신번호를 선택하세요") :
                         isBlock == true ? setIsBlock(false) : setIsBlock(true)
                       }}>
-                        수신거부
+                        <span className="btn-inner--icon">
+                          <i className="ni ni-tag" />
+                        </span>
+                        <span className="btn-inner--text">수신거부</span>
                       </Button>
                       <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleTemplate()}>
-                        템플릿
+                      <span className="btn-inner--icon">
+                          <i className="ni ni-caps-small" />
+                        </span>
+                        <span className="btn-inner--text">템플릿</span>
                       </Button>
                       <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleMessageRule()}>
-                        발송설정
+                      <span className="btn-inner--icon">
+                          <i className="ni ni-time-alarm" />
+                        </span>
+                        <span className="btn-inner--text">발송설정</span>
                       </Button>
                       <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleReceiver()}>
-                        수신자
+                      <span className="btn-inner--icon">
+                          <i className="ni ni-circle-08" />
+                        </span>
+                        <span className="btn-inner--text">수신자</span>
                       </Button>
                     </div>
                   </Col>
