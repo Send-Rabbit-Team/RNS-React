@@ -387,7 +387,7 @@ const SendSms = () => {
                         <Container>
                           <Row>
                             {selectContactList.map(v => (
-                                    <Badge className="badge-md m-1" color="primary">{makeHyphen(v.phoneNumber)}</Badge>
+                                    <Badge className="badge-md m-1" color="primary">{v.phoneNumber}</Badge>
                                 )
                             )}
                             {selectContactGroupList.map(v => (
@@ -478,7 +478,7 @@ const SendSms = () => {
                           {selectContactList.map(v => {
                             return (
                               <Button color="primary" type="button" style={{ margin: 2 }}>
-                                <span>{makeHyphen(v.phoneNumber)}</span>
+                                <span>{v.phoneNumber}</span>
 
                               </Button>
                             )

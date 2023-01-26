@@ -89,13 +89,26 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
     }
   }
 
+  const isFound = (contact) => selectContactList.some(existContact => {
+    console.log(existContact)
+    if (existContact.phoneNumber == contact) {
+      return true;
+    }
 
+    return false;
+  });
+  
 
   // 컴포넌트
   const searchContactListComponent = searchContactNumber.map((searchContactNumber, index) => (
     <tr>
       <td>{makeHyphen(searchContactNumber.phoneNumber)}</td>
-      <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactHandler(e.target.value)} /></a></td>
+      {console.log("123123: ",typeof(searchContactNumber.phoneNumber))}
+      {
+        isFound(searchContactNumber.phoneNumber)==false?
+        <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactHandler(searchContactNumber)} /></a></td>:
+        <td><a href="#"><i className="fas fa-minus" onClick={(e) => onDeleteContactHandler(searchContactNumber)} /></a></td>
+      }
     </tr>
   )
   )
@@ -115,10 +128,18 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
         <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactGroupHandler(contactGroup)} /></a></td>
       </tr>)
   })
+
+  
+
   const contactNumberListComponent = ContactNumberList.map((contactNumber, index) => (
+    
     <tr>
       <td>{makeHyphen(contactNumber.phoneNumber)}</td>
-      <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactHandler(contactNumber)} /></a></td>
+      {
+        isFound(contactNumber.phoneNumber)==false?
+        <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactHandler(contactNumber)} /></a></td>:
+        <td><a href="#"><i className="fas fa-minus" onClick={(e) => onDeleteContactHandler(contactNumber)} /></a></td>
+      }
     </tr>
   )
   )
