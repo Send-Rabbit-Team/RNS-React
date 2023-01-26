@@ -302,7 +302,7 @@ const SendSms = () => {
                   <Col sm="10">
                     <div className="d-flex justify-content-between" style={{ paddingBottom: 20, flexDirection: "row" }} align="center" >
                       <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleImageUpload()}>
-                        
+
                         <span className="btn-inner--icon">
                           <i className="ni ni-album-2" />
                         </span>
@@ -463,10 +463,11 @@ const SendSms = () => {
                       <div style={{height: 120}}></div>
                       <div style={{ height: 816, whiteSpace: "pre-wrap", width: 290, margin: 30, }}>
                         <MessageBox
-                            style={{ whiteSpace: "pre-wrap" }}
+                            style={{ whiteSpace: "pre-wrap",fontWeight: 'bold'}}
                             position={'left'}
                             type={'text'}
                             text={message}
+                            title={messageTitle}
                         />
                       </div>
                     </div>
@@ -490,7 +491,7 @@ const SendSms = () => {
                                 text={message}
                                 title={messageTitle}
                               />
-                             
+
                             </div>
                           </Col>
                         </Row>
