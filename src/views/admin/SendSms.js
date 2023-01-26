@@ -28,6 +28,7 @@ import TemplateModal from "./modal/TemplateModal";
 import ImageUpload from "./modal/ImageUpload";
 import {Image} from "react-bootstrap";
 import MessageSchedule from "./modal/MessageSchedule";
+import iphone from '../../assets/img/brand/iphone.jpg';
 
 
 const SendSms = () => {
@@ -301,7 +302,7 @@ const SendSms = () => {
                   <Col sm="10">
                     <div className="d-flex justify-content-between" style={{ paddingBottom: 20, flexDirection: "row" }} align="center" >
                       <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleImageUpload()}>
-                        
+
                         <span className="btn-inner--icon">
                           <i className="ni ni-album-2" />
                         </span>
@@ -368,7 +369,7 @@ const SendSms = () => {
 
 
 
-                  <Col md="6">
+                  <Col sm="8">
                     <CardBody style={{ boxShadow: '1px 2px 9px #8c8c8c' }}>
                       <FormGroup>
                         <label className="form-control-label">
@@ -451,6 +452,28 @@ const SendSms = () => {
                   </Col>
 
 
+
+                  <Col sm="4">
+                    <div style={{
+                      backgroundImage: `url(${iphone})`,
+                      backgroundRepeat: "no-repeat",
+                      backgroundSize: "100%",
+                      height: "100%"
+                    }}>
+                      <div style={{height: 120}}></div>
+                      <div style={{ height: 816, whiteSpace: "pre-wrap", width: 290, margin: 30, }}>
+                        <MessageBox
+                            style={{ whiteSpace: "pre-wrap",fontWeight: 'bold'}}
+                            position={'left'}
+                            type={'text'}
+                            text={message}
+                            title={messageTitle}
+                        />
+                      </div>
+                    </div>
+                  </Col>
+
+
                   {/* 미리 보기 / Bubble */}
                   <Col sm="6" style={{padding:40}}>
                     <FormGroup style={{ position: "relative" ,backgroundColor : 'lightblue' }}>
@@ -468,7 +491,7 @@ const SendSms = () => {
                                 text={message}
                                 title={messageTitle}
                               />
-                             
+
                             </div>
                           </Col>
                         </Row>
