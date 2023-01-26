@@ -28,6 +28,7 @@ import TemplateModal from "./modal/TemplateModal";
 import ImageUpload from "./modal/ImageUpload";
 import {Image} from "react-bootstrap";
 import MessageSchedule from "./modal/MessageSchedule";
+import iphone from '../../assets/img/brand/iphone.jpg';
 
 
 const SendSms = () => {
@@ -357,7 +358,7 @@ const SendSms = () => {
 
 
 
-                  <Col md="6">
+                  <Col sm="8">
                     <CardBody style={{ boxShadow: '1px 2px 9px #8c8c8c' }}>
                       <FormGroup>
                         <label className="form-control-label">
@@ -437,6 +438,27 @@ const SendSms = () => {
                         </Container>
                       </FormGroup>
                     </CardBody>
+                  </Col>
+
+
+
+                  <Col sm="4">
+                    <div style={{
+                      backgroundImage: `url(${iphone})`,
+                      backgroundRepeat: "no-repeat",
+                      backgroundSize: "100%",
+                      height: "100%"
+                    }}>
+                      <div style={{height: 120}}></div>
+                      <div style={{ height: 816, whiteSpace: "pre-wrap", width: 290, margin: 30, }}>
+                        <MessageBox
+                            style={{ whiteSpace: "pre-wrap" }}
+                            position={'left'}
+                            type={'text'}
+                            text={message}
+                        />
+                      </div>
+                    </div>
                   </Col>
 
 
