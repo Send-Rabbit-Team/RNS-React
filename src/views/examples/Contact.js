@@ -328,6 +328,21 @@ const ContactNumber = () => {
           </button>
         </div>
         <div className="modal-body">
+        <FormGroup className="mb-3">
+            <InputGroup className="input-group-alternative">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fa fa-edit" />
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                  className="form-control-alternative"
+                  placeholder="메모를 입력하세요"
+                  type="text"
+                  onChange={(e) => {setNewMemo(e.target.value)}}
+              />
+            </InputGroup>
+          </FormGroup>
           <FormGroup className="mb-3">
               <InputGroup className="input-group-alternative">
                 <InputGroupAddon addonType="prepend">
@@ -342,22 +357,6 @@ const ContactNumber = () => {
                     onChange={(e) => {setNewPhoneNumber(e.target.value)}}
                 />
               </InputGroup>
-          </FormGroup>
-
-          <FormGroup className="mb-3">
-            <InputGroup className="input-group-alternative">
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>
-                  <i className="fa fa-edit" />
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input
-                  className="form-control-alternative"
-                  placeholder="메모를 입력하세요"
-                  type="text"
-                  onChange={(e) => {setNewMemo(e.target.value)}}
-              />
-            </InputGroup>
           </FormGroup>
           <FormGroup>
             <InputGroup className="input-group-alternative" alignRight>
