@@ -11,7 +11,8 @@ const TemplateModal = (props) => {
             .then((response) => {
                 if (response.data.isSuccess) {
                     setTemplateList(response.data.result)
-                } else {
+                }
+                else {
                     window.alert(response.data.message)
                 }
             })
@@ -40,7 +41,7 @@ const TemplateModal = (props) => {
             </div>
             <div className="modal-body">
                 <Row>
-                    {templateList.map((template) => (
+                    {templateList != null ? templateList.map((template) => (
                         <div className="col-sm-4 mb-3">
                             <h4>{template.title}</h4>
                             <Button block outline className="lg" color="default" style={{textAlign : "left"}}
@@ -52,7 +53,7 @@ const TemplateModal = (props) => {
                                 {/*<p>{template.content.map()}</p>*/}
                             </Button>
                         </div>
-                    ))}
+                    )) : (<p className="m-3">탬플릿이 없습니다</p>)}
 
                 </Row>
             </div>

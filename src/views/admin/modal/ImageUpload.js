@@ -1,6 +1,5 @@
 import {Modal, Form, Button, Row, Card, CardBody, CardHeader, CardImg} from "reactstrap"
 import React, {useState} from "react";
-import {forEach} from "react-bootstrap/ElementChildren";
 
 const ImageUpload = (props) => {
     const [imgFile, setImgFile] = useState(null);	//파일
