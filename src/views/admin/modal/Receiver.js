@@ -139,7 +139,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
   }
 
   const onDeleteContactHandler = (v) => {
-    const newContactList = selectContactList.contactfilter((item) => item !== v);
+    const newContactList = selectContactList.filter((item) => item !== v);
     setSelectContactList(newContactList)
     selectContactChild(newContactList)
   }
@@ -150,7 +150,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
   }
 
   const onDeleteContactGroupHandler = (v) => {
-    const newContactGroupList = selectContactGroupList.contactfilter((item) => item !== v);
+    const newContactGroupList = selectContactGroupList.filter((item) => item !== v);
     setSelectContactGroupList(newContactGroupList)
     selectContactGroupChild(newContactGroupList)
   }
