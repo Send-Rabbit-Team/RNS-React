@@ -149,8 +149,8 @@ const SendSms = () => {
 
   // 수신거부
   const messageWithBlockNumber = `${messageContext} \n\n\n무료수신거부: ${blockNumber}`
-  const messageWithTitle = `${messageTitle} \n\n\n${messageContext}`
-  const messageWithBlockerNumberAndTitle = `${messageTitle} \n\n\n${messageContext} \n\n\n무료수신거부: ${blockNumber}`
+  // const messageWithTitle = `${messageTitle} \n\n\n${messageContext}`
+  // const messageWithBlockerNumberAndTitle = `${messageTitle} \n\n\n${messageContext} \n\n\n무료수신거부: ${blockNumber}`
 
   // 메시지 타입 지정
   const [messageType, setMessageType] = useState()
@@ -230,17 +230,9 @@ const SendSms = () => {
 
   useEffect(()=>
   {
-      console.log('I am In!')
-      if(isBlock && isTitle){
-        console.log('I am messageWithBlockerNumberAndTitle')
-        setMessage(messageWithBlockerNumberAndTitle)
-      } else if(isBlock){
+      if(isBlock){
         console.log('I am messageWithBlockNumber')
         setMessage(messageWithBlockNumber)
-      } else if(isTitle){
-        console.log('I am messageWithTitle')
-        console.log(messageWithTitle)
-        setMessage(messageWithTitle)
       } else {
         console.log('I am messageContext')
         setMessage(messageContext)
@@ -451,11 +443,13 @@ const SendSms = () => {
                           <Col>
                             <div style={{ height: 816, paddingTop: 60, margin: 30, whiteSpace: "pre-wrap", width: 400}}>
                               <MessageBox
-                                style={{ whiteSpace: "pre-wrap" }}
+                                style={{ whiteSpace: "pre-wrap",fontWeight: 'bold'}}
                                 position={'left'}
                                 type={'text'}
                                 text={message}
+                                title={messageTitle}
                               />
+                             
                             </div>
                           </Col>
                         </Row>
