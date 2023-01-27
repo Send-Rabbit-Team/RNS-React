@@ -29,6 +29,7 @@ import ImageUpload from "./modal/ImageUpload";
 import {Image} from "react-bootstrap";
 import MessageSchedule from "./modal/MessageSchedule";
 import iphone from '../../assets/img/brand/iphone.jpg';
+import { ChatBubble, Message } from 'react-chat-ui';
 
 
 const SendSms = () => {
@@ -148,10 +149,22 @@ const SendSms = () => {
   const [isTitle, setIstitle] = useState(false);
   const [message, setMessage] = useState("");
 
+  var messageInput = new Message({
+    id: 1,
+    message: message,
+    senderName: "youngjoo"
+  });
+
+  useEffect(()=>{
+    messageInput = new Message({
+      id: 1,
+      message: message,
+    });
+  },[message])
+  
+
   // 수신거부
   const messageWithBlockNumber = `${messageContext} \n\n\n무료수신거부: ${blockNumber}`
-  // const messageWithTitle = `${messageTitle} \n\n\n${messageContext}`
-  // const messageWithBlockerNumberAndTitle = `${messageTitle} \n\n\n${messageContext} \n\n\n무료수신거부: ${blockNumber}`
 
   // 메시지 타입 지정
   const [messageType, setMessageType] = useState()
@@ -464,13 +477,33 @@ const SendSms = () => {
                     }}>
                       <div style={{ height: 120 }}></div>
                       <div style={{ height: 550, whiteSpace: "pre-wrap", width: 300, margin: 30}}>
-                        <MessageBox
+                        {/* <MessageBox
                             style={{ whiteSpace: "pre-wrap",fontWeight: 'bold'}}
                             position={'left'}
                             type={'text'}
                             text={message}
                             title={messageTitle}
+                        /> */}
+
+                        <ChatBubble 
+                          message={messageInput}
+                          bubbleStyles={
+                            {
+                              text: {
+                                fontSize: 13,
+                                color:'black'
+                              },
+                              chatbubble: {
+                                borderRadius: 20,
+                                paddingLeft:14,
+                                margin:10,
+                                maxWidth:250,
+                                backgroundColor: '#e5e5e6',
+                              }
+                            }
+                          }
                         />
+
                       </div>
                     </div>
                   </Col>
