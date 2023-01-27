@@ -9,6 +9,7 @@ import SenderNumber from "./views/admin/SenderNumber";
 import ContactNumber from "views/examples/Contact.js";
 import ContactGroup from "./views/admin/ContactGroup";
 import SendSms from "./views/admin/SendSms"
+import SendKakao from "./views/admin/SendKakao"
 import MakeTemplate from "./views/admin/MakeTemplate";
 import Template from "./views/admin/template/Template";
 
@@ -66,6 +67,14 @@ var routes = [
     name: "SMS 발송",
     icon: "ni ni-send",
     component: SendSms,
+    layout: "/admin",
+    sidebar:true
+  },
+  {
+    path: "/kakao",
+    name: "알림톡 발송",
+    icon: "ni ni-send",
+    component: SendKakao,
     layout: "/admin",
     sidebar:true
   },
