@@ -10,6 +10,7 @@ import ContactNumber from "views/examples/Contact.js";
 import ContactGroup from "./views/admin/ContactGroup";
 import SendSms from "./views/admin/SendSms"
 import MakeTemplate from "./views/admin/MakeTemplate";
+import Template from "./views/admin/template/Template";
 
 var routes = [
   {
@@ -69,10 +70,10 @@ var routes = [
     sidebar:true
   },
   {
-    path: "/template/:page",
+    path: "/template/:type/:page",
     name: "탬플릿 관리",
     icon: "fas fa-cog",
-    component: MakeTemplate,
+    component: Template                                                                     ,
     layout: "/admin",
     sidebar:true
   }
