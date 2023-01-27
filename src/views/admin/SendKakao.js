@@ -426,7 +426,30 @@ const SendKakao = () => {
                       </FormGroup>
                       <FormGroup>
                         <label className="form-control-label">
+                          소제목  
+                        </label>
+                        <Input
+                            value={messageTitle}
+                            rows="1"
+                            type="textarea"
+                            onChange={(e)=>{onChangeTitleHandler(e.target.value)}}
+                        ></Input>
+                      </FormGroup>
+                      <FormGroup>
+                        <label className="form-control-label">
                           메시지 내용
+                        </label>
+                        <Input
+                            value={messageContext}
+                            rows="10"
+                            type="textarea"
+                            onChange={(e)=>{setMessageContext(e.target.value)}}
+                        ></Input>
+                        <p align="right">{messageType}&nbsp;{messageByte}byte</p>
+                      </FormGroup>
+                      <FormGroup>
+                        <label className="form-control-label">
+                          반복 문구
                         </label>
                         <Input
                             value={messageContext}
