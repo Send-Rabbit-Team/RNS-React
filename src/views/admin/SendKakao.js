@@ -9,8 +9,6 @@ import {
   Button,
   Input,
   FormGroup,
-  InputGroup,
-  InputGroupAddon,
   Badge,
   UncontrolledDropdown,
   DropdownToggle,
@@ -20,8 +18,6 @@ import {
 import Header from "components/Headers/Header.js";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import 'react-chat-elements/dist/main.css'
-import { MessageBox } from 'react-chat-elements'
 import MessageRule from './modal/MessageRule'
 import Receiver from "./modal/Receiver";
 import TemplateModal from "./modal/TemplateModal";
@@ -29,7 +25,7 @@ import ImageUpload from "./modal/ImageUpload";
 import {Image} from "react-bootstrap";
 import MessageSchedule from "./modal/MessageSchedule";
 import iphone from '../../assets/img/brand/iphone.jpg';
-
+import { ChatBubble, Message } from 'react-chat-ui';
 
 const SendKakao = () => {
 
@@ -147,11 +143,34 @@ const SendKakao = () => {
   const [isBlock, setIsBlock] = useState(false);
   const [isTitle, setIstitle] = useState(false);
   const [message, setMessage] = useState("");
+  const IphoneTime = ()=>{
+    let now = new Date();
+    let hour = now.getHours();
+    let hourMod = hour<=12?hour:hour-12
+    let min = now.getMinutes();
+    console.log(hour)
+    let PA = now.getHours() < 12 ? "오전" : "오후";
+    return PA+' '+hourMod+'시 '+min+'분'
+  }
+  
+
+  var messageInput = new Message({
+    id: 1,
+    message: message,
+    senderName: "youngjoo"
+  });
+
+  useEffect(()=>{
+    messageInput = new Message({
+      id: 1,
+      message: message,
+    });
+  },[message])
 
   // 수신거부
-  const messageWithBlockNumber = `${messageContext} \n\n\n무료수신거부: ${blockNumber}`
-  // const messageWithTitle = `${messageTitle} \n\n\n${messageContext}`
-  // const messageWithBlockerNumberAndTitle = `${messageTitle} \n\n\n${messageContext} \n\n\n무료수신거부: ${blockNumber}`
+  const messageWithBlockNumber = `${messageContext} \n\n무료수신거부: ${blockNumber}`
+  const messageWithTitle = `${messageTitle} \n\n${messageContext}`
+  const messageWithBlockerNumberAndTitle = `${messageTitle} \n\n${messageContext} \n\n무료수신거부: ${blockNumber}`
 
   // 메시지 타입 지정
   const [messageType, setMessageType] = useState()
@@ -231,13 +250,23 @@ const SendKakao = () => {
 
   useEffect(()=>
   {
-      if(isBlock){
-        console.log('I am messageWithBlockNumber')
-        setMessage(messageWithBlockNumber)
-      } else {
-        console.log('I am messageContext')
-        setMessage(messageContext)
-      }
+    console.log('I am In!')
+    console.log('Block: ',isBlock)
+    console.log('Title: ',isTitle)
+    console.log("message: ", message)
+    if(isBlock && isTitle){
+      console.log('I am messageWithBlockerNumberAndTitle')
+      setMessage(messageWithBlockerNumberAndTitle)
+    } else if(isBlock){
+      console.log('I am messageWithBlockNumber')
+      setMessage(messageWithBlockNumber)
+    } else if(isTitle){
+      console.log('I am messageWithTitle')
+      console.log(messageWithTitle)
+      setMessage(messageWithTitle)
+    } else {
+      console.log('I am messageContext')
+      setMessage(messageContext)}
   }
   ,[messageTitle,isBlock,messageContext])
 
@@ -291,7 +320,7 @@ const SendKakao = () => {
               <CardHeader className="border-0">
                 <Row>
                   <Col>
-                    <h3 className="mb-0" style={{ paddingTop: 10 }}>알림톡 발송 &nbsp;&nbsp;
+                    <h3 className="mb-0" style={{ paddingTop: 10 }}>SMS 발송 &nbsp;&nbsp;
                     </h3>
                   </Col>
                 </Row>
@@ -369,7 +398,7 @@ const SendKakao = () => {
 
 
 
-                  <Col sm="8">
+                  <Col sm="6">
                     <CardBody style={{ boxShadow: '1px 2px 9px #8c8c8c' }}>
                       <FormGroup>
                         <label className="form-control-label">
@@ -426,7 +455,7 @@ const SendKakao = () => {
                       </FormGroup>
                       <FormGroup>
                         <label className="form-control-label">
-                          소제목  
+                          부제목
                         </label>
                         <Input
                             value={messageTitle}
@@ -441,24 +470,24 @@ const SendKakao = () => {
                         </label>
                         <Input
                             value={messageContext}
-                            rows="10"
+                            rows="5"
                             type="textarea"
                             onChange={(e)=>{setMessageContext(e.target.value)}}
                         ></Input>
-                        <p align="right">{messageType}&nbsp;{messageByte}byte</p>
-                      </FormGroup>
-                      <FormGroup>
+                        <p align="right">{messageType}&nbsp;{messageByte}byte</p> 
+                        {/* 부가 정보 합산 바이트 */}
                         <label className="form-control-label">
-                          반복 문구
+                          부가정보
                         </label>
                         <Input
                             value={messageContext}
-                            rows="10"
+                            rows="5"
                             type="textarea"
                             onChange={(e)=>{setMessageContext(e.target.value)}}
                         ></Input>
                         <p align="right">{messageType}&nbsp;{messageByte}byte</p>
                       </FormGroup>
+        
                       <FormGroup>
                         <label className="form-control-label">
                           수신차단번호
@@ -476,79 +505,50 @@ const SendKakao = () => {
 
 
 
-                  <Col sm="4">
+
+                  {/* 메시지 미리보기  */}
+                  <Col sm="6" style={{paddingLeft:80}}>
                     <div style={{
                       backgroundImage: `url(${iphone})`,
                       backgroundRepeat: "no-repeat",
-                      backgroundSize: "100%",
-                      height: "100%"
+                      backgroundSize: "80%",
+                      height: "100%",
                     }}>
-                      <div style={{height: 120}}></div>
-                      <div style={{ height: 816, whiteSpace: "pre-wrap", width: 290, margin: 30, }}>
-                        <MessageBox
-                            style={{ whiteSpace: "pre-wrap",fontWeight: 'bold'}}
-                            position={'left'}
-                            type={'text'}
-                            text={message}
-                            title={messageTitle}
+                      <div style={{ height: 110 }}></div>
+                      <div style={{ height: 550, whiteSpace: "pre-wrap", width: 300, margin: 30}}>
+                        <div style={{textAlign:"center", fontSize:10,fontWeight:"bold", color:'#b1b1b4'}}>{`문자 메시지\n(오늘) ${IphoneTime()} `}</div>
+                        <ChatBubble 
+                          message={messageInput}
+                          bubbleStyles={
+                            {
+                              text: {
+                                fontSize: 12,
+                                color:'black'
+                              },
+                              chatbubble: {
+                                borderRadius: 20,
+                                paddingLeft:14,
+                                margin:10,
+                                maxWidth:250,
+                                backgroundColor: '#e5e5e6',
+                              }
+                            }
+                          }
                         />
+
                       </div>
                     </div>
                   </Col>
 
-
-                  {/* 미리 보기 / Bubble */}
-                  <Col sm="6" style={{padding:40}}>
-                    <FormGroup style={{ position: "relative" ,backgroundColor : 'lightblue' }}>
-                      <InputGroup className="input-group-alternative" style={{ boxShadow: '1px 2px 9px #8c8c8c' }}>
-                        <InputGroupAddon addonType="prepend">
-                          {/* 애드온 */}
-                        </InputGroupAddon>
-                        <Row style={{ height: 500, paddingTop: 10, bordingTop:10 }}>
-                          <Col>
-                            <div style={{ height: 816, paddingTop: 60, margin: 30, whiteSpace: "pre-wrap", width: 400}}>
-                              <MessageBox
-                                style={{ whiteSpace: "pre-wrap",fontWeight: 'bold'}}
-                                position={'left'}
-                                type={'text'}
-                                text={message}
-                                title={messageTitle}
-                              />
-
-                            </div>
-                          </Col>
-                        </Row>
-                        <Row style={{ margin: 30 }}>
-
-                          {/* 수신자 불러오기 */}
-                          {selectContactList.map(v => {
-                            return (
-                              <Button color="primary" type="button" style={{ margin: 2 }}>
-                                <span>{v.phoneNumber}</span>
-
-                              </Button>
-                            )
-                          })}
-                          {selectContactGroupList.map(v => {
-                            return (
-                              <Button color="info" type="button" style={{ margin: 2 }}>
-                                <span>{v.name}</span>
-                              </Button>
-                            )
-                          })}
-                        </Row>
-                      </InputGroup>
-                    </FormGroup>
-                  </Col>
                 </Row>
-                <Button className="btn-icon btn-3" size="xl" color="primary" type="button" style={{ width: "15%", height: 54, margin: 10, fontSize: 22, float: "right"}} onClick={(e)=> sendMessage()}>
+                <Button className="btn-icon btn-3" size="xl" color="primary" type="button" style={{ width: "15%", height: 54, margin: 10, fontSize: 17, float: "right"}} onClick={(e)=> sendMessage()}>
                   <span className="btn-inner--icon">
                     <i className="ni ni-send text-white" />
                   </span>
                   <span className="btn-inner--text">발송하기</span>
                 </Button>
 
-                <Button className="btn-icon btn-3" size="xl" color="primary" type="button" style={{ width: "15%", height: 54, margin: 10, fontSize: 22, float: "right", }} onClick={(e) => toggleMessageSchedule()}>
+                <Button className="btn-icon btn-3" size="xl" color="primary" type="button" style={{ width: "15%", height: 54, margin: 10, fontSize: 17, float: "right", }} onClick={(e) => toggleMessageSchedule()}>
                   <span className="btn-inner--icon">
                     <i className="ni ni-time-alarm" />
                   </span>
