@@ -44,7 +44,16 @@ const KakaoTemplateModal = (props) => {
                     {templateList != null ? templateList.map((template) => (
                         <div className="col-lg-6 mb-3">
                             <Button block className="lg p-0" style={{textAlign : "left"}}
-                                onClick={(e) => {props.setSelectTemplate(template.content); props.hide()}}
+                                onClick={(e) => {
+                                    props.setMessageTitle(template.title)
+                                    props.setMessageSubTitle(template.subTitle)
+                                    props.setMessageContext(template.content)
+                                    props.setMessageDescription(template.description)
+                                    props.setButtonTitle(template.buttonTitle)
+                                    props.setButtonUrl(template.buttonUrl)
+                                    props.setButtonType(template.buttonType)
+                                    props.hide()
+                                }}
                             >
                                 <Card className="m-0">
                                     <CardHeader className="bg-yellow">알림톡 도착</CardHeader>

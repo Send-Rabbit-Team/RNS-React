@@ -24,11 +24,11 @@ import 'react-chat-elements/dist/main.css'
 import { MessageBox } from 'react-chat-elements'
 import MessageRule from './modal/MessageRule'
 import Receiver from "./modal/Receiver";
-import TemplateModal from "./modal/TemplateModal";
+import KakaoTemplateModal from "./modal/KakaoTemplateModal";
 import ImageUpload from "./modal/ImageUpload";
 import {Image} from "react-bootstrap";
 import MessageSchedule from "./modal/MessageSchedule";
-import iphone from '../../assets/img/brand/iphone.jpg';
+import iphonekakao from '../../assets/img/brand/iphonekakao.png';
 
 
 const SendKakao = () => {
@@ -113,13 +113,6 @@ const SendKakao = () => {
   const [selectContactList, setSelectContactList] = useState([]);
   const [selectContactGroupList, setSelectContactGroupList] = useState([]);
 
-  // 탬플릿 모달 -> 메인페이지 데이터 전달
-  const [selectTemplate, setSelectTemplate] = useState();
-  const getSelectTemplate = (data) => {
-    setSelectTemplate(data);
-    setMessageContext(messageContext + data)
-  }
-
   // 이미지 모달 -> 메인페이지 데이터 전달
   const [selectImage, setSelectImage] = useState([]);
   const getSelectImage = (data) => {
@@ -142,8 +135,14 @@ const SendKakao = () => {
   }
 
   // 미리보기화면
-  const [messageContext, setMessageContext] = useState("")
   const [messageTitle, setMessageTitle] = useState("")
+  const [messageSubTitle, setMessageSubTitle] = useState("")
+  const [messageContext, setMessageContext] = useState("")
+  const [messageDescription, setMessageDescription] = useState("")
+  const [buttonTitle, setButtonTitle] = useState("")
+  const [buttonUrl, setButtonUrl] = useState("")
+  const [buttonType, setButtonType] = useState("")
+
   const [isBlock, setIsBlock] = useState(false);
   const [isTitle, setIstitle] = useState(false);
   const [message, setMessage] = useState("");
@@ -152,30 +151,6 @@ const SendKakao = () => {
   const messageWithBlockNumber = `${messageContext} \n\n\n무료수신거부: ${blockNumber}`
   // const messageWithTitle = `${messageTitle} \n\n\n${messageContext}`
   // const messageWithBlockerNumberAndTitle = `${messageTitle} \n\n\n${messageContext} \n\n\n무료수신거부: ${blockNumber}`
-
-  // 메시지 타입 지정
-  const [messageType, setMessageType] = useState()
-  useEffect(() => {
-    selectImage.length != 0 ? setMessageType("MMS") :
-        messageByte > 80 ?
-            setMessageType("LMS") : setMessageType("SMS")
-  });
-
-  // 메시지 바이트 변환
-  const [messageByte, setMessageByte] = useState()
-  useEffect(() => {
-    var l= 0;
-
-    for(var idx=0; idx < messageContext.length; idx++) {
-      var c = escape(messageContext.charAt(idx));
-
-      if( c.length==1 ) l ++;
-      else if( c.indexOf("%u")!=-1 ) l += 2;
-      else if( c.indexOf("%")!=-1 ) l += c.length/3;
-    }
-
-    isBlock ? setMessageByte(l+29) : setMessageByte(l)
-  });
 
   // SenderNumber 불러오기
   const [senderNumberList, setSenderNumberList] = useState([]);
@@ -256,11 +231,16 @@ const SendKakao = () => {
     <>
       {/* 발송 설정 모달 */}
       <MessageRule isShowingMessageRule={isShowingMessageRule} hide={toggleMessageRule} />
-      <TemplateModal
+      <KakaoTemplateModal
           isShowingTemplate={isShowingTemplate}
           hide={toggleTemplate}
-          selectTemplate={selectTemplate}
-          setSelectTemplate={getSelectTemplate}
+          setMessageTitle={setMessageTitle}
+          setMessageSubTitle={setMessageSubTitle}
+          setMessageContext={setMessageContext}
+          setMessageDescription={setMessageDescription}
+          setButtonTitle={setButtonTitle}
+          setButtonUrl={setButtonUrl}
+          setButtonType={setButtonType}
       />
       <ImageUpload
           isShowingImageUpload={isShowingImageUpload}
@@ -415,29 +395,29 @@ const SendKakao = () => {
                       </FormGroup>
                       <FormGroup>
                         <label className="form-control-label">
-                          제목
+                          알림톡 제목
                         </label>
                         <Input
                             value={messageTitle}
                             rows="1"
                             type="textarea"
-                            onChange={(e)=>{onChangeTitleHandler(e.target.value)}}
+                            onChange={(e)=>{setMessageTitle(e.target.value)}}
                         ></Input>
                       </FormGroup>
                       <FormGroup>
                         <label className="form-control-label">
-                          소제목  
+                          알림톡 소제목
                         </label>
                         <Input
-                            value={messageTitle}
+                            value={messageSubTitle}
                             rows="1"
                             type="textarea"
-                            onChange={(e)=>{onChangeTitleHandler(e.target.value)}}
+                            onChange={(e)=>{setMessageSubTitle(e.target.value)}}
                         ></Input>
                       </FormGroup>
                       <FormGroup>
                         <label className="form-control-label">
-                          메시지 내용
+                          알림톡 내용
                         </label>
                         <Input
                             value={messageContext}
@@ -445,19 +425,58 @@ const SendKakao = () => {
                             type="textarea"
                             onChange={(e)=>{setMessageContext(e.target.value)}}
                         ></Input>
-                        <p align="right">{messageType}&nbsp;{messageByte}byte</p>
                       </FormGroup>
                       <FormGroup>
                         <label className="form-control-label">
-                          반복 문구
+                          알림톡 설명
                         </label>
                         <Input
-                            value={messageContext}
+                            value={messageDescription}
                             rows="10"
                             type="textarea"
-                            onChange={(e)=>{setMessageContext(e.target.value)}}
+                            onChange={(e)=>{setMessageDescription(e.target.value)}}
                         ></Input>
-                        <p align="right">{messageType}&nbsp;{messageByte}byte</p>
+                      </FormGroup>
+                      <FormGroup>
+                        <label className="form-control-label">
+                          알림톡 버튼 이름
+                        </label>
+                        <Input
+                            value={buttonTitle}
+                            rows="1"
+                            type="textarea"
+                            onChange={(e)=>{setButtonTitle(e.target.value)}}
+                        ></Input>
+                      </FormGroup>
+                      <FormGroup>
+                        <label className="form-control-label">
+                          알림톡 버튼 링크
+                        </label>
+                        <Input
+                            value={buttonUrl}
+                            rows="1"
+                            type="textarea"
+                            onChange={(e)=>{setButtonUrl(e.target.value)}}
+                        ></Input>
+                      </FormGroup>
+                      <FormGroup>
+                        <label className="form-control-label">
+                          알림톡 버튼 종류
+                        </label>
+                        <Input
+                            value={buttonType}
+                            rows="1"
+                            type="select"
+                            onChange={(e)=>{setButtonType(e.target.value)}}
+                        >
+                          <option>선택</option>
+                          <option value="DS">배송 조회</option>
+                          <option value="WL">웹 링크</option>
+                          <option value="AL">앱 링크</option>
+                          <option value="BK">봇 키워드</option>
+                          <option value="MD">메시지 전달</option>
+                          <option value="AC">채널 추가</option>
+                        </Input>
                       </FormGroup>
                       <FormGroup>
                         <label className="form-control-label">
@@ -478,7 +497,7 @@ const SendKakao = () => {
 
                   <Col sm="4">
                     <div style={{
-                      backgroundImage: `url(${iphone})`,
+                      backgroundImage: `url(${iphonekakao})`,
                       backgroundRepeat: "no-repeat",
                       backgroundSize: "100%",
                       height: "100%"
