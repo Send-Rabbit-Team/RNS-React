@@ -140,7 +140,7 @@ const SendKakao = () => {
 
   // 미리보기화면
   const [messageTitle, setMessageTitle] = useState("")
-  const [messageSubtitle, setMEssageSubtitle] = useState("")
+  const [messageSubtitle, setMessageSubtitle] = useState("")
   const [messageContext, setMessageContext] = useState("")
   const [messageDescription, setMessageDescription] = useState("")
 
@@ -180,71 +180,61 @@ const SendKakao = () => {
    font-size: 13px;
    color: blue;
    border:0px;
-   background: #e5e5e6;
    text-decoration: underline;
    `;
    const TitleCss = styled.text`
-   font-size: 14px;
+   font-size: 18px;
    font-weight:bold;
-   background: #e5e5e6;
    border:0px;
    `;
    const SubtitleCss = styled.text`
-   font-size: 14px;
+   font-size: 10px;
    font-weight:bold;
-   background: #e5e5e6;
    border:0px;
    `;
  
    const BodyCss = styled.text`
    font-size: 13px;
-   background: #e5e5e6;
+   font-weight:500;
    border:0px;
    `;
 
    const DescriptionCss = styled.text`
    font-size: 13px;
-   background: #e5e5e6;
    border:0px;
+   color:grey;
    `;
-
-
-  // <순서>
-  // 제목
-  // 부제목
-  // 내용물
-  // 부가정보
-  // 수신자차단
 
   // 모두
   const messageWithAll = 
     <>
       <TitleCss>{messageTitle}</TitleCss>
+      <br/>
       <SubtitleCss>{messageSubtitle}</SubtitleCss>
       <br/>
       <BodyCss>{messageContext}</BodyCss>
+      <br/>
       <DescriptionCss>{messageDescription}</DescriptionCss>
       <br/><br/>
       무료수신거부:
       <BlockCss>{blockNumber}</BlockCss>
     </>
 
-// 3개:
-//  제목/부제목/부가정보
-//  제목/부제목/수신자차단
-//  부제목/부가정보/수신자차단
 const messageWithTSD = 
     <>
       <TitleCss>{messageTitle}</TitleCss>
+      <br/>
       <SubtitleCss>{messageSubtitle}</SubtitleCss>
       <br/>
       <BodyCss>{messageContext}</BodyCss>
+      <br/>
       <DescriptionCss>{messageDescription}</DescriptionCss>
     </>
 
 const messageWithTSB = 
     <>
       <TitleCss>{messageTitle}</TitleCss>
+      <br/>
       <SubtitleCss>{messageSubtitle}</SubtitleCss>
       <br/>
       <BodyCss>{messageContext}</BodyCss>
@@ -258,17 +248,96 @@ const messageWithSDB =
       <SubtitleCss>{messageSubtitle}</SubtitleCss>
       <br/>
       <BodyCss>{messageContext}</BodyCss>
+      <br/>
       <DescriptionCss>{messageDescription}</DescriptionCss>
       <br/><br/>
       무료수신거부:
       <BlockCss>{blockNumber}</BlockCss>
     </>
 
-// 2개
-//  제목 / 부제목  -> messageWithTitleSubTitle
-//  제목 / 부가정보 -> messageWithTitleDes
-//  제목 / 수신자차단
+const messageWithTS = 
+    <>
+      <TitleCss>{messageTitle}</TitleCss>
+      <br/>
+      <SubtitleCss>{messageSubtitle}</SubtitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+    </>
 
+const messageWithTD = 
+    <>
+      <TitleCss>{messageTitle}</TitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/>
+      <DescriptionCss>{messageDescription}</DescriptionCss>
+    </>
+
+const messageWithTB = 
+    <>
+      <TitleCss>{messageTitle}</TitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/><br/>
+      무료수신거부:
+      <BlockCss>{blockNumber}</BlockCss>
+    </>
+
+const messageWithSD = 
+    <>
+      <SubtitleCss>{messageSubtitle}</SubtitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/>
+      <DescriptionCss>{messageDescription}</DescriptionCss>
+    </>
+
+const messageWithSB = 
+    <>
+      <SubtitleCss>{messageSubtitle}</SubtitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/><br/>
+      무료수신거부:
+      <BlockCss>{blockNumber}</BlockCss>
+    </>
+
+const messageWithDB = 
+    <>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/>
+      <DescriptionCss>{messageDescription}</DescriptionCss>
+      <br/><br/>
+      무료수신거부:
+      <BlockCss>{blockNumber}</BlockCss>
+    </>
+
+const messageWithTitle =
+    <>
+      <TitleCss>{messageTitle}</TitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+    </>
+const messageWithSubtitle = 
+    <>
+      <SubtitleCss>{messageSubtitle}</SubtitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+    </>
+const messageWithDescription = 
+    <>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/>
+      <DescriptionCss>{messageDescription}</DescriptionCss>
+    </>
+
+const messageWithBlock= 
+    <>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/><br/>
+      무료수신거부:
+      <BlockCss>{blockNumber}</BlockCss>
+    </>
 
 
 
@@ -351,30 +420,43 @@ const messageWithSDB =
 
 
   // 미리보기 출력 텍스트
-  // useEffect(()=>
-  // {
-  //   console.log('I am In!')
-  //   console.log('Block: ',isBlock)
-  //   console.log('Title: ',isTitle)
-  //   console.log("message: ", message)
-  //   if(isBlock && isTitle){
-  //     console.log('I am messageWithBlockerNumberAndTitle')
-  //     setMessage(messageWithBlockerNumberAndTitle)
-  //   } else if(isBlock){
-  //     console.log('I am messageWithBlockNumber')
-  //     setMessage(messageWithBlockNumber)
-  //   } else if(isTitle){
-  //     console.log('I am messageWithTitle')
-  //     console.log(messageWithTitle)
-  //     setMessage(messageWithTitle)
-  //   } else {
-  //     console.log('I am messageContext')
-  //     setMessage(messageContext)}
-  // }
-  // ,[messageTitle,isBlock,messageContext])
+  useEffect(()=>
+  {
+    if(isTitle && isSubtitle && isDescription && isBlock){
+      setMessage(messageWithAll)
+    } else if(isTitle && isSubtitle && isDescription){
+      setMessage(messageWithTSD)
+    } else if(isTitle && isSubtitle && isBlock){
+      setMessage(messageWithTSB)
+    } else if(isSubtitle && isDescription && isBlock){
+      setMessage(messageWithSDB)
+    } else if(isTitle && isSubtitle){
+      setMessage(messageWithTS)
+    } else if(isTitle && isDescription){
+      setMessage(messageWithTD)
+    } else if(isTitle && isBlock){
+      setMessage(messageWithTB)
+    } else if(isSubtitle && isDescription){
+      setMessage(messageWithSD)
+    } else if(isSubtitle && isBlock){
+      setMessage(messageWithSB)
+    } else if(isDescription && isBlock){
+      setMessage(messageWithSB)
+    } else if(isTitle){
+      setMessage(messageWithTitle)
+    } else if(isSubtitle){
+      setMessage(messageWithSubtitle)
+    } else if(isDescription){
+      setMessage(messageWithDescription)
+    } else if(isBlock){
+      setMessage(messageWithBlock)
+    } else {
+      setMessage(messageContext)}
+  }
+  ,[messageTitle,messageSubtitle, messageDescription,isBlock,messageContext])
+
 
   const onChangeTitleHandler=(v)=> {
-    console.log("messageTitle: ",messageTitle)
     if(isTitle){
       setMessageTitle(v)
     } else {
@@ -383,11 +465,23 @@ const messageWithSDB =
     }
   }
 
+  const onChangeSubtitleHandler=(v)=> {
+    if(isSubtitle){
+      setMessageSubtitle(v)
+    } else {
+      setIsSubtitle(true)
+      setMessageSubtitle(v)
+    }
+  }
 
-
-
-
-
+  const onChangeDescriptionHandler=(v)=> {
+    if(isDescription){
+      setMessageDescription(v)
+    } else {
+      setIsDescription(true)
+      setMessageDescription(v)
+    }
+  }
 
   return (
     <>
@@ -557,7 +651,6 @@ const messageWithSDB =
                           제목
                         </label>
                         <Input
-                            // style={{fontWeight:"bold",color:"red"}}
                             value={messageTitle}
                             rows="1"
                             type="textarea"
@@ -571,10 +664,10 @@ const messageWithSDB =
                           부제목
                         </label>
                         <Input
-                            value={messageTitle}
+                            value={messageSubtitle}
                             rows="1"
                             type="textarea"
-                            onChange={(e)=>{onChangeTitleHandler(e.target.value)}}
+                            onChange={(e)=>{onChangeSubtitleHandler(e.target.value)}}
                         ></Input>
                       </FormGroup>
                       <FormGroup>
@@ -593,10 +686,10 @@ const messageWithSDB =
                           부가정보
                         </label>
                         <Input
-                            value={messageContext}
+                            value={messageDescription}
                             rows="5"
                             type="textarea"
-                            onChange={(e)=>{setMessageContext(e.target.value)}}
+                            onChange={(e)=>{onChangeDescriptionHandler(e.target.value)}}
                         ></Input>
                         <p align="right">{messageType}&nbsp;{messageByte}byte</p>
                       </FormGroup>
@@ -628,7 +721,7 @@ const messageWithSDB =
                       height: "100%",
                     }}>
                       <div style={{ height: 110 }}></div>
-                      <div style={{ height: 550, whiteSpace: "pre-wrap", width: 300, margin: 30}}>
+                      <div style={{ height: 550, whiteSpace: "pre-wrap", width: 300, margin: 30,backgroundColor:'#6884B3'}}>
                         <div style={{textAlign:"center", fontSize:10,fontWeight:"bold", color:'#b1b1b4'}}>{`문자 메시지\n(오늘) ${IphoneTime()} `}</div>
                         <ChatBubble 
                           message={messageInput}
@@ -639,11 +732,12 @@ const messageWithSDB =
                                 color:'black'
                               },
                               chatbubble: {
+                                borderTop: '40px solid #F7E600',
                                 borderRadius: 20,
                                 paddingLeft:14,
                                 margin:10,
-                                maxWidth:250,
-                                backgroundColor: '#e5e5e6',
+                                width:250,
+                                backgroundColor: 'white',
                               }
                             }
                           }
