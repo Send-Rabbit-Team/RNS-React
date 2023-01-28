@@ -9,6 +9,8 @@ import {
   Button,
   Input,
   FormGroup,
+  InputGroup,
+  InputGroupAddon,
   Badge,
   UncontrolledDropdown,
   DropdownToggle,
@@ -18,12 +20,16 @@ import {
 import Header from "components/Headers/Header.js";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
+import 'react-chat-elements/dist/main.css'
+import { MessageBox } from 'react-chat-elements'
 import MessageRule from './modal/MessageRule'
 import Receiver from "./modal/Receiver";
-import TemplateModal from "./modal/TemplateModal";
+import KakaoTemplateModal from "./modal/KakaoTemplateModal";
 import ImageUpload from "./modal/ImageUpload";
 import {Image} from "react-bootstrap";
 import MessageSchedule from "./modal/MessageSchedule";
+import iphonekakao from '../../assets/img/brand/iphonekakao.png';
+
 import iphone from '../../assets/img/brand/iphone.jpg';
 import { ChatBubble, Message } from 'react-chat-ui';
 import styled from "styled-components";
@@ -145,6 +151,14 @@ const SendKakao = () => {
   const [messageDescription, setMessageDescription] = useState("")
 
 
+  const [messageSubTitle, setMessageSubTitle] = useState("")
+  const [messageContext, setMessageContext] = useState("")
+  const [messageDescription, setMessageDescription] = useState("")
+  const [buttonTitle, setButtonTitle] = useState("")
+  const [buttonUrl, setButtonUrl] = useState("")
+  const [buttonType, setButtonType] = useState("")
+
+  const [isBlock, setIsBlock] = useState(false);
   const [isTitle, setIstitle] = useState(false);
   const [isSubtitle, setIsSubtitle] = useState(false);
   const [isDescription, setIsDescription] = useState(false);
@@ -160,7 +174,7 @@ const SendKakao = () => {
     let PA = now.getHours() < 12 ? "오전" : "오후";
     return PA+' '+hourMod+'시 '+min+'분'
   }
-  
+
 
   var messageInput = new Message({
     id: 1,
@@ -192,7 +206,7 @@ const SendKakao = () => {
    font-weight:bold;
    border:0px;
    `;
- 
+
    const BodyCss = styled.text`
    font-size: 13px;
    font-weight:500;
@@ -206,7 +220,7 @@ const SendKakao = () => {
    `;
 
   // 모두
-  const messageWithAll = 
+  const messageWithAll =
     <>
       <TitleCss>{messageTitle}</TitleCss>
       <br/>
@@ -220,7 +234,7 @@ const SendKakao = () => {
       <BlockCss>{blockNumber}</BlockCss>
     </>
 
-const messageWithTSD = 
+const messageWithTSD =
     <>
       <TitleCss>{messageTitle}</TitleCss>
       <br/>
@@ -231,7 +245,7 @@ const messageWithTSD =
       <DescriptionCss>{messageDescription}</DescriptionCss>
     </>
 
-const messageWithTSB = 
+const messageWithTSB =
     <>
       <TitleCss>{messageTitle}</TitleCss>
       <br/>
@@ -242,8 +256,8 @@ const messageWithTSB =
       무료수신거부:
       <BlockCss>{blockNumber}</BlockCss>
     </>
-  
-const messageWithSDB = 
+
+const messageWithSDB =
     <>
       <SubtitleCss>{messageSubtitle}</SubtitleCss>
       <br/>
@@ -255,7 +269,7 @@ const messageWithSDB =
       <BlockCss>{blockNumber}</BlockCss>
     </>
 
-const messageWithTS = 
+const messageWithTS =
     <>
       <TitleCss>{messageTitle}</TitleCss>
       <br/>
@@ -264,7 +278,7 @@ const messageWithTS =
       <BodyCss>{messageContext}</BodyCss>
     </>
 
-const messageWithTD = 
+const messageWithTD =
     <>
       <TitleCss>{messageTitle}</TitleCss>
       <br/>
@@ -273,7 +287,7 @@ const messageWithTD =
       <DescriptionCss>{messageDescription}</DescriptionCss>
     </>
 
-const messageWithTB = 
+const messageWithTB =
     <>
       <TitleCss>{messageTitle}</TitleCss>
       <br/>
@@ -283,7 +297,7 @@ const messageWithTB =
       <BlockCss>{blockNumber}</BlockCss>
     </>
 
-const messageWithSD = 
+const messageWithSD =
     <>
       <SubtitleCss>{messageSubtitle}</SubtitleCss>
       <br/>
@@ -292,7 +306,7 @@ const messageWithSD =
       <DescriptionCss>{messageDescription}</DescriptionCss>
     </>
 
-const messageWithSB = 
+const messageWithSB =
     <>
       <SubtitleCss>{messageSubtitle}</SubtitleCss>
       <br/>
@@ -302,7 +316,7 @@ const messageWithSB =
       <BlockCss>{blockNumber}</BlockCss>
     </>
 
-const messageWithDB = 
+const messageWithDB =
     <>
       <BodyCss>{messageContext}</BodyCss>
       <br/>
@@ -318,20 +332,20 @@ const messageWithTitle =
       <br/>
       <BodyCss>{messageContext}</BodyCss>
     </>
-const messageWithSubtitle = 
+const messageWithSubtitle =
     <>
       <SubtitleCss>{messageSubtitle}</SubtitleCss>
       <br/>
       <BodyCss>{messageContext}</BodyCss>
     </>
-const messageWithDescription = 
+const messageWithDescription =
     <>
       <BodyCss>{messageContext}</BodyCss>
       <br/>
       <DescriptionCss>{messageDescription}</DescriptionCss>
     </>
 
-const messageWithBlock= 
+const messageWithBlock=
     <>
       <BodyCss>{messageContext}</BodyCss>
       <br/><br/>
@@ -340,30 +354,6 @@ const messageWithBlock=
     </>
 
 
-
-  // 메시지 타입 지정
-  const [messageType, setMessageType] = useState()
-  useEffect(() => {
-    selectImage.length != 0 ? setMessageType("MMS") :
-        messageByte > 80 ?
-            setMessageType("LMS") : setMessageType("SMS")
-  });
-
-  // 메시지 바이트 변환
-  const [messageByte, setMessageByte] = useState()
-  useEffect(() => {
-    var l= 0;
-
-    for(var idx=0; idx < messageContext.length; idx++) {
-      var c = escape(messageContext.charAt(idx));
-
-      if( c.length==1 ) l ++;
-      else if( c.indexOf("%u")!=-1 ) l += 2;
-      else if( c.indexOf("%")!=-1 ) l += c.length/3;
-    }
-
-    isBlock ? setMessageByte(l+29) : setMessageByte(l)
-  });
 
   // SenderNumber 불러오기
   const [senderNumberList, setSenderNumberList] = useState([]);
@@ -457,6 +447,7 @@ const messageWithBlock=
 
 
   const onChangeTitleHandler=(v)=> {
+    console.log("messageTitle: ",messageTitle)
     if(isTitle){
       setMessageTitle(v)
     } else {
@@ -487,11 +478,16 @@ const messageWithBlock=
     <>
       {/* 발송 설정 모달 */}
       <MessageRule isShowingMessageRule={isShowingMessageRule} hide={toggleMessageRule} />
-      <TemplateModal
+      <KakaoTemplateModal
           isShowingTemplate={isShowingTemplate}
           hide={toggleTemplate}
-          selectTemplate={selectTemplate}
-          setSelectTemplate={getSelectTemplate}
+          setMessageTitle={setMessageTitle}
+          setMessageSubTitle={setMessageSubTitle}
+          setMessageContext={setMessageContext}
+          setMessageDescription={setMessageDescription}
+          setButtonTitle={setButtonTitle}
+          setButtonUrl={setButtonUrl}
+          setButtonType={setButtonType}
       />
       <ImageUpload
           isShowingImageUpload={isShowingImageUpload}
@@ -648,20 +644,20 @@ const messageWithBlock=
 
                       <FormGroup>
                         <label className="form-control-label">
-                          제목
+                          알림톡 제목
                         </label>
                         <Input
                             value={messageTitle}
                             rows="1"
                             type="textarea"
-                            onChange={(e)=>{onChangeTitleHandler(e.target.value)}}
+                            onChange={(e)=>{setMessageTitle(e.target.value)}}
                         ></Input>
                       </FormGroup>
 
-                      
+
                       <FormGroup>
                         <label className="form-control-label">
-                          부제목
+                          알림톡 소제목
                         </label>
                         <Input
                             value={messageSubtitle}
@@ -672,7 +668,7 @@ const messageWithBlock=
                       </FormGroup>
                       <FormGroup>
                         <label className="form-control-label">
-                          메시지 내용
+                          알림톡 내용
                         </label>
                         <Input
                             value={messageContext}
@@ -680,20 +676,66 @@ const messageWithBlock=
                             type="textarea"
                             onChange={(e)=>{setMessageContext(e.target.value)}}
                         ></Input>
-                        <p align="right">{messageType}&nbsp;{messageByte}byte</p> 
+                        <p align="right">{messageType}&nbsp;{messageByte}byte</p>
                         {/* 부가 정보 합산 바이트 */}
+                      </FormGroup>
+                      <FormGroup>
                         <label className="form-control-label">
                           부가정보
+                          알림톡 설명
                         </label>
                         <Input
                             value={messageDescription}
                             rows="5"
+                            value={messageDescription}
+                            rows="10"
                             type="textarea"
                             onChange={(e)=>{onChangeDescriptionHandler(e.target.value)}}
+                            onChange={(e)=>{setMessageDescription(e.target.value)}}
                         ></Input>
-                        <p align="right">{messageType}&nbsp;{messageByte}byte</p>
                       </FormGroup>
-        
+                      <FormGroup>
+                        <label className="form-control-label">
+                          알림톡 버튼 이름
+                        </label>
+                        <Input
+                            value={buttonTitle}
+                            rows="1"
+                            type="textarea"
+                            onChange={(e)=>{setButtonTitle(e.target.value)}}
+                        ></Input>
+                      </FormGroup>
+                      <FormGroup>
+                        <label className="form-control-label">
+                          알림톡 버튼 링크
+                        </label>
+                        <Input
+                            value={buttonUrl}
+                            rows="1"
+                            type="textarea"
+                            onChange={(e)=>{setButtonUrl(e.target.value)}}
+                        ></Input>
+                      </FormGroup>
+                      <FormGroup>
+                        <label className="form-control-label">
+                          알림톡 버튼 종류
+                        </label>
+                        <Input
+                            value={buttonType}
+                            rows="1"
+                            type="select"
+                            onChange={(e)=>{setButtonType(e.target.value)}}
+                        >
+                          <option>선택</option>
+                          <option value="DS">배송 조회</option>
+                          <option value="WL">웹 링크</option>
+                          <option value="AL">앱 링크</option>
+                          <option value="BK">봇 키워드</option>
+                          <option value="MD">메시지 전달</option>
+                          <option value="AC">채널 추가</option>
+                        </Input>
+                      </FormGroup>
+
                       <FormGroup>
                         <label className="form-control-label">
                           수신차단번호
@@ -715,7 +757,7 @@ const messageWithBlock=
                   {/* 메시지 미리보기  */}
                   <Col sm="6" style={{paddingLeft:80}}>
                     <div style={{
-                      backgroundImage: `url(${iphone})`,
+                      backgroundImage: `url(${iphonekakao})`,
                       backgroundRepeat: "no-repeat",
                       backgroundSize: "80%",
                       height: "100%",
@@ -723,7 +765,7 @@ const messageWithBlock=
                       <div style={{ height: 110 }}></div>
                       <div style={{ height: 550, whiteSpace: "pre-wrap", width: 300, margin: 30,backgroundColor:'#6884B3'}}>
                         <div style={{textAlign:"center", fontSize:10,fontWeight:"bold", color:'#b1b1b4'}}>{`문자 메시지\n(오늘) ${IphoneTime()} `}</div>
-                        <ChatBubble 
+                        <ChatBubble
                           message={messageInput}
                           bubbleStyles={
                             {
