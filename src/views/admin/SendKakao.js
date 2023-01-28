@@ -9,8 +9,6 @@ import {
   Button,
   Input,
   FormGroup,
-  InputGroup,
-  InputGroupAddon,
   Badge,
   UncontrolledDropdown,
   DropdownToggle,
@@ -21,7 +19,6 @@ import Header from "components/Headers/Header.js";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import 'react-chat-elements/dist/main.css'
-import { MessageBox } from 'react-chat-elements'
 import MessageRule from './modal/MessageRule'
 import Receiver from "./modal/Receiver";
 import KakaoTemplateModal from "./modal/KakaoTemplateModal";
@@ -29,8 +26,6 @@ import ImageUpload from "./modal/ImageUpload";
 import {Image} from "react-bootstrap";
 import MessageSchedule from "./modal/MessageSchedule";
 import iphonekakao from '../../assets/img/brand/iphonekakao.png';
-
-import iphone from '../../assets/img/brand/iphone.jpg';
 import { ChatBubble, Message } from 'react-chat-ui';
 import styled from "styled-components";
 
@@ -105,14 +100,9 @@ const SendKakao = () => {
 
   // 발신자 번호 변수
   const [senderNumber, setSenderNumber] = useState();
-  const [blockNumber, setBlockNumber] = useState();
   const [senderMemo, setSenderMemo] = useState();
 
   // 수신자 모달 -> 메인페이지 데이타 전달
-  const [ContactNumberList, setContactNumberList] = useState([])
-  const [contactGroupList, setContactGroupList] = useState([])
-  const [selectIdList, setSelectIdList] = useState([]);
-  const [selectNameList, setSelectNameList] = useState([]);
   const [selectContactList, setSelectContactList] = useState([]);
   const [selectContactGroupList, setSelectContactGroupList] = useState([]);
 
@@ -149,20 +139,14 @@ const SendKakao = () => {
   const [messageSubtitle, setMessageSubtitle] = useState("")
   const [messageContext, setMessageContext] = useState("")
   const [messageDescription, setMessageDescription] = useState("")
-
-
-  const [messageSubTitle, setMessageSubTitle] = useState("")
-  const [messageContext, setMessageContext] = useState("")
-  const [messageDescription, setMessageDescription] = useState("")
-  const [buttonTitle, setButtonTitle] = useState("")
+  const [buttonTitle, setButtonTitle] = useState("알림톡 버튼")
   const [buttonUrl, setButtonUrl] = useState("")
   const [buttonType, setButtonType] = useState("")
 
-  const [isBlock, setIsBlock] = useState(false);
   const [isTitle, setIstitle] = useState(false);
   const [isSubtitle, setIsSubtitle] = useState(false);
   const [isDescription, setIsDescription] = useState(false);
-  const [isBlock, setIsBlock] = useState(false);
+  const [isButton, setIsButton] = useState(false);
   const [message, setMessage] = useState("");
 
   const IphoneTime = ()=>{
@@ -190,14 +174,8 @@ const SendKakao = () => {
   },[message])
 
    // CSS
-   const BlockCss = styled.text`
-   font-size: 13px;
-   color: blue;
-   border:0px;
-   text-decoration: underline;
-   `;
    const TitleCss = styled.text`
-   font-size: 18px;
+   font-size: 20px;
    font-weight:bold;
    border:0px;
    `;
@@ -219,6 +197,17 @@ const SendKakao = () => {
    color:grey;
    `;
 
+   const ButtonCss = {
+    width:220, 
+    padding:"8px 12px", 
+    borderRadius:5, 
+    fontSize:14, 
+    fontWeight:500, 
+    lineWeight:1.5, 
+    backgroundColor:'#f5f5f5',
+    position:'relative'
+   }
+
   // 모두
   const messageWithAll =
     <>
@@ -230,8 +219,7 @@ const SendKakao = () => {
       <br/>
       <DescriptionCss>{messageDescription}</DescriptionCss>
       <br/><br/>
-      무료수신거부:
-      <BlockCss>{blockNumber}</BlockCss>
+      <Button style={ButtonCss} href="#pablo">{buttonTitle}</Button>
     </>
 
 const messageWithTSD =
@@ -253,8 +241,7 @@ const messageWithTSB =
       <br/>
       <BodyCss>{messageContext}</BodyCss>
       <br/><br/>
-      무료수신거부:
-      <BlockCss>{blockNumber}</BlockCss>
+      <Button style={ButtonCss} href="#pablo">{buttonTitle}</Button>
     </>
 
 const messageWithSDB =
@@ -265,8 +252,7 @@ const messageWithSDB =
       <br/>
       <DescriptionCss>{messageDescription}</DescriptionCss>
       <br/><br/>
-      무료수신거부:
-      <BlockCss>{blockNumber}</BlockCss>
+      <Button style={ButtonCss} href="#pablo">{buttonTitle}</Button>
     </>
 
 const messageWithTS =
@@ -293,8 +279,7 @@ const messageWithTB =
       <br/>
       <BodyCss>{messageContext}</BodyCss>
       <br/><br/>
-      무료수신거부:
-      <BlockCss>{blockNumber}</BlockCss>
+      <Button style={ButtonCss} href="#pablo">{buttonTitle}</Button>
     </>
 
 const messageWithSD =
@@ -312,8 +297,7 @@ const messageWithSB =
       <br/>
       <BodyCss>{messageContext}</BodyCss>
       <br/><br/>
-      무료수신거부:
-      <BlockCss>{blockNumber}</BlockCss>
+      <Button style={ButtonCss} href="#pablo">{buttonTitle}</Button>
     </>
 
 const messageWithDB =
@@ -322,8 +306,7 @@ const messageWithDB =
       <br/>
       <DescriptionCss>{messageDescription}</DescriptionCss>
       <br/><br/>
-      무료수신거부:
-      <BlockCss>{blockNumber}</BlockCss>
+      <Button style={ButtonCss} href="#pablo">{buttonTitle}</Button>
     </>
 
 const messageWithTitle =
@@ -349,9 +332,31 @@ const messageWithBlock=
     <>
       <BodyCss>{messageContext}</BodyCss>
       <br/><br/>
-      무료수신거부:
-      <BlockCss>{blockNumber}</BlockCss>
+      <Button style={ButtonCss} href="#pablo">{buttonTitle}</Button>
     </>
+
+    // 메시지 타입 지정
+  const [messageType, setMessageType] = useState()
+  useEffect(() => {
+    selectImage.length != 0 ? setMessageType("MMS") :
+        messageByte > 80 ?
+            setMessageType("LMS") : setMessageType("SMS")
+  });
+  // 메시지 바이트 변환
+  const [messageByte, setMessageByte] = useState()
+  useEffect(() => {
+    var l= 0;
+
+    for(var idx=0; idx < messageContext.length; idx++) {
+      var c = escape(messageContext.charAt(idx));
+
+      if( c.length==1 ) l ++;
+      else if( c.indexOf("%u")!=-1 ) l += 2;
+      else if( c.indexOf("%")!=-1 ) l += c.length/3;
+    }
+
+    isButton ? setMessageByte(l+29) : setMessageByte(l)
+  });
 
 
 
@@ -412,38 +417,38 @@ const messageWithBlock=
   // 미리보기 출력 텍스트
   useEffect(()=>
   {
-    if(isTitle && isSubtitle && isDescription && isBlock){
+    if(isTitle && isSubtitle && isDescription && isButton){
       setMessage(messageWithAll)
     } else if(isTitle && isSubtitle && isDescription){
       setMessage(messageWithTSD)
-    } else if(isTitle && isSubtitle && isBlock){
+    } else if(isTitle && isSubtitle && isButton){
       setMessage(messageWithTSB)
-    } else if(isSubtitle && isDescription && isBlock){
+    } else if(isSubtitle && isDescription && isButton){
       setMessage(messageWithSDB)
     } else if(isTitle && isSubtitle){
       setMessage(messageWithTS)
     } else if(isTitle && isDescription){
       setMessage(messageWithTD)
-    } else if(isTitle && isBlock){
+    } else if(isTitle && isButton){
       setMessage(messageWithTB)
     } else if(isSubtitle && isDescription){
       setMessage(messageWithSD)
-    } else if(isSubtitle && isBlock){
+    } else if(isSubtitle && isButton){
       setMessage(messageWithSB)
-    } else if(isDescription && isBlock){
-      setMessage(messageWithSB)
+    } else if(isDescription && isButton){
+      setMessage(messageWithDB)
     } else if(isTitle){
       setMessage(messageWithTitle)
     } else if(isSubtitle){
       setMessage(messageWithSubtitle)
     } else if(isDescription){
       setMessage(messageWithDescription)
-    } else if(isBlock){
+    } else if(isButton){
       setMessage(messageWithBlock)
     } else {
       setMessage(messageContext)}
   }
-  ,[messageTitle,messageSubtitle, messageDescription,isBlock,messageContext])
+  ,[messageTitle,messageSubtitle, messageDescription,buttonTitle,isButton,messageContext])
 
 
   const onChangeTitleHandler=(v)=> {
@@ -474,6 +479,15 @@ const messageWithBlock=
     }
   }
 
+  const onChangeButtonHandler=(v)=> {
+    if(isDescription){
+      setButtonTitle(v)
+    } else {
+      setIsDescription(true)
+      setMessageDescription(v)
+    }
+  }
+
   return (
     <>
       {/* 발송 설정 모달 */}
@@ -482,7 +496,7 @@ const messageWithBlock=
           isShowingTemplate={isShowingTemplate}
           hide={toggleTemplate}
           setMessageTitle={setMessageTitle}
-          setMessageSubTitle={setMessageSubTitle}
+          setMessageSubtitle={setMessageSubtitle}
           setMessageContext={setMessageContext}
           setMessageDescription={setMessageDescription}
           setButtonTitle={setButtonTitle}
@@ -556,7 +570,6 @@ const messageWithBlock=
                             <DropdownItem onClick={(e) => {
                               setSenderMemo(sn.memo)
                               setSenderNumber(sn.phoneNumber)
-                              setBlockNumber(sn.blockNumber)
                             }}>
                               {"[" + sn.memo + "] " + makeHyphen(sn.phoneNumber)}
                             </DropdownItem>
@@ -565,13 +578,12 @@ const messageWithBlock=
                       </UncontrolledDropdown>
 
                       <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => {
-                        blockNumber == null ? window.alert("발신번호를 선택하세요") :
-                        isBlock == true ? setIsBlock(false) : setIsBlock(true)
+                        isButton == true ? setIsButton(false) : setIsButton(true)
                       }}>
                         <span className="btn-inner--icon">
-                          <i className="ni ni-tag" />
+                          <i className="ni ni-chat-round" />
                         </span>
-                        <span className="btn-inner--text">수신거부</span>
+                        <span className="btn-inner--text">버튼</span>
                       </Button>
                       <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleTemplate()}>
                       <span className="btn-inner--icon">
@@ -650,7 +662,7 @@ const messageWithBlock=
                             value={messageTitle}
                             rows="1"
                             type="textarea"
-                            onChange={(e)=>{setMessageTitle(e.target.value)}}
+                            onChange={(e)=>{onChangeTitleHandler(e.target.value)}}
                         ></Input>
                       </FormGroup>
 
@@ -687,11 +699,9 @@ const messageWithBlock=
                         <Input
                             value={messageDescription}
                             rows="5"
-                            value={messageDescription}
-                            rows="10"
                             type="textarea"
                             onChange={(e)=>{onChangeDescriptionHandler(e.target.value)}}
-                            onChange={(e)=>{setMessageDescription(e.target.value)}}
+
                         ></Input>
                       </FormGroup>
                       <FormGroup>
@@ -735,19 +745,6 @@ const messageWithBlock=
                           <option value="AC">채널 추가</option>
                         </Input>
                       </FormGroup>
-
-                      <FormGroup>
-                        <label className="form-control-label">
-                          수신차단번호
-                        </label>
-                        <Container>
-                          {isBlock?
-                              <Row>
-                                <Badge className="badge-md" color="primary">{blockNumber != null ? makeHyphen(blockNumber) : null}</Badge>
-                              </Row>
-                              :null}
-                        </Container>
-                      </FormGroup>
                     </CardBody>
                   </Col>
 
@@ -762,9 +759,9 @@ const messageWithBlock=
                       backgroundSize: "80%",
                       height: "100%",
                     }}>
-                      <div style={{ height: 110 }}></div>
-                      <div style={{ height: 550, whiteSpace: "pre-wrap", width: 300, margin: 30,backgroundColor:'#6884B3'}}>
-                        <div style={{textAlign:"center", fontSize:10,fontWeight:"bold", color:'#b1b1b4'}}>{`문자 메시지\n(오늘) ${IphoneTime()} `}</div>
+                      <div style={{ height: 220 }}></div>
+                      <div style={{ height: 550, whiteSpace: "pre-wrap", width: 300, margin: 30}}>
+                        {/* <div style={{textAlign:"center", fontSize:10,fontWeight:"bold", color:'#b1b1b4'}}>{`문자 메시지\n(오늘) ${IphoneTime()} `}</div> */}
                         <ChatBubble
                           message={messageInput}
                           bubbleStyles={
