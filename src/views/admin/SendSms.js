@@ -9,8 +9,6 @@ import {
   Button,
   Input,
   FormGroup,
-  InputGroup,
-  InputGroupAddon,
   Badge,
   UncontrolledDropdown,
   DropdownToggle,
@@ -20,8 +18,6 @@ import {
 import Header from "components/Headers/Header.js";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import 'react-chat-elements/dist/main.css'
-import { MessageBox } from 'react-chat-elements'
 import MessageRule from './modal/MessageRule'
 import Receiver from "./modal/Receiver";
 import TemplateModal from "./modal/TemplateModal";
@@ -30,7 +26,7 @@ import {Image} from "react-bootstrap";
 import MessageSchedule from "./modal/MessageSchedule";
 import iphone from '../../assets/img/brand/iphone.jpg';
 import { ChatBubble, Message } from 'react-chat-ui';
-
+import styled from "styled-components";
 
 const SendSms = () => {
 
@@ -172,10 +168,31 @@ const SendSms = () => {
     });
   },[message])
 
-  // 수신거부
-  const messageWithBlockNumber = `${messageContext} \n\n무료수신거부: ${blockNumber}`
-  const messageWithTitle = `${messageTitle} \n\n${messageContext}`
-  const messageWithBlockerNumberAndTitle = `${messageTitle} \n\n${messageContext} \n\n무료수신거부: ${blockNumber}`
+  // CSS
+  const BlockCss = styled.text`
+  font-size: 13px;
+  color: blue;
+  border:0px;
+  background: #e5e5e6;
+  text-decoration: underline;
+  `;
+  const TitleCss = styled.text`
+  font-size: 14px;
+  font-weight:bold;
+  background: #e5e5e6;
+  border:0px;
+  `;
+
+  const BodyCss = styled.text`
+  font-size: 13px;
+  background: #e5e5e6;
+  border:0px;
+  `;
+
+  // 미리보기 메시지 내용
+  const messageWithBlockNumber = <>{messageContext}<br/><br/>무료수신거부: <BlockCss>{blockNumber}</BlockCss></>
+  const messageWithTitle = <><TitleCss>{messageTitle}</TitleCss><br/><BodyCss>{messageContext}</BodyCss></>
+  const messageWithBlockerNumberAndTitle = <><TitleCss>{messageTitle}</TitleCss><br/><BodyCss>{messageContext}</BodyCss><br/><br/>무료수신거부:<BlockCss>{blockNumber}</BlockCss></>
 
   // 메시지 타입 지정
   const [messageType, setMessageType] = useState()
@@ -253,30 +270,23 @@ const SendSms = () => {
     setSelectContactList([...data])
   }
 
+
+
+  // 미리보기 출력 텍스트
   useEffect(()=>
   {
-    console.log('I am In!')
-    console.log('Block: ',isBlock)
-    console.log('Title: ',isTitle)
-    console.log("message: ", message)
     if(isBlock && isTitle){
-      console.log('I am messageWithBlockerNumberAndTitle')
       setMessage(messageWithBlockerNumberAndTitle)
     } else if(isBlock){
-      console.log('I am messageWithBlockNumber')
       setMessage(messageWithBlockNumber)
     } else if(isTitle){
-      console.log('I am messageWithTitle')
-      console.log(messageWithTitle)
       setMessage(messageWithTitle)
     } else {
-      console.log('I am messageContext')
       setMessage(messageContext)}
   }
   ,[messageTitle,isBlock,messageContext])
 
   const onChangeTitleHandler=(v)=> {
-    console.log("messageTitle: ",messageTitle)
     if(isTitle){
       setMessageTitle(v)
     } else {
@@ -284,7 +294,6 @@ const SendSms = () => {
       setMessageTitle(v)
     }
   }
-
 
   return (
     <>
@@ -452,6 +461,7 @@ const SendSms = () => {
                           제목
                         </label>
                         <Input
+                            // style={{fontWeight:"bold",color:"red"}}
                             value={messageTitle}
                             rows="1"
                             type="textarea"
@@ -464,12 +474,13 @@ const SendSms = () => {
                         </label>
                         <Input
                             value={messageContext}
-                            rows="10"
+                            rows="5"
                             type="textarea"
                             onChange={(e)=>{setMessageContext(e.target.value)}}
                         ></Input>
                         <p align="right">{messageType}&nbsp;{messageByte}byte</p>
                       </FormGroup>
+        
                       <FormGroup>
                         <label className="form-control-label">
                           수신차단번호

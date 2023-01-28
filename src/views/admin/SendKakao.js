@@ -26,6 +26,7 @@ import {Image} from "react-bootstrap";
 import MessageSchedule from "./modal/MessageSchedule";
 import iphone from '../../assets/img/brand/iphone.jpg';
 import { ChatBubble, Message } from 'react-chat-ui';
+import styled from "styled-components";
 
 const SendKakao = () => {
 
@@ -138,11 +139,18 @@ const SendKakao = () => {
   }
 
   // 미리보기화면
-  const [messageContext, setMessageContext] = useState("")
   const [messageTitle, setMessageTitle] = useState("")
-  const [isBlock, setIsBlock] = useState(false);
+  const [messageSubtitle, setMEssageSubtitle] = useState("")
+  const [messageContext, setMessageContext] = useState("")
+  const [messageDescription, setMessageDescription] = useState("")
+
+
   const [isTitle, setIstitle] = useState(false);
+  const [isSubtitle, setIsSubtitle] = useState(false);
+  const [isDescription, setIsDescription] = useState(false);
+  const [isBlock, setIsBlock] = useState(false);
   const [message, setMessage] = useState("");
+
   const IphoneTime = ()=>{
     let now = new Date();
     let hour = now.getHours();
@@ -167,10 +175,102 @@ const SendKakao = () => {
     });
   },[message])
 
-  // 수신거부
-  const messageWithBlockNumber = `${messageContext} \n\n무료수신거부: ${blockNumber}`
-  const messageWithTitle = `${messageTitle} \n\n${messageContext}`
-  const messageWithBlockerNumberAndTitle = `${messageTitle} \n\n${messageContext} \n\n무료수신거부: ${blockNumber}`
+   // CSS
+   const BlockCss = styled.text`
+   font-size: 13px;
+   color: blue;
+   border:0px;
+   background: #e5e5e6;
+   text-decoration: underline;
+   `;
+   const TitleCss = styled.text`
+   font-size: 14px;
+   font-weight:bold;
+   background: #e5e5e6;
+   border:0px;
+   `;
+   const SubtitleCss = styled.text`
+   font-size: 14px;
+   font-weight:bold;
+   background: #e5e5e6;
+   border:0px;
+   `;
+ 
+   const BodyCss = styled.text`
+   font-size: 13px;
+   background: #e5e5e6;
+   border:0px;
+   `;
+
+   const DescriptionCss = styled.text`
+   font-size: 13px;
+   background: #e5e5e6;
+   border:0px;
+   `;
+
+
+  // <순서>
+  // 제목
+  // 부제목
+  // 내용물
+  // 부가정보
+  // 수신자차단
+
+  // 모두
+  const messageWithAll = 
+    <>
+      <TitleCss>{messageTitle}</TitleCss>
+      <SubtitleCss>{messageSubtitle}</SubtitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+      <DescriptionCss>{messageDescription}</DescriptionCss>
+      <br/><br/>
+      무료수신거부:
+      <BlockCss>{blockNumber}</BlockCss>
+    </>
+
+// 3개:
+//  제목/부제목/부가정보
+//  제목/부제목/수신자차단
+//  부제목/부가정보/수신자차단
+const messageWithTSD = 
+    <>
+      <TitleCss>{messageTitle}</TitleCss>
+      <SubtitleCss>{messageSubtitle}</SubtitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+      <DescriptionCss>{messageDescription}</DescriptionCss>
+    </>
+
+const messageWithTSB = 
+    <>
+      <TitleCss>{messageTitle}</TitleCss>
+      <SubtitleCss>{messageSubtitle}</SubtitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/><br/>
+      무료수신거부:
+      <BlockCss>{blockNumber}</BlockCss>
+    </>
+  
+const messageWithSDB = 
+    <>
+      <SubtitleCss>{messageSubtitle}</SubtitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+      <DescriptionCss>{messageDescription}</DescriptionCss>
+      <br/><br/>
+      무료수신거부:
+      <BlockCss>{blockNumber}</BlockCss>
+    </>
+
+// 2개
+//  제목 / 부제목  -> messageWithTitleSubTitle
+//  제목 / 부가정보 -> messageWithTitleDes
+//  제목 / 수신자차단
+
+
+
 
   // 메시지 타입 지정
   const [messageType, setMessageType] = useState()
@@ -248,27 +348,30 @@ const SendKakao = () => {
     setSelectContactList([...data])
   }
 
-  useEffect(()=>
-  {
-    console.log('I am In!')
-    console.log('Block: ',isBlock)
-    console.log('Title: ',isTitle)
-    console.log("message: ", message)
-    if(isBlock && isTitle){
-      console.log('I am messageWithBlockerNumberAndTitle')
-      setMessage(messageWithBlockerNumberAndTitle)
-    } else if(isBlock){
-      console.log('I am messageWithBlockNumber')
-      setMessage(messageWithBlockNumber)
-    } else if(isTitle){
-      console.log('I am messageWithTitle')
-      console.log(messageWithTitle)
-      setMessage(messageWithTitle)
-    } else {
-      console.log('I am messageContext')
-      setMessage(messageContext)}
-  }
-  ,[messageTitle,isBlock,messageContext])
+
+
+  // 미리보기 출력 텍스트
+  // useEffect(()=>
+  // {
+  //   console.log('I am In!')
+  //   console.log('Block: ',isBlock)
+  //   console.log('Title: ',isTitle)
+  //   console.log("message: ", message)
+  //   if(isBlock && isTitle){
+  //     console.log('I am messageWithBlockerNumberAndTitle')
+  //     setMessage(messageWithBlockerNumberAndTitle)
+  //   } else if(isBlock){
+  //     console.log('I am messageWithBlockNumber')
+  //     setMessage(messageWithBlockNumber)
+  //   } else if(isTitle){
+  //     console.log('I am messageWithTitle')
+  //     console.log(messageWithTitle)
+  //     setMessage(messageWithTitle)
+  //   } else {
+  //     console.log('I am messageContext')
+  //     setMessage(messageContext)}
+  // }
+  // ,[messageTitle,isBlock,messageContext])
 
   const onChangeTitleHandler=(v)=> {
     console.log("messageTitle: ",messageTitle)
@@ -279,6 +382,11 @@ const SendKakao = () => {
       setMessageTitle(v)
     }
   }
+
+
+
+
+
 
 
   return (
@@ -442,17 +550,22 @@ const SendKakao = () => {
                           </Row>
                         </Container>
                       </FormGroup>
+
+
                       <FormGroup>
                         <label className="form-control-label">
                           제목
                         </label>
                         <Input
+                            // style={{fontWeight:"bold",color:"red"}}
                             value={messageTitle}
                             rows="1"
                             type="textarea"
                             onChange={(e)=>{onChangeTitleHandler(e.target.value)}}
                         ></Input>
                       </FormGroup>
+
+                      
                       <FormGroup>
                         <label className="form-control-label">
                           부제목
