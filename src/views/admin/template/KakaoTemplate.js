@@ -2,7 +2,6 @@ import {
     Card,
     CardFooter,
     CardHeader,
-    Container,
     Pagination,
     PaginationItem,
     PaginationLink,
@@ -10,7 +9,6 @@ import {
     CardBody,
     Button,
     Input,
-    Col,
     InputGroup
 } from "reactstrap";
 import React, {useEffect, useState} from "react";
@@ -38,6 +36,9 @@ const KakaoTemplate = () => {
     const [newSubTitle, setNewSubTitle] = useState("");
     const [newContent, setNewContent] = useState("");
     const [newDescription, setNewDescription] = useState("");
+    const [newButtonTitle, setNewButtonTitle] = useState("");
+    const [newButtonUrl, setNewButtonUrl] = useState("");
+    const [newButtonType, setNewButtonType] = useState("");
 
     let patchTemplateReq = {}
 
@@ -59,25 +60,29 @@ const KakaoTemplate = () => {
 
     // 탬플릿 생성하기
     const registerTemplate = async () => {
-        newTitle == "" ?  window.alert("탬플릿 제목을 입력하세요") :
-            newContent == "" ? window.alert("탬플릿 내용을 입력하세요") :
-                await axios.post("/kakao/template/register", {
-                    "title" : newTitle,
-                    "subTitle" : newSubTitle,
-                    "content" : newContent,
-                    "description" : newDescription
-                })
-                    .then((response) => {
-                        if (response.data.isSuccess) {
-                            window.alert(response.data.message)
-                            window.location.replace("/admin/template/kakao/1")
-                        } else {
-                            window.alert(response.data.message)
-                        }
+        newTitle == "" ?  window.alert("알림톡 제목을 입력하세요") :
+            newContent == "" ? window.alert("알림톡 내용을 입력하세요") :
+                newButtonType == "" ? window.alert("알림톡 버튼 종류를 선택하세요") :
+                    await axios.post("/kakao/template/register", {
+                        "title" : newTitle,
+                        "subTitle" : newSubTitle,
+                        "content" : newContent,
+                        "description" : newDescription,
+                        "buttonTitle" : newButtonTitle,
+                        "buttonUrl" : newButtonUrl,
+                        "buttonType" : newButtonType
                     })
-                    .catch((error) => {
-                        window.alert(error.response.data.message)
-                    })
+                        .then((response) => {
+                            if (response.data.isSuccess) {
+                                window.alert(response.data.message)
+                                window.location.replace("/admin/template/kakao/1")
+                            } else {
+                                window.alert(response.data.message)
+                            }
+                        })
+                        .catch((error) => {
+                            window.alert(error.response.data.message)
+                        })
     }
 
     // 탬플릿 수정하기
@@ -87,24 +92,30 @@ const KakaoTemplate = () => {
                 patchTemplateReq = {
                     "templateId" : templateId,
                     "title" : t.title,
-                    "content" : t.content
+                    "subTitle" : t.subTitle,
+                    "content" : t.content,
+                    "description" : t.description,
+                    "buttonTitle" : t.buttonTitle,
+                    "buttonUrl" : t.buttonUrl,
+                    "buttonType" : t.buttonType
                 }
             }
         })
-        patchTemplateReq.title == "" ?  window.alert("탬플릿 제목을 입력하세요") :
-            patchTemplateReq.content == "" ?  window.alert("탬플릿 내용을 입력하세요") :
-                await axios.patch("/kakao/template/edit", patchTemplateReq)
-                    .then((response) => {
-                        if (response.data.isSuccess) {
-                            window.alert(response.data.message)
-                            window.location.reload()
-                        } else {
-                            window.alert(response.data.message)
-                        }
-                    })
-                    .catch((error) => {
-                        window.alert(error.response.data.message)
-                    })
+        patchTemplateReq.title == "" ?  window.alert("알림톡 제목을 입력하세요") :
+            patchTemplateReq.content == "" ?  window.alert("알림톡 내용을 입력하세요") :
+                patchTemplateReq.buttonType == "" ? window.alert("알림톡 버튼 종류를 선택하세요") :
+                    await axios.patch("/kakao/template/edit", patchTemplateReq)
+                        .then((response) => {
+                            if (response.data.isSuccess) {
+                                window.alert(response.data.message)
+                                window.location.reload()
+                            } else {
+                                window.alert(response.data.message)
+                            }
+                        })
+                        .catch((error) => {
+                            window.alert(error.response.data.message)
+                        })
     }
 
     // 탬플릿 삭제하기
@@ -128,7 +139,9 @@ const KakaoTemplate = () => {
 
     return (
         <Row>
-            <div className="col-md-3">
+
+            {/*탬플릿 생성*/}
+            <div className="col-md-4">
                 <Card className="shadow">
                     <CardHeader className="border-0">
                         <h3 className="mb-0">탬플릿 생성</h3>
@@ -146,7 +159,7 @@ const KakaoTemplate = () => {
                                     <Input
                                         value={newTitle}
                                         className="mb-2"
-                                        placeholder="탬플릿 제목"
+                                        placeholder="알림톡 제목"
                                         type="text"
                                         onChange={(e) => {setNewTitle(e.target.value)}}
                                     />
@@ -155,7 +168,7 @@ const KakaoTemplate = () => {
                                     <Input
                                         value={newSubTitle}
                                         className="mb-2"
-                                        placeholder="탬플릿 소제목"
+                                        placeholder="알림톡 소제목"
                                         type="text"
                                         onChange={(e) => {setNewSubTitle(e.target.value)}}
                                     />
@@ -164,19 +177,53 @@ const KakaoTemplate = () => {
                                 <Input
                                     value={newContent}
                                     className="mb-2"
-                                    placeholder="탬플릿 내용을 입력하세요"
+                                    placeholder="알림톡 내용"
                                     rows="7"
                                     type="textarea"
                                     onChange={(e) => {setNewContent(e.target.value)}}
                                 />
                                 <Input
                                     value={newDescription}
-                                    className="mb-3"
-                                    placeholder="탬플릿 내용을 입력하세요"
+                                    placeholder="알림톡 설명"
                                     rows="7"
                                     type="textarea"
                                     onChange={(e) => {setNewDescription(e.target.value)}}
                                 />
+                            </CardBody>
+                            <CardFooter>
+                                <InputGroup>
+                                    <Input
+                                        value={newButtonTitle}
+                                        className="mb-2"
+                                        placeholder="알림톡 버튼 이름"
+                                        type="text"
+                                        onChange={(e) => {setNewButtonTitle(e.target.value)}}
+                                    />
+                                </InputGroup>
+                                <InputGroup>
+                                    <Input
+                                        value={newButtonUrl}
+                                        className="mb-2"
+                                        placeholder="알림톡 버튼 링크"
+                                        type="text"
+                                        onChange={(e) => {setNewButtonUrl(e.target.value)}}
+                                    />
+                                </InputGroup>
+                                <InputGroup>
+                                    <Input
+                                        value={newButtonType}
+                                        className="mb-3"
+                                        type="select"
+                                        onChange={(e) => {setNewButtonType(e.target.value)}}>
+                                        <option>알림톡 버튼 종류</option>
+                                        <option value="DS">배송 조회</option>
+                                        <option value="WL">웹 링크</option>
+                                        <option value="AL">앱 링크</option>
+                                        <option value="BK">봇 키워드</option>
+                                        <option value="MD">메시지 전달</option>
+                                        <option value="AC">채널 추가</option>
+                                    </Input>
+                                </InputGroup>
                                 <Button
                                     block
                                     color="primary"
@@ -184,21 +231,22 @@ const KakaoTemplate = () => {
                                 >
                                     저장
                                 </Button>
-                            </CardBody>
+                            </CardFooter>
                         </Card>
                     </div>
                     <CardFooter className="pb-4 mb-3"><br/></CardFooter>
                 </Card>
             </div>
 
-            <div className="col-md-9">
+            {/*탬플릿 관리*/}
+            <div className="col-md-8">
                 <Card className="shadow">
                     <CardHeader className="border-0">
                         <h3 className="mb-0">탬플릿 관리</h3>
                     </CardHeader>
                     <Row>
                         {templateList.map((template) => (
-                            <div className="col-md-4" key={template.templateId}>
+                            <div className="col-md-6" key={template.templateId}>
                                 <div className="m-3">
                                     <Card>
                                         <CardBody>
@@ -211,7 +259,7 @@ const KakaoTemplate = () => {
                                             <Input
                                                 value={template.title}
                                                 className="mb-2"
-                                                placeholder="탬플릿 제목"
+                                                placeholder="알림톡 제목"
                                                 type="text"
                                                 onChange={(e) => {
                                                     setTemplateList(
@@ -224,7 +272,7 @@ const KakaoTemplate = () => {
                                             <Input
                                                 value={template.subTitle}
                                                 className="mb-2"
-                                                placeholder="탬플릿 소제목"
+                                                placeholder="알림톡 소제목"
                                                 type="text"
                                                 onChange={(e) => {
                                                     setTemplateList(
@@ -237,7 +285,7 @@ const KakaoTemplate = () => {
                                             <Input
                                                 value={template.content}
                                                 className="mb-2"
-                                                placeholder="탬플릿 내용을 입력하세요"
+                                                placeholder="알림톡 내용"
                                                 rows="7"
                                                 type="textarea"
                                                 onChange={(e) => {
@@ -250,8 +298,7 @@ const KakaoTemplate = () => {
                                             />
                                             <Input
                                                 value={template.description}
-                                                className="mb-3"
-                                                placeholder="탬플릿 설명을 입력하세요"
+                                                placeholder="알림톡 설명"
                                                 rows="7"
                                                 type="textarea"
                                                 onChange={(e) => {
@@ -262,6 +309,54 @@ const KakaoTemplate = () => {
                                                     );
                                                 }}
                                             />
+                                        </CardBody>
+                                        <CardFooter>
+                                            <Input
+                                                value={template.buttonTitle}
+                                                className="mb-2"
+                                                placeholder="알림톡 버튼 이름"
+                                                type="text"
+                                                onChange={(e) => {
+                                                    setTemplateList(
+                                                        templateList.map((t) =>
+                                                            t.templateId === template.templateId ? { ...t, buttonTitle: e.target.value } : t
+                                                        )
+                                                    );
+                                                }}
+                                            />
+                                            <Input
+                                                value={template.buttonUrl}
+                                                className="mb-2"
+                                                placeholder="알림톡 버튼 링크"
+                                                type="text"
+                                                onChange={(e) => {
+                                                    setTemplateList(
+                                                        templateList.map((t) =>
+                                                            t.templateId === template.templateId ? { ...t, buttonUrl: e.target.value } : t
+                                                        )
+                                                    );
+                                                }}
+                                            />
+                                            <Input
+                                                value={template.buttonType}
+                                                className="mb-3"
+                                                type="select"
+                                                onChange={(e) => {
+                                                    setTemplateList(
+                                                        templateList.map((t) =>
+                                                            t.templateId === template.templateId ? { ...t, buttonType: e.target.value } : t
+                                                        )
+                                                    );
+                                                }}
+                                            >
+                                                <option>알림톡 버튼 종류</option>
+                                                <option value="DS">배송 조회</option>
+                                                <option value="WL">웹 링크</option>
+                                                <option value="AL">앱 링크</option>
+                                                <option value="BK">봇 키워드</option>
+                                                <option value="MD">메시지 전달</option>
+                                                <option value="AC">채널 추가</option>
+                                            </Input>
                                             <Button
                                                 block
                                                 color="primary"
@@ -269,7 +364,7 @@ const KakaoTemplate = () => {
                                             >
                                                 수정
                                             </Button>
-                                        </CardBody>
+                                        </CardFooter>
                                     </Card>
                                 </div>
                             </div>
