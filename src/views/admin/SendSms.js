@@ -20,13 +20,14 @@ import React, {useEffect, useState} from "react";
 import axios from "axios";
 import MessageRule from './modal/MessageRule'
 import Receiver from "./modal/Receiver";
-import TemplateModal from "./modal/TemplateModal";
+import SMSTemplateModal from "./modal/SMSTemplateModal";
 import ImageUpload from "./modal/ImageUpload";
 import {Image} from "react-bootstrap";
 import MessageSchedule from "./modal/MessageSchedule";
 import iphone from '../../assets/img/brand/iphone.jpg';
 import { ChatBubble, Message } from 'react-chat-ui';
 import styled from "styled-components";
+import Swal from 'sweetalert2'
 
 const SendSms = () => {
 
@@ -299,7 +300,7 @@ const SendSms = () => {
     <>
       {/* 발송 설정 모달 */}
       <MessageRule isShowingMessageRule={isShowingMessageRule} hide={toggleMessageRule} />
-      <TemplateModal
+      <SMSTemplateModal
           isShowingTemplate={isShowingTemplate}
           hide={toggleTemplate}
           selectTemplate={selectTemplate}
@@ -381,7 +382,12 @@ const SendSms = () => {
                       </UncontrolledDropdown>
 
                       <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => {
-                        blockNumber == null ? window.alert("발신번호를 선택하세요") :
+                        blockNumber == null ? Swal.fire({
+                          title: '발신번호를 선택하세요',
+                          icon: 'warning',
+                          showConfirmButton: false,
+                          timer: 1000
+                        })  :
                         isBlock == true ? setIsBlock(false) : setIsBlock(true)
                       }}>
                         <span className="btn-inner--icon">
