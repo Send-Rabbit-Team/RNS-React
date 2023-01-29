@@ -9,6 +9,8 @@ import animation_sms from "../assets/img/brand/sms-animation.gif"
 import { Button } from "reactstrap";
 
 const Onboarding = (props) => {
+  var token = localStorage.getItem("bearer");
+
   const mainContent = React.useRef(null);
   const location = useLocation();
 
@@ -18,7 +20,7 @@ const Onboarding = (props) => {
       document.body.classList.remove("bg-default");
     };
   }, []);
-  
+
   React.useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
@@ -50,8 +52,9 @@ const Onboarding = (props) => {
             <div className="header-body">
               <Row className="pt-6">
                 <Col lg="4" md="6">
-                  <h1 className="text-white" style={{fontSize: 60, paddingTop: 75}} >Rabbit Notification Service</h1>
-                  <p className="text-lead text-light" style={{fontSize: 21}}>
+                  <h1 className="text-white"
+                      style={{fontSize: 60, paddingTop: 75, lineHeight: "140%"}}>Rabbit Notification Service</h1>
+                  <p className="text-lead text-light" style={{fontSize: 18}}>
                     <TextAnimation.Slide  animation={{
                         duration:1000,
                         delay:2000,
@@ -60,7 +63,8 @@ const Onboarding = (props) => {
                         당신의 메시지를 "안전하게" 전달해보세요
                     </TextAnimation.Slide>
                     <Row style={{paddingTop:20,paddingLeft:15}}>
-                      <Button button style={{ width:180, height: 60, fontSize:25}} color="primary"type="button">
+                      <Button button style={{ width:180, height: 60, fontSize:25}} color="primary"type="button"
+                      href={token ? "/admin/sms" : "/auth/login"}>
                         시작하기
                       </Button>
                     </Row>
@@ -70,7 +74,7 @@ const Onboarding = (props) => {
                   <div>
                     <img src={animation_sms} style={{paddingLeft:80, paddingBottom:120,width:630, height:590}} alt="sms"/>
                   </div>
-                </Col>  
+                </Col>
               </Row>
             </div>
           </Container>
