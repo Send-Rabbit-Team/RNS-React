@@ -2,7 +2,8 @@ import {Button, Modal, Card, CardBody, Row, Col, CardHeader, CardFooter} from "r
 import React, {useState} from "react";
 import axios from "axios";
 
-const TemplateModal = (props) => {
+
+const SMSTemplateModal = (props) => {
     const [templateList, setTemplateList] = useState([]);
 
     // 탬플릿 불러오기
@@ -53,7 +54,7 @@ const TemplateModal = (props) => {
                                 {/*<p>{template.content.map()}</p>*/}
                             </Button>
                         </div>
-                    )) : (<p className="m-3">탬플릿이 없습니다</p>)}
+                    )) : (<p className="m-3">템플릿이 없습니다</p>)}
 
                 </Row>
             </div>
@@ -62,4 +63,4 @@ const TemplateModal = (props) => {
     )
 
 }
-export default TemplateModal
+export default SMSTemplateModal

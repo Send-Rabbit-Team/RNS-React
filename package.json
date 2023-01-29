@@ -69,7 +69,8 @@
     "react-text-animations": "^1.1.10",
     "reactstrap": "8.9.0",
     "sass": "1.54.5",
-    "styled-components": "^5.3.6"
+    "styled-components": "^5.3.6",
+    "sweetalert2": "^11.7.1"
   },
   "devDependencies": {
     "file-loader": "^6.2.0",

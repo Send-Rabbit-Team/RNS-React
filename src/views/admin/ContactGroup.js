@@ -1,21 +1,3 @@
-/*!
-
-=========================================================
-* Argon Dashboard React - v1.2.2
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/argon-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/argon-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-// reactstrap components
 import {
   Card,
   CardHeader,
@@ -34,6 +16,7 @@ import Header from "components/Headers/Header.js";
 import React, {useState} from "react";
 import { useParams } from 'react-router-dom';
 import axios from "axios";
+import Swal from 'sweetalert2'
 
 const ContactGroup = () => {
 
@@ -98,8 +81,6 @@ const ContactGroup = () => {
         .then((response) => {
           if (response.data.isSuccess) {
             setContactList(response.data.result)
-          } else{
-            window.alert(response.data.message)
           }
         })
         .catch((error) => {
@@ -129,64 +110,110 @@ const ContactGroup = () => {
 
   // 그룹 수정 api 연동
   const editContactGroup = async (contactGroupId) => {
-    editGroupName == null ? window.alert("그룹 이름을 입력하세요") :
-      await axios.patch('/group/edit', {
-        "contactGroupId" : editGroupId,
-        "name" : editGroupName
-      })
-          .then((response) => {
+    await Swal.fire({
+      title: "그룹을 수정하시겠습니까?",
+      icon:'question',
+      showDenyButton: true,
+      confirmButtonText: '네',
+      denyButtonText: `아니요`,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        editGroupName == null ? Swal.fire({
+          title: "그룹이름을 입력하세요",
+          icon: 'warning',
+          showConfirmButton: false,
+          timer: 1000
+        }) :
+        await axios.patch('/group/edit', {
+          "contactGroupId" : editGroupId,
+          "name" : editGroupName
+        })
+          .then(async(response) => {
             if (response.data.isSuccess) {
-              window.alert(response.data.message)
+              await Swal.fire({
+                title: '그룹을 수정했습니다',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 1000
+              })
               window.location.replace("/admin/group/1")
             } else {
-              window.alert(response.data.message)
+              await Swal.fire({
+                title: '그룹을 수정하는데 실패했습니다',
+                icon: 'error',
+                showConfirmButton: false,
+                timer: 1000
+              })
             }
           })
-          .catch((error) => {
-            window.alert(error.response.data.message)
+          .catch(async(error) => {
+            await Swal.fire({
+              title: '연락처를 수정했습니다',
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 1000
+            })
+            window.location.reload()
           })
+      }
+    })
   }
 
   // 그룹 삭제 api 연동
   const deleteContactGroup = async (contactGroupId) => {
-    if (window.confirm("정말 삭제하시겠습니까?")) {
-      await axios.patch(`/group/delete/${contactGroupId}`)
-          .then((response) => {
+    Swal.fire({
+      title: "그룹을 삭제하시겠습니까?",
+      text:'그룹 삭제시 복구가 불가능합니다',
+      icon:'question',
+      showDenyButton: true,
+      confirmButtonText: '네',
+      denyButtonText: `아니요`,
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        await axios.patch(`/group/delete/${contactGroupId}`)
+          .then(async(response) => {
             if (response.data.isSuccess) {
-              window.alert(response.data.message)
+              await Swal.fire({title:'그룹이 삭제되었습니다', icon: 'success'})
               window.location.replace("/admin/group/1")
             } else {
-              // window.alert(response.data.message)
+              await Swal.fire({title:'그룹을 삭제하는데 실패했습니다', icon: 'error'})
             }
           })
           .catch((error) => {
             window.alert(error.response.data.message)
           })
-    }
-
+      }
+    })
   }
 
   // 연락처 그룹 연동 해제 api 연동
   const quitContactGroup = async (contactId) => {
-    if (window.confirm("정말 삭제하시겠습니까?")) {
-      await axios.patch(`/contact/quit/${contactId}`)
-          .then((response) => {
+    Swal.fire({
+      title: "그룹에서 삭제하시겠습니까?",
+      icon:'question',
+      showDenyButton: true,
+      confirmButtonText: '네',
+      denyButtonText: `아니요`,
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        await axios.patch(`/contact/quit/${contactId}`)
+          .then(async(response) => {
             if (response.data.isSuccess) {
-              window.alert(response.data.message)
+              await Swal.fire({title:'그룹에서 삭제되었습니다', icon: 'success'})
               window.location.replace("/admin/group/1")
             } else {
-              window.alert(response.data.message)
+              await Swal.fire({title:'그룹에서 삭제하는데 실패했습니다', icon: 'error'})
             }
           })
           .catch((error) => {
             window.alert(error.response.data.message)
           })
-    }
+      }
+    })
   }
 
   return (
     <>
-
       {/* modal start */}
       <Modal
           className="modal-dialog-centered"
