@@ -51,10 +51,14 @@ import {
   Row,
   Col
 } from "reactstrap";
+import default_image from "../../assets/img/theme/rabbit-user2.png";
 
 var ps;
 
 const Sidebar = (props) => {
+  const profile_image = localStorage.getItem("profile_image")
+  const default_image = require("../../assets/img/theme/rabbit-user2.png")
+
   const [collapseOpen, setCollapseOpen] = useState();
   // verifies if routeName is the one active (in browser input)
   const activeRoute = (routeName) => {
@@ -72,12 +76,12 @@ const Sidebar = (props) => {
   const createLinks = (routes) => {
     return routes.map((prop, key) => {
       console.log('프롭: ',prop.sidebar)
-      
+
         return prop.sidebar?
           <NavItem key={key}>
             <NavLink
               to={prop.layout + prop.path}
-              tag={NavLinkRRD} 
+              tag={NavLinkRRD}
               onClick={closeCollapse}
               activeClassName="active"
             >
@@ -85,8 +89,8 @@ const Sidebar = (props) => {
               {prop.name}
             </NavLink>
           </NavItem>: null
-        
-      
+
+
     });
   };
 
@@ -132,27 +136,12 @@ const Sidebar = (props) => {
         {/* User */}
         <Nav className="align-items-center d-md-none">
           <UncontrolledDropdown nav>
-            <DropdownToggle nav className="nav-link-icon">
-              <i className="ni ni-bell-55" />
-            </DropdownToggle>
-            <DropdownMenu
-              aria-labelledby="navbar-default_dropdown_1"
-              className="dropdown-menu-arrow"
-              right
-            >
-              <DropdownItem>Action</DropdownItem>
-              <DropdownItem>Another action</DropdownItem>
-              <DropdownItem divider />
-              <DropdownItem>Something else here</DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-          <UncontrolledDropdown nav>
             <DropdownToggle nav>
               <Media className="align-items-center">
                 <span className="avatar avatar-sm rounded-circle">
                   <img
                     alt="..."
-                    src={require("../../assets/img/theme/team-1-800x800.jpg")}
+                    src={profile_image ? profile_image : default_image}
                   />
                 </span>
               </Media>
@@ -178,7 +167,7 @@ const Sidebar = (props) => {
                 <span>Support</span>
               </DropdownItem>
               <DropdownItem divider />
-              <DropdownItem href="#pablo" onClick={(e) => e.preventDefault()}>
+              <DropdownItem to="/auth/login" tag={Link}>
                 <i className="ni ni-user-run" />
                 <span>Logout</span>
               </DropdownItem>
@@ -215,25 +204,10 @@ const Sidebar = (props) => {
               </Col>
             </Row>
           </div>
-          {/* Form */}
-          <Form className="mt-4 mb-3 d-md-none">
-            <InputGroup className="input-group-rounded input-group-merge">
-              <Input
-                aria-label="Search"
-                className="form-control-rounded form-control-prepended"
-                placeholder="Search"
-                type="search"
-              />
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>
-                  <span className="fa fa-search" />
-                </InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
-          </Form>
+
           {/* Navigation */}
           <Nav navbar>{createLinks(routes)}</Nav>
-          
+
 
         </Collapse>
       </Container>
