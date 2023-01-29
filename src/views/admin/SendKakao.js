@@ -198,7 +198,7 @@ const SendKakao = () => {
    `;
 
    const ButtonCss = {
-    width:220, 
+    width:"100%", 
     padding:"8px 12px", 
     borderRadius:5, 
     fontSize:14, 
@@ -208,9 +208,17 @@ const SendKakao = () => {
     position:'relative'
    }
 
+   const ImageCss = {
+    width:"125%",
+    paddingRight:27,
+    marginLeft:-14,
+   }
+
   // 모두
   const messageWithAll =
-    <>
+    <body style={{margin: 0}}>
+      <Image src="https://img.etnews.com/photonews/2107/1432751_20210708160744_846_0001.jpg" style={ImageCss}></Image>
+      <br/><br/>
       <TitleCss>{messageTitle}</TitleCss>
       <br/>
       <SubtitleCss>{messageSubtitle}</SubtitleCss>
@@ -220,7 +228,7 @@ const SendKakao = () => {
       <DescriptionCss>{messageDescription}</DescriptionCss>
       <br/><br/>
       <Button style={ButtonCss} href="#pablo">{buttonTitle}</Button>
-    </>
+    </body>
 
 const messageWithTSD =
     <>
@@ -379,15 +387,22 @@ const messageWithBlock=
   // 메시지 전송
   const sendMessage = async()=>{
 
-    await axios.post('/message/send',{
-      "message":{
+    await axios.post('/message/send/kakao',{
+      "kakaoMessageDto":{
         "from": senderMemo,
-        "subject": messageTitle, // 예나가 주제를 구현하고 추가하는 부분
+        "title": messageTitle,
+        "subtitle": messageSubtitle,
         "content": messageContext,
-        "image": selectImage,
-        "messageType":"SMS"
+        "description":messageDescription,
+        "image":selectImage,
+        "kakaoButtonDtoList":[
+          {
+            buttonTitle: buttonTitle,
+            buttonType:buttonType,
+            buttonUrl: buttonUrl
+          }
+        ]
       },
-      "count":10000,
       "senderNumber":senderNumber,
       "receivers":selectContactList.map(contact=>contact.phoneNumber)
     }).then((response) => {
