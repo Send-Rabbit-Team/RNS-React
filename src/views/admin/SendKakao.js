@@ -9,8 +9,6 @@ import {
   Button,
   Input,
   FormGroup,
-  InputGroup,
-  InputGroupAddon,
   Badge,
   UncontrolledDropdown,
   DropdownToggle,
@@ -21,7 +19,6 @@ import Header from "components/Headers/Header.js";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import 'react-chat-elements/dist/main.css'
-import { MessageBox } from 'react-chat-elements'
 import MessageRule from './modal/MessageRule'
 import Receiver from "./modal/Receiver";
 import KakaoTemplateModal from "./modal/KakaoTemplateModal";
@@ -29,7 +26,8 @@ import ImageUpload from "./modal/ImageUpload";
 import {Image} from "react-bootstrap";
 import MessageSchedule from "./modal/MessageSchedule";
 import iphonekakao from '../../assets/img/brand/iphonekakao.png';
-
+import { ChatBubble, Message } from 'react-chat-ui';
+import styled from "styled-components";
 
 const SendKakao = () => {
 
@@ -102,16 +100,18 @@ const SendKakao = () => {
 
   // 발신자 번호 변수
   const [senderNumber, setSenderNumber] = useState();
-  const [blockNumber, setBlockNumber] = useState();
   const [senderMemo, setSenderMemo] = useState();
 
   // 수신자 모달 -> 메인페이지 데이타 전달
-  const [ContactNumberList, setContactNumberList] = useState([])
-  const [contactGroupList, setContactGroupList] = useState([])
-  const [selectIdList, setSelectIdList] = useState([]);
-  const [selectNameList, setSelectNameList] = useState([]);
   const [selectContactList, setSelectContactList] = useState([]);
   const [selectContactGroupList, setSelectContactGroupList] = useState([]);
+
+  // 탬플릿 모달 -> 메인페이지 데이터 전달
+  const [selectTemplate, setSelectTemplate] = useState();
+  const getSelectTemplate = (data) => {
+    setSelectTemplate(data);
+    setMessageContext(messageContext + data)
+  }
 
   // 이미지 모달 -> 메인페이지 데이터 전달
   const [selectImage, setSelectImage] = useState([]);
@@ -136,21 +136,237 @@ const SendKakao = () => {
 
   // 미리보기화면
   const [messageTitle, setMessageTitle] = useState("")
-  const [messageSubTitle, setMessageSubTitle] = useState("")
+  const [messageSubtitle, setMessageSubtitle] = useState("")
   const [messageContext, setMessageContext] = useState("")
   const [messageDescription, setMessageDescription] = useState("")
-  const [buttonTitle, setButtonTitle] = useState("")
+  const [buttonTitle, setButtonTitle] = useState("알림톡 버튼")
   const [buttonUrl, setButtonUrl] = useState("")
   const [buttonType, setButtonType] = useState("")
 
-  const [isBlock, setIsBlock] = useState(false);
   const [isTitle, setIstitle] = useState(false);
+  const [isSubtitle, setIsSubtitle] = useState(false);
+  const [isDescription, setIsDescription] = useState(false);
+  const [isButton, setIsButton] = useState(false);
   const [message, setMessage] = useState("");
 
-  // 수신거부
-  const messageWithBlockNumber = `${messageContext} \n\n\n무료수신거부: ${blockNumber}`
-  // const messageWithTitle = `${messageTitle} \n\n\n${messageContext}`
-  // const messageWithBlockerNumberAndTitle = `${messageTitle} \n\n\n${messageContext} \n\n\n무료수신거부: ${blockNumber}`
+  const IphoneTime = ()=>{
+    let now = new Date();
+    let hour = now.getHours();
+    let hourMod = hour<=12?hour:hour-12
+    let min = now.getMinutes();
+    console.log(hour)
+    let PA = now.getHours() < 12 ? "오전" : "오후";
+    return PA+' '+hourMod+'시 '+min+'분'
+  }
+
+
+  var messageInput = new Message({
+    id: 1,
+    message: message,
+    senderName: "youngjoo"
+  });
+
+  useEffect(()=>{
+    messageInput = new Message({
+      id: 1,
+      message: message,
+    });
+  },[message])
+
+   // CSS
+   const TitleCss = styled.text`
+   font-size: 20px;
+   font-weight:bold;
+   border:0px;
+   `;
+   const SubtitleCss = styled.text`
+   font-size: 10px;
+   font-weight:bold;
+   border:0px;
+   `;
+
+   const BodyCss = styled.text`
+   font-size: 13px;
+   font-weight:500;
+   border:0px;
+   `;
+
+   const DescriptionCss = styled.text`
+   font-size: 13px;
+   border:0px;
+   color:grey;
+   `;
+
+   const ButtonCss = {
+    width:"100%", 
+    padding:"8px 12px", 
+    borderRadius:5, 
+    fontSize:14, 
+    fontWeight:500, 
+    lineWeight:1.5, 
+    backgroundColor:'#f5f5f5',
+    position:'relative'
+   }
+
+   const ImageCss = {
+    width:"125%",
+    paddingRight:27,
+    marginLeft:-14,
+   }
+
+  // 모두
+  const messageWithAll =
+    <body style={{margin: 0}}>
+      <Image src="https://img.etnews.com/photonews/2107/1432751_20210708160744_846_0001.jpg" style={ImageCss}></Image>
+      <br/><br/>
+      <TitleCss>{messageTitle}</TitleCss>
+      <br/>
+      <SubtitleCss>{messageSubtitle}</SubtitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/>
+      <DescriptionCss>{messageDescription}</DescriptionCss>
+      <br/><br/>
+      <Button style={ButtonCss} href="#pablo">{buttonTitle}</Button>
+    </body>
+
+const messageWithTSD =
+    <>
+      <TitleCss>{messageTitle}</TitleCss>
+      <br/>
+      <SubtitleCss>{messageSubtitle}</SubtitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/>
+      <DescriptionCss>{messageDescription}</DescriptionCss>
+    </>
+
+const messageWithTSB =
+    <>
+      <TitleCss>{messageTitle}</TitleCss>
+      <br/>
+      <SubtitleCss>{messageSubtitle}</SubtitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/><br/>
+      <Button style={ButtonCss} href="#pablo">{buttonTitle}</Button>
+    </>
+
+const messageWithSDB =
+    <>
+      <SubtitleCss>{messageSubtitle}</SubtitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/>
+      <DescriptionCss>{messageDescription}</DescriptionCss>
+      <br/><br/>
+      <Button style={ButtonCss} href="#pablo">{buttonTitle}</Button>
+    </>
+
+const messageWithTS =
+    <>
+      <TitleCss>{messageTitle}</TitleCss>
+      <br/>
+      <SubtitleCss>{messageSubtitle}</SubtitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+    </>
+
+const messageWithTD =
+    <>
+      <TitleCss>{messageTitle}</TitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/>
+      <DescriptionCss>{messageDescription}</DescriptionCss>
+    </>
+
+const messageWithTB =
+    <>
+      <TitleCss>{messageTitle}</TitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/><br/>
+      <Button style={ButtonCss} href="#pablo">{buttonTitle}</Button>
+    </>
+
+const messageWithSD =
+    <>
+      <SubtitleCss>{messageSubtitle}</SubtitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/>
+      <DescriptionCss>{messageDescription}</DescriptionCss>
+    </>
+
+const messageWithSB =
+    <>
+      <SubtitleCss>{messageSubtitle}</SubtitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/><br/>
+      <Button style={ButtonCss} href="#pablo">{buttonTitle}</Button>
+    </>
+
+const messageWithDB =
+    <>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/>
+      <DescriptionCss>{messageDescription}</DescriptionCss>
+      <br/><br/>
+      <Button style={ButtonCss} href="#pablo">{buttonTitle}</Button>
+    </>
+
+const messageWithTitle =
+    <>
+      <TitleCss>{messageTitle}</TitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+    </>
+const messageWithSubtitle =
+    <>
+      <SubtitleCss>{messageSubtitle}</SubtitleCss>
+      <br/>
+      <BodyCss>{messageContext}</BodyCss>
+    </>
+const messageWithDescription =
+    <>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/>
+      <DescriptionCss>{messageDescription}</DescriptionCss>
+    </>
+
+const messageWithBlock=
+    <>
+      <BodyCss>{messageContext}</BodyCss>
+      <br/><br/>
+      <Button style={ButtonCss} href="#pablo">{buttonTitle}</Button>
+    </>
+
+    // 메시지 타입 지정
+  const [messageType, setMessageType] = useState()
+  useEffect(() => {
+    selectImage.length != 0 ? setMessageType("MMS") :
+        messageByte > 80 ?
+            setMessageType("LMS") : setMessageType("SMS")
+  });
+  // 메시지 바이트 변환
+  const [messageByte, setMessageByte] = useState()
+  useEffect(() => {
+    var l= 0;
+
+    for(var idx=0; idx < messageContext.length; idx++) {
+      var c = escape(messageContext.charAt(idx));
+
+      if( c.length==1 ) l ++;
+      else if( c.indexOf("%u")!=-1 ) l += 2;
+      else if( c.indexOf("%")!=-1 ) l += c.length/3;
+    }
+
+    isButton ? setMessageByte(l+29) : setMessageByte(l)
+  });
+
+
 
   // SenderNumber 불러오기
   const [senderNumberList, setSenderNumberList] = useState([]);
@@ -171,15 +387,22 @@ const SendKakao = () => {
   // 메시지 전송
   const sendMessage = async()=>{
 
-    await axios.post('/message/send',{
-      "message":{
+    await axios.post('/message/send/kakao',{
+      "kakaoMessageDto":{
         "from": senderMemo,
-        "subject": messageTitle, // 예나가 주제를 구현하고 추가하는 부분
+        "title": messageTitle,
+        "subtitle": messageSubtitle,
         "content": messageContext,
-        "image": selectImage,
-        "messageType":"SMS"
+        "description":messageDescription,
+        "image":selectImage,
+        "kakaoButtonDtoList":[
+          {
+            buttonTitle: buttonTitle,
+            buttonType:buttonType,
+            buttonUrl: buttonUrl
+          }
+        ]
       },
-      "count":10000,
       "senderNumber":senderNumber,
       "receivers":selectContactList.map(contact=>contact.phoneNumber)
     }).then((response) => {
@@ -204,17 +427,44 @@ const SendKakao = () => {
     setSelectContactList([...data])
   }
 
+
+
+  // 미리보기 출력 텍스트
   useEffect(()=>
   {
-      if(isBlock){
-        console.log('I am messageWithBlockNumber')
-        setMessage(messageWithBlockNumber)
-      } else {
-        console.log('I am messageContext')
-        setMessage(messageContext)
-      }
+    if(isTitle && isSubtitle && isDescription && isButton){
+      setMessage(messageWithAll)
+    } else if(isTitle && isSubtitle && isDescription){
+      setMessage(messageWithTSD)
+    } else if(isTitle && isSubtitle && isButton){
+      setMessage(messageWithTSB)
+    } else if(isSubtitle && isDescription && isButton){
+      setMessage(messageWithSDB)
+    } else if(isTitle && isSubtitle){
+      setMessage(messageWithTS)
+    } else if(isTitle && isDescription){
+      setMessage(messageWithTD)
+    } else if(isTitle && isButton){
+      setMessage(messageWithTB)
+    } else if(isSubtitle && isDescription){
+      setMessage(messageWithSD)
+    } else if(isSubtitle && isButton){
+      setMessage(messageWithSB)
+    } else if(isDescription && isButton){
+      setMessage(messageWithDB)
+    } else if(isTitle){
+      setMessage(messageWithTitle)
+    } else if(isSubtitle){
+      setMessage(messageWithSubtitle)
+    } else if(isDescription){
+      setMessage(messageWithDescription)
+    } else if(isButton){
+      setMessage(messageWithBlock)
+    } else {
+      setMessage(messageContext)}
   }
-  ,[messageTitle,isBlock,messageContext])
+  ,[messageTitle,messageSubtitle, messageDescription,buttonTitle,isButton,messageContext])
+
 
   const onChangeTitleHandler=(v)=> {
     console.log("messageTitle: ",messageTitle)
@@ -226,6 +476,32 @@ const SendKakao = () => {
     }
   }
 
+  const onChangeSubtitleHandler=(v)=> {
+    if(isSubtitle){
+      setMessageSubtitle(v)
+    } else {
+      setIsSubtitle(true)
+      setMessageSubtitle(v)
+    }
+  }
+
+  const onChangeDescriptionHandler=(v)=> {
+    if(isDescription){
+      setMessageDescription(v)
+    } else {
+      setIsDescription(true)
+      setMessageDescription(v)
+    }
+  }
+
+  const onChangeButtonHandler=(v)=> {
+    if(isDescription){
+      setButtonTitle(v)
+    } else {
+      setIsDescription(true)
+      setMessageDescription(v)
+    }
+  }
 
   return (
     <>
@@ -235,7 +511,7 @@ const SendKakao = () => {
           isShowingTemplate={isShowingTemplate}
           hide={toggleTemplate}
           setMessageTitle={setMessageTitle}
-          setMessageSubTitle={setMessageSubTitle}
+          setMessageSubtitle={setMessageSubtitle}
           setMessageContext={setMessageContext}
           setMessageDescription={setMessageDescription}
           setButtonTitle={setButtonTitle}
@@ -271,7 +547,7 @@ const SendKakao = () => {
               <CardHeader className="border-0">
                 <Row>
                   <Col>
-                    <h3 className="mb-0" style={{ paddingTop: 10 }}>알림톡 발송 &nbsp;&nbsp;
+                    <h3 className="mb-0" style={{ paddingTop: 10 }}>SMS 발송 &nbsp;&nbsp;
                     </h3>
                   </Col>
                 </Row>
@@ -309,7 +585,6 @@ const SendKakao = () => {
                             <DropdownItem onClick={(e) => {
                               setSenderMemo(sn.memo)
                               setSenderNumber(sn.phoneNumber)
-                              setBlockNumber(sn.blockNumber)
                             }}>
                               {"[" + sn.memo + "] " + makeHyphen(sn.phoneNumber)}
                             </DropdownItem>
@@ -318,13 +593,12 @@ const SendKakao = () => {
                       </UncontrolledDropdown>
 
                       <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => {
-                        blockNumber == null ? window.alert("발신번호를 선택하세요") :
-                        isBlock == true ? setIsBlock(false) : setIsBlock(true)
+                        isButton == true ? setIsButton(false) : setIsButton(true)
                       }}>
                         <span className="btn-inner--icon">
-                          <i className="ni ni-tag" />
+                          <i className="ni ni-chat-round" />
                         </span>
-                        <span className="btn-inner--text">수신거부</span>
+                        <span className="btn-inner--text">버튼</span>
                       </Button>
                       <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleTemplate()}>
                       <span className="btn-inner--icon">
@@ -349,7 +623,7 @@ const SendKakao = () => {
 
 
 
-                  <Col sm="8">
+                  <Col sm="6">
                     <CardBody style={{ boxShadow: '1px 2px 9px #8c8c8c' }}>
                       <FormGroup>
                         <label className="form-control-label">
@@ -393,6 +667,8 @@ const SendKakao = () => {
                           </Row>
                         </Container>
                       </FormGroup>
+
+
                       <FormGroup>
                         <label className="form-control-label">
                           알림톡 제목
@@ -401,18 +677,20 @@ const SendKakao = () => {
                             value={messageTitle}
                             rows="1"
                             type="textarea"
-                            onChange={(e)=>{setMessageTitle(e.target.value)}}
+                            onChange={(e)=>{onChangeTitleHandler(e.target.value)}}
                         ></Input>
                       </FormGroup>
+
+
                       <FormGroup>
                         <label className="form-control-label">
                           알림톡 소제목
                         </label>
                         <Input
-                            value={messageSubTitle}
+                            value={messageSubtitle}
                             rows="1"
                             type="textarea"
-                            onChange={(e)=>{setMessageSubTitle(e.target.value)}}
+                            onChange={(e)=>{onChangeSubtitleHandler(e.target.value)}}
                         ></Input>
                       </FormGroup>
                       <FormGroup>
@@ -421,20 +699,24 @@ const SendKakao = () => {
                         </label>
                         <Input
                             value={messageContext}
-                            rows="10"
+                            rows="5"
                             type="textarea"
                             onChange={(e)=>{setMessageContext(e.target.value)}}
                         ></Input>
+                        <p align="right">{messageType}&nbsp;{messageByte}byte</p>
+                        {/* 부가 정보 합산 바이트 */}
                       </FormGroup>
                       <FormGroup>
                         <label className="form-control-label">
+                          부가정보
                           알림톡 설명
                         </label>
                         <Input
                             value={messageDescription}
-                            rows="10"
+                            rows="5"
                             type="textarea"
-                            onChange={(e)=>{setMessageDescription(e.target.value)}}
+                            onChange={(e)=>{onChangeDescriptionHandler(e.target.value)}}
+
                         ></Input>
                       </FormGroup>
                       <FormGroup>
@@ -478,96 +760,56 @@ const SendKakao = () => {
                           <option value="AC">채널 추가</option>
                         </Input>
                       </FormGroup>
-                      <FormGroup>
-                        <label className="form-control-label">
-                          수신차단번호
-                        </label>
-                        <Container>
-                          {isBlock?
-                              <Row>
-                                <Badge className="badge-md" color="primary">{blockNumber != null ? makeHyphen(blockNumber) : null}</Badge>
-                              </Row>
-                              :null}
-                        </Container>
-                      </FormGroup>
                     </CardBody>
                   </Col>
 
 
 
-                  <Col sm="4">
+
+                  {/* 메시지 미리보기  */}
+                  <Col sm="6" style={{paddingLeft:80}}>
                     <div style={{
                       backgroundImage: `url(${iphonekakao})`,
                       backgroundRepeat: "no-repeat",
-                      backgroundSize: "100%",
-                      height: "100%"
+                      backgroundSize: "80%",
+                      height: "100%",
                     }}>
-                      <div style={{height: 120}}></div>
-                      <div style={{ height: 816, whiteSpace: "pre-wrap", width: 290, margin: 30, }}>
-                        <MessageBox
-                            style={{ whiteSpace: "pre-wrap",fontWeight: 'bold'}}
-                            position={'left'}
-                            type={'text'}
-                            text={message}
-                            title={messageTitle}
+                      <div style={{ height: 220 }}></div>
+                      <div style={{ height: 550, whiteSpace: "pre-wrap", width: 300, margin: 30}}>
+                        {/* <div style={{textAlign:"center", fontSize:10,fontWeight:"bold", color:'#b1b1b4'}}>{`문자 메시지\n(오늘) ${IphoneTime()} `}</div> */}
+                        <ChatBubble
+                          message={messageInput}
+                          bubbleStyles={
+                            {
+                              text: {
+                                fontSize: 12,
+                                color:'black'
+                              },
+                              chatbubble: {
+                                borderTop: '40px solid #F7E600',
+                                borderRadius: 20,
+                                paddingLeft:14,
+                                margin:10,
+                                width:250,
+                                backgroundColor: 'white',
+                              }
+                            }
+                          }
                         />
+
                       </div>
                     </div>
                   </Col>
 
-
-                  {/* 미리 보기 / Bubble */}
-                  <Col sm="6" style={{padding:40}}>
-                    <FormGroup style={{ position: "relative" ,backgroundColor : 'lightblue' }}>
-                      <InputGroup className="input-group-alternative" style={{ boxShadow: '1px 2px 9px #8c8c8c' }}>
-                        <InputGroupAddon addonType="prepend">
-                          {/* 애드온 */}
-                        </InputGroupAddon>
-                        <Row style={{ height: 500, paddingTop: 10, bordingTop:10 }}>
-                          <Col>
-                            <div style={{ height: 816, paddingTop: 60, margin: 30, whiteSpace: "pre-wrap", width: 400}}>
-                              <MessageBox
-                                style={{ whiteSpace: "pre-wrap",fontWeight: 'bold'}}
-                                position={'left'}
-                                type={'text'}
-                                text={message}
-                                title={messageTitle}
-                              />
-
-                            </div>
-                          </Col>
-                        </Row>
-                        <Row style={{ margin: 30 }}>
-
-                          {/* 수신자 불러오기 */}
-                          {selectContactList.map(v => {
-                            return (
-                              <Button color="primary" type="button" style={{ margin: 2 }}>
-                                <span>{v.phoneNumber}</span>
-
-                              </Button>
-                            )
-                          })}
-                          {selectContactGroupList.map(v => {
-                            return (
-                              <Button color="info" type="button" style={{ margin: 2 }}>
-                                <span>{v.name}</span>
-                              </Button>
-                            )
-                          })}
-                        </Row>
-                      </InputGroup>
-                    </FormGroup>
-                  </Col>
                 </Row>
-                <Button className="btn-icon btn-3" size="xl" color="primary" type="button" style={{ width: "15%", height: 54, margin: 10, fontSize: 22, float: "right"}} onClick={(e)=> sendMessage()}>
+                <Button className="btn-icon btn-3" size="xl" color="primary" type="button" style={{ width: "15%", height: 54, margin: 10, fontSize: 17, float: "right"}} onClick={(e)=> sendMessage()}>
                   <span className="btn-inner--icon">
                     <i className="ni ni-send text-white" />
                   </span>
                   <span className="btn-inner--text">발송하기</span>
                 </Button>
 
-                <Button className="btn-icon btn-3" size="xl" color="primary" type="button" style={{ width: "15%", height: 54, margin: 10, fontSize: 22, float: "right", }} onClick={(e) => toggleMessageSchedule()}>
+                <Button className="btn-icon btn-3" size="xl" color="primary" type="button" style={{ width: "15%", height: 54, margin: 10, fontSize: 17, float: "right", }} onClick={(e) => toggleMessageSchedule()}>
                   <span className="btn-inner--icon">
                     <i className="ni ni-time-alarm" />
                   </span>
