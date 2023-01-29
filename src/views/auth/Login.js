@@ -16,6 +16,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import setAuthorizationToken from "../../utils/authorization/SetAuthorizationToken.js"
 import {GoogleLogin, GoogleOAuthProvider} from "@react-oauth/google";
+import Swal from 'sweetalert2'
+
 
 // Redux 활용을 위한 jwt 라이브러리 - jetpack 요구
 // import jwt from "jsonwebtoken"
@@ -41,16 +43,19 @@ const Login = () => {
 
   const login = async ()=>{
     await axios.post("/login", GeneralLoginInfo)
-      .then(response => {
+      .then(async response => {
         if (response.data.isSuccess === true) {
-          window.alert(response.data.message);
-          console.log("로그인 성공 결과: ",response.data)
+          await Swal.fire({
+            title: '로그인에 성공했습니다',
+            icon: 'success',
+            showConfirmButton: false,
+            timer: 1500
+          })
           localStorage.setItem("bearer", response.data.result.jwt);
           if (response.data.result.profileImageURL)
             localStorage.setItem("profile_image", response.data.result.profileImageURL)
           localStorage.setItem("name", response.data.result.name);
 
-          console.log('토큰: ',response.data.result.jwt)
           setAuthorizationToken(response.data.result.jwt);
 
           // Redux활용 코드:
@@ -59,8 +64,13 @@ const Login = () => {
           window.location.replace("/admin/sms")
           return response.data.code;
         } else{
-          window.alert(response.data.message);
-          console.log("로그인 실패 결과: ",response.data)
+          await Swal.fire({
+            title: '로그인에 실패했습니다',
+            text:'아이디 또는 비밀번호를 확인하세요',
+            icon: 'error',
+            showConfirmButton: false,
+            timer: 1500
+          })
         }
       }
     )
@@ -73,10 +83,14 @@ const Login = () => {
   const google = async (credentialResponse) => {
     axios.defaults.withCredentials = true;
     await axios.post("/google/login", credentialResponse)
-        .then((response)=>{
+        .then(async (response)=>{
           if (response.data.isSuccess === true) {
-            window.alert(response.data.message);
-            console.log("로그인 성공 결과: ",response.data)
+            await Swal.fire({
+              title: '로그인에 성공했습니다',
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 2000
+            })
             localStorage.setItem("bearer", response.data.result.jwt);
             if (response.data.result.profileImageURL)
               localStorage.setItem("profile_image", response.data.result.profileImageURL)
@@ -84,8 +98,13 @@ const Login = () => {
             window.location.replace("/admin/sms")
             return response.data.code;
           } else{
-            window.alert(response.data.message);
-            console.log("로그인 실패 결과: ",response.data)
+            await Swal.fire({
+              title: '로그인에 실패했습니다',
+              text:'구글 계정으로 회원가입하세요',
+              icon: 'error',
+              showConfirmButton: false,
+              timer: 2000
+            })
           }
          }
         )

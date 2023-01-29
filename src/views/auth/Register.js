@@ -1,22 +1,3 @@
-/*!
-
-=========================================================
-* Argon Dashboard React - v1.2.2
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/argon-dashboard-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/argon-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-
-// reactstrap components
 import React from "react";
 import classnames from "classnames";
 import { Card, CardHeader, CardBody, Col, Nav, NavItem, NavLink, TabContent, TabPane, Button} from "reactstrap";
@@ -24,6 +5,7 @@ import RegMember from "./RegMember";
 import RegCompany from "./RegCompany";
 import axios from "axios";
 import {GoogleLogin, GoogleOAuthProvider} from "@react-oauth/google";
+import Swal from 'sweetalert2'
 
 class Register extends React.Component {
 
@@ -119,8 +101,6 @@ class Register extends React.Component {
                     </TabContent>
                   </CardBody>
                 </Card>
-
-
               </CardBody>
             </Card>
           </Col>

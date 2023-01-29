@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import { Modal, Button, Col, Form, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Row, Label} from "reactstrap";
 import axios from "axios";
+import Swal from 'sweetalert2'
 
 const RegCompany = (props) => {
     const regUrl = props.gmail == null ? "/register" : "/google/register"
@@ -81,19 +82,69 @@ const RegCompany = (props) => {
             "memberType" : "COMPANY",
             "loginType" : props.gmail == null ? "DEFAULT" : "GOOGLE"
         }
-        props.gmail == null && companyEmail == null ? window.alert("이메일을 입력하세요") :
-            props.gmail == null && companyPassword1 == null ? window.alert("비밀번호를 입력하세요") :
-                props.gmail == null && companyPassword1 != companyPassword2 ? window.alert("비밀번호가 일치하지 않습니다") :
-                    companyManager == null ? window.alert("이름을 입력하세요") :
-                        companyPhone == null ? window.alert("휴대폰 번호를 입력하세요") :
-                            !companyPhoneCheck ? window.alert("휴대폰 번호를 인증하세요") :
-                                companyName == null ? window.alert("회사 이름을 입력하세요") :
-                                    companyBsnum == null ? window.alert("사업자 번호를 입력하세요") :
-                                        !companyBsnumCheck ? window.alert("사업자 번호를 인증하세요") :
+        props.gmail == null && companyEmail == null ? await Swal.fire({
+            title: '이메일을 입력하세요',
+            icon: 'warning',
+            showConfirmButton: false,
+            timer: 1500
+          }) :
+            props.gmail == null && companyPassword1 == null ? await Swal.fire({
+                title: '비밀번호를 입력하세요',
+                icon: 'warning',
+                showConfirmButton: false,
+                timer: 1500
+              }) :
+                props.gmail == null && companyPassword1 != companyPassword2 ? await Swal.fire({
+                    title: '비밀번호가 일치하지 않습니다',
+                    icon: 'warning',
+                    showConfirmButton: false,
+                    timer: 1500
+                  }) :
+                    companyManager == null ? await Swal.fire({
+                        title: '이름을 입력하세요',
+                        icon: 'warning',
+                        showConfirmButton: false,
+                        timer: 1500
+                      }) :
+                        companyPhone == null ? await Swal.fire({
+                            title: '휴대폰 번호를 입력하세요',
+                            icon: 'warning',
+                            showConfirmButton: false,
+                            timer: 1500
+                          }) :
+                            !companyPhoneCheck ? await Swal.fire({
+                                title: '휴대폰 번호를 인증하세요',
+                                icon: 'warning',
+                                showConfirmButton: false,
+                                timer: 1500
+                              }) :
+                                companyName == null ? await Swal.fire({
+                                    title: '회사이름을 입력하세요',
+                                    icon: 'warning',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                  }) :
+                                    companyBsnum == null ? await Swal.fire({
+                                        title: '사업자번호를 입력하세요',
+                                        icon: 'warning',
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                      }) :
+                                        !companyBsnumCheck ? await Swal.fire({
+                                            title: '사업자번호를 인증하세요',
+                                            icon: 'warning',
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                          }) :
                                         await axios.post(regUrl, companyRegisterReq)
-                                            .then((response) => {
+                                            .then(async(response) => {
                                                 if (response.data.isSuccess == true) {
-                                                    window.alert(response.data.message)
+                                                    await Swal.fire({
+                                                        title: '회원가입에 실패했습니다',
+                                                        icon: 'error',
+                                                        showConfirmButton: false,
+                                                        timer: 1500
+                                                      })
                                                     window.location.replace("/auth/login")
                                                 } else {
                                                     window.alert(response.data.message)

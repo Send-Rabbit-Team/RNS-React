@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import { Modal, Button, Col, Form, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Row, Label} from "reactstrap";
 import axios from "axios";
+import Swal from 'sweetalert2'
 
 const RegMember = (props) => {
     const regUrl = props.gmail == null ? "/register" : "/google/register"
@@ -59,19 +60,59 @@ const RegMember = (props) => {
             "memberType" : "PERSON",
             "loginType" : props.gmail == null ? "DEFAULT" : "GOOGLE"
         }
-        props.gmail == null && memberEmail == null ? window.alert("이메일을 입력하세요") :
-            props.gmail == null && memberPassword1 == null ? window.alert("비밀번호를 입력하세요") :
-                props.gmail == null && memberPassword1 != memberPassword2 ? window.alert("비밀번호가 일치하지 않습니다") :
-                    memberName == null ? window.alert("이름을 입력하세요") :
-                        memberPhone == null ? window.alert("휴대폰 번호를 입력하세요") :
-                            !memberPhoneCheck ? window.alert("휴대폰 번호를 인증하세요") :
+        props.gmail == null && memberEmail == null ? await Swal.fire({
+            title: '이메일을 입력하세요',
+            icon: 'warning',
+            showConfirmButton: false,
+            timer: 1500
+          }) :
+            props.gmail == null && memberPassword1 == null ? await Swal.fire({
+                title: '비밀번호를 입력하세요',
+                icon: 'warning',
+                showConfirmButton: false,
+                timer: 1500
+              }) :
+                props.gmail == null && memberPassword1 != memberPassword2 ? await Swal.fire({
+                    title: '비밀번호가 일치하지 않습니다',
+                    icon: 'warning',
+                    showConfirmButton: false,
+                    timer: 1500
+                  }) :
+                    memberName == null ? await Swal.fire({
+                        title: '이름을 입력하세요',
+                        icon: 'warning',
+                        showConfirmButton: false,
+                        timer: 1500
+                      }) :
+                        memberPhone == null ? await Swal.fire({
+                            title: '휴대폰 번호를 입력하세요',
+                            icon: 'warning',
+                            showConfirmButton: false,
+                            timer: 1500
+                          }) :
+                            !memberPhoneCheck ? await Swal.fire({
+                                title: '휴대폰 번호를 인증하세요',
+                                icon: 'warning',
+                                showConfirmButton: false,
+                                timer: 1500
+                              }) :
                                 await axios.post(regUrl, memberRegisterReq)
-                                    .then((response) => {
+                                    .then(async(response) => {
                                         if (response.data.isSuccess == true) {
-                                            window.alert(response.data.message)
+                                            await Swal.fire({
+                                                title: '회원가입에 성공했습니다',
+                                                icon: 'success',
+                                                showConfirmButton: false,
+                                                timer: 1500
+                                              })
                                             window.location.replace("/auth/login")
                                         } else {
-                                            window.alert(response.data.message)
+                                            await Swal.fire({
+                                                title: '회원가입에 실패했습니다',
+                                                icon: 'error',
+                                                showConfirmButton: false,
+                                                timer: 1500
+                                              })
                                         }
                                     }).catch((error) => {
                                         window.alert(error.response.data.message)

@@ -19,6 +19,7 @@ import Header from "components/Headers/Header.js";
 import React, {useState,useEffect} from "react";
 import { useParams } from 'react-router-dom';
 import axios from "axios";
+import Swal from 'sweetalert2'
 
 
 const ContactNumber = () => {
@@ -189,21 +190,29 @@ const ContactNumber = () => {
 
   // 연락처 삭제 메소드
   const deleteContactNumber = async (ContactNumberId) => {
-    if (window.confirm("정말 삭제하시겠습니까?")) {
-      await axios.patch(`/contact/delete/${ContactNumberId}`)
-          .then((response) => {
+    Swal.fire({
+      title: "연락처를 삭제하시겠습니까?",
+      text:'연락처 삭제시 복구가 불가능합니다',
+      icon:'question',
+      showDenyButton: true,
+      confirmButtonText: '네',
+      denyButtonText: `아니요`,
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        await axios.patch(`/contact/delete/${ContactNumberId}`)
+          .then(async(response) => {
             if (response.data.isSuccess) {
-              window.alert(response.data.message)
+              await Swal.fire({title:'연락처가 삭제되었습니다', icon: 'success'})
               window.location.replace("/admin/contact/1")
             } else {
-              window.alert(response.data.message)
+              await Swal.fire({title:'연락처를 삭제하는데 실패했습니다', icon: 'error'})
             }
           })
           .catch((error) => {
             window.alert(error.response.data.message)
           })
-    }
-
+      }
+    })
   }
 
   // 그룹 정보 불러오기
@@ -212,10 +221,8 @@ const ContactNumber = () => {
     .then(
       (response)=>{
         if (response.data.isSuccess){
-          console.log('그룹 정보 받아오기 성공: ',response.data);
           setEditGroupName(response.data.result.name);
         } else{
-          console.log('그룹 정보 받아오기 실패: ', response.data);
         }
       }
     )
@@ -228,14 +235,12 @@ const ContactNumber = () => {
     .then(
       (response) => {
       if (response.data.isSuccess) {
-        console.log('연락처 정보 받아오기 성공: ',response.data)
         setEditContactId(ContactNumberId)
         setEditPhoneNumber(response.data.result.phoneNumber);
         setEditGroupId(response.data.result.groupId);
         getGroupInfo(response.data.result.groupId);
         setEditMemo(response.data.result.memo);
       } else {
-        console.log('연락처 정보 받아오기 실패: ',response.data)
       }})
       // Modal 활성화
       setEditModal(true);
@@ -243,29 +248,55 @@ const ContactNumber = () => {
 
   // 연락처 수정 메소드
   const editContactNumber = async () => {
-    console.log('editGroupId: ',editGroupId)
-    editPhoneNumber == null ?  window.alert("전화번호를 입력하세요") :
-          console.log('editContactId: ',editContactId)
+    await Swal.fire({
+      title: "연락처를 수정하시겠습니까?",
+      icon:'question',
+      showDenyButton: true,
+      confirmButtonText: '네',
+      denyButtonText: `아니요`,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        editPhoneNumber == null ? Swal.fire({
+          title: "전화번호를 입력하세요",
+          icon: 'warning',
+          showConfirmButton: false,
+          timer: 1000
+        }) :
           await axios.patch("/contact/edit", {
             "contactId": editContactId,
             "contactGroupId": editGroupId,
             "phoneNumber" : editPhoneNumber,
             "memo" : editMemo,
           })
-          .then((response) => {
+          .then(async(response) => {
             if (response.data.isSuccess) {
-              window.alert('연락처를 수정했습니다.')
-
-
+              await Swal.fire({
+                title: '연락처를 수정했습니다',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 1000
+              })
               window.location.reload()
             } else {
-              window.alert('연락처를 수정하는데 실패했습니다.')
+              await Swal.fire({
+                title: '연락처를 수정하는데 실패했습니다',
+                icon: 'error',
+                showConfirmButton: false,
+                timer: 1000
+              })
             }
           })
-          .catch((error) => {
-            console.log(error)
+          .catch(async(error) => {
+            await Swal.fire({
+              title: '연락처를 수정했습니다',
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 1000
+            })
             window.location.reload()
           })
+      }
+    })
   }
 
 
