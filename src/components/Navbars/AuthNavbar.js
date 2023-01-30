@@ -35,7 +35,7 @@ const AdminNavbar = () => {
                   <Link to="/">
                     <img
                       alt="..."
-                      src={require("../../assets/img/brand/argon-react.png")}
+                      src={require("../../assets/img/brand/RNS.png")}
                     />
                   </Link>
                 </Col>
@@ -49,37 +49,40 @@ const AdminNavbar = () => {
             </div>
             <Nav className="ml-auto" navbar>
               <NavItem>
-                <NavLink className="nav-link-icon" to="/admin/index" tag={Link}>
+                <NavLink className="nav-link-icon" to="/onboarding/index" tag={Link}>
                   <i className="ni ni-chart-pie-35" />
                   <span className="nav-link-inner--text">대시보드</span>
                 </NavLink>
               </NavItem>
-              <NavItem>
-                <NavLink
-                  className="nav-link-icon"
-                  to="/auth/register"
-                  tag={Link}
-                >
-                  <i className="ni ni-circle-08" />
-                  <span className="nav-link-inner--text">회원가입</span>
-                </NavLink>
-              </NavItem>
+              {token==null ? (
+                <NavItem>
+                  <NavLink
+                    className="nav-link-icon"
+                    to="/auth/register"
+                    tag={Link}
+                  >
+                    <i className="ni ni-circle-08" />
+                    <span className="nav-link-inner--text">회원가입</span>
+                  </NavLink>
+                </NavItem>
+              ) : (
+                  <NavItem>
+                    <NavLink
+                        className="nav-link-icon"
+                        to="/admin/user-profile"
+                        tag={Link}
+                    >
+                      <i className="ni ni-single-02" />
+                      <span className="nav-link-inner--text">마이페이지</span>
+                    </NavLink>
+                  </NavItem>
+              )}
               <NavItem>
                 <NavLink className="nav-link-icon" to="/auth/login" tag={Link}>
                   <i className="ni ni-key-25" />
                   {token!=null?
                   <span className="nav-link-inner--text">로그아웃</span>:
                   <span className="nav-link-inner--text">로그인</span>}
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  className="nav-link-icon"
-                  to="/admin/user-profile"
-                  tag={Link}
-                >
-                  <i className="ni ni-single-02" />
-                  <span className="nav-link-inner--text">마이페이지</span>
                 </NavLink>
               </NavItem>
             </Nav>

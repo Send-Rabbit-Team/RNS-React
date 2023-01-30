@@ -35,7 +35,7 @@ const Login = () => {
   const GoogleLoginInfo = {
     email: email
   }
-  
+
   if(localStorage.getItem("bearer") != null){
     localStorage.clear()
     window.location.reload();
@@ -52,7 +52,8 @@ const Login = () => {
             timer: 1500
           })
           localStorage.setItem("bearer", response.data.result.jwt);
-          localStorage.setItem("profile_image", response.data.result.profileImage);
+          if (response.data.result.profileImageURL)
+            localStorage.setItem("profile_image", response.data.result.profileImageURL)
           localStorage.setItem("name", response.data.result.name);
 
           setAuthorizationToken(response.data.result.jwt);
@@ -60,7 +61,7 @@ const Login = () => {
           // Redux활용 코드:
           // console.log('디코딩된 토큰(회원정보): ',jwt.decode(response.data.result.jwt))
 
-          window.location.replace("/admin/index")
+          window.location.replace("/admin/sms")
           return response.data.code;
         } else{
           await Swal.fire({
@@ -91,7 +92,10 @@ const Login = () => {
               timer: 2000
             })
             localStorage.setItem("bearer", response.data.result.jwt);
-            window.location.replace("/admin/index")
+            if (response.data.result.profileImageURL)
+              localStorage.setItem("profile_image", response.data.result.profileImageURL)
+            localStorage.setItem("name", response.data.result.name);
+            window.location.replace("/admin/sms")
             return response.data.code;
           } else{
             await Swal.fire({

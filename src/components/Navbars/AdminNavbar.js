@@ -20,12 +20,13 @@ import {
 
 const AdminNavbar = (props) => {
   const profile_image = localStorage.getItem("profile_image")
+  const default_image = require("../../assets/img/theme/rabbit-user2.png")
   const name = localStorage.getItem("name")
 
-  
+
   // const logout = ()=>{
   //   return(
-      
+
   //   )
   // }
 
@@ -39,18 +40,7 @@ const AdminNavbar = (props) => {
           >
             {props.brandText}
           </Link>
-          <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
-            <FormGroup className="mb-0">
-              <InputGroup className="input-group-alternative">
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>
-                    <i className="fas fa-search" />
-                  </InputGroupText>
-                </InputGroupAddon>
-                <Input placeholder="Search" type="text" />
-              </InputGroup>
-            </FormGroup>
-          </Form>
+
           <Nav className="align-items-center d-none d-md-flex" navbar>
             <UncontrolledDropdown nav>
               <DropdownToggle className="pr-0" nav>
@@ -58,7 +48,7 @@ const AdminNavbar = (props) => {
                   <span className="avatar avatar-sm rounded-circle">
                     <img
                       alt="..."
-                      src={profile_image}
+                      src={profile_image ? profile_image : default_image}
                     />
                   </span>
                   <Media className="ml-2 d-none d-lg-block">
