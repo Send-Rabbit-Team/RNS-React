@@ -50,6 +50,7 @@ const ImageUpload = (props) => {
                     <div className="custom-file m-1">
                         <input
                             multiple
+                            accept="image/*"
                             className=" custom-file-input"
                             type="file"
                             onChange={handleChangeFile}
