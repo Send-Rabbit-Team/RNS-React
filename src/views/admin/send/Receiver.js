@@ -30,7 +30,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
   const [selectContactList, setSelectContactList] = useState([]);
   const [selectContactGroupList, setSelectContactGroupList] = useState([]);
 
- 
+
 
   const [ContactNumberList, setContactNumberList] = useState([])
   const [contactGroupList, setContactGroupList] = useState([])
@@ -106,7 +106,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
 
     return false;
   });
-  
+
 
   // 컴포넌트
   const searchContactListComponent = searchContactNumber.map((searchContactNumber, index) => (
@@ -115,8 +115,8 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
       <td>{makeHyphen(searchContactNumber.phoneNumber)}</td>
       {
         isFoundContact(searchContactNumber.phoneNumber)==false?
-        <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactHandler(searchContactNumber)} /></a></td>:
-        <td><a href="#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactHandler(searchContactNumber)} /></a></td>
+        <td><a href="views/admin/send/Receiver#"><i className="fas fa-plus" onClick={(e) => onSelectContactHandler(searchContactNumber)} /></a></td>:
+        <td><a href="views/admin/send/Receiver#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactHandler(searchContactNumber)} /></a></td>
       }
     </tr>
   )
@@ -127,8 +127,8 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
       <td>{searchContactGroup.name}</td>
       {
         isFoundContactGroup(searchContactGroup.name)==false?
-        <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactGroupHandler(searchContactGroup)} /></a></td>:
-        <td><a href="#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactGroupHandler(searchContactGroup)} /></a></td>
+        <td><a href="views/admin/send/Receiver#"><i className="fas fa-plus" onClick={(e) => onSelectContactGroupHandler(searchContactGroup)} /></a></td>:
+        <td><a href="views/admin/send/Receiver#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactGroupHandler(searchContactGroup)} /></a></td>
       }
     </tr>
   )
@@ -140,13 +140,13 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
         <td>{contactGroup.name}</td>
         {
           isFoundContactGroup(contactGroup.name)==false?
-          <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactGroupHandler(contactGroup)} /></a></td>:
-          <td><a href="#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactGroupHandler(contactGroup)} /></a></td>
+          <td><a href="views/admin/send/Receiver#"><i className="fas fa-plus" onClick={(e) => onSelectContactGroupHandler(contactGroup)} /></a></td>:
+          <td><a href="views/admin/send/Receiver#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactGroupHandler(contactGroup)} /></a></td>
         }
       </tr>)
   })
 
-  
+
 
   const contactNumberListComponent = ContactNumberList.map((contactNumber, index) => (
     // console.log(contactNumber),
@@ -155,8 +155,8 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
       <td>{makeHyphen(contactNumber.phoneNumber)}</td>
       {
         isFoundContact(contactNumber.phoneNumber)==false?
-        <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactHandler(contactNumber)} /></a></td>:
-        <td><a href="#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactHandler(contactNumber)} /></a></td>
+        <td><a href="views/admin/send/Receiver#"><i className="fas fa-plus" onClick={(e) => onSelectContactHandler(contactNumber)} /></a></td>:
+        <td><a href="views/admin/send/Receiver#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactHandler(contactNumber)} /></a></td>
       }
     </tr>
   )
@@ -256,7 +256,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
           <span aria-hidden={true}>×</span>
         </div>
 
-        
+
         <Row style={{
           display: "flex",
           flexDirection: "Row"
@@ -296,8 +296,8 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
                   </Table>
 
                 <Table className="align-items-center table-flush" responsive>
-                 
-           
+
+
                   <tbody style={{overflowY: "scroll"}}>
                     {contactfilter == true ? searchContactListComponent : contactNumberListComponent}
                   </tbody>
@@ -324,7 +324,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
                         <Input
                           placeholder="그룹 검색하기"
                           type="text"
-                          onChange={(e) => {searchContactGroupController(e.target.value)}} 
+                          onChange={(e) => {searchContactGroupController(e.target.value)}}
                           value={searchContactGroupInput}
                           onCh />
                       </InputGroup>
@@ -340,9 +340,9 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
                   </thead>
                   </Table>
                 <Table className="align-items-center table-flush" responsive>
-               
+
                   <tbody style={{overflowY: "scroll"}}>
-                  {contactGroupFilter == true ? searchContactGroupListComponent : contactGroupListComponent} 
+                  {contactGroupFilter == true ? searchContactGroupListComponent : contactGroupListComponent}
                   </tbody>
                 </Table>
               </Card >
@@ -380,9 +380,9 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
               완료
             </Button>
           </div>
-          
+
         </Row>
-        
+
 
 
       </Modal> : null

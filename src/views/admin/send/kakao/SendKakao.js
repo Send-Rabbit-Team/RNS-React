@@ -10,26 +10,23 @@ import {
   Input,
   FormGroup,
   Badge,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
 } from "reactstrap";
 import Header from "components/Headers/Header.js";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import MessageRule from './modal/MessageRule'
-import Receiver from "./modal/Receiver";
-import SMSTemplateModal from "./modal/SMSTemplateModal";
-import ImageUpload from "./modal/ImageUpload";
+import 'react-chat-elements/dist/main.css'
+import Receiver from "../Receiver";
+import KakaoTemplateModal from "./KakaoTemplateModal";
+import KakaoImageUpload from "./KakaoImageUpload";
 import {Image} from "react-bootstrap";
-import MessageSchedule from "./modal/MessageSchedule";
-import iphone from '../../assets/img/brand/iphone.jpg';
+import MessageSchedule from "../MessageSchedule";
+import iphonekakao from '../../../../assets/img/brand/iphonekakao.png';
 import { ChatBubble, Message } from 'react-chat-ui';
-import styled from "styled-components";
-import Swal from 'sweetalert2'
+import KakaoMessageRule from "./KakaoMessageRule";
+import Swal from "sweetalert2";
 
-const SendSms = () => {
+const SendKakao = () => {
+  var memberType = localStorage.getItem("member_type")
 
   // Modal
   const useModalMessageRule = () => {
@@ -100,14 +97,9 @@ const SendSms = () => {
 
   // 발신자 번호 변수
   const [senderNumber, setSenderNumber] = useState();
-  const [blockNumber, setBlockNumber] = useState();
   const [senderMemo, setSenderMemo] = useState();
 
   // 수신자 모달 -> 메인페이지 데이타 전달
-  const [ContactNumberList, setContactNumberList] = useState([])
-  const [contactGroupList, setContactGroupList] = useState([])
-  const [selectIdList, setSelectIdList] = useState([]);
-  const [selectNameList, setSelectNameList] = useState([]);
   const [selectContactList, setSelectContactList] = useState([]);
   const [selectContactGroupList, setSelectContactGroupList] = useState([]);
 
@@ -119,9 +111,12 @@ const SendSms = () => {
   }
 
   // 이미지 모달 -> 메인페이지 데이터 전달
-  const [selectImage, setSelectImage] = useState([]);
+  const [selectImage, setSelectImage] = useState(null);
   const getSelectImage = (data) => {
-    setSelectImage([...data])
+    setSelectImage(data)
+  }
+  const removeSelectImage = () => {
+    setSelectImage(null)
   }
 
   // 예약발송 모달 -> 메인페이지 데이터 전달
@@ -140,21 +135,15 @@ const SendSms = () => {
   }
 
   // 미리보기화면
-  const [messageContext, setMessageContext] = useState("")
   const [messageTitle, setMessageTitle] = useState("")
-  const [isBlock, setIsBlock] = useState(false);
-  const [isTitle, setIstitle] = useState(false);
+  const [messageSubtitle, setMessageSubtitle] = useState("")
+  const [messageContext, setMessageContext] = useState("")
+  const [messageDescription, setMessageDescription] = useState("")
+  const [buttonTitle, setButtonTitle] = useState("")
+  const [buttonUrl, setButtonUrl] = useState("")
+  const [buttonType, setButtonType] = useState("")
+
   const [message, setMessage] = useState("");
-  const IphoneTime = ()=>{
-    let now = new Date();
-    let hour = now.getHours();
-    let hourMod = hour<=12?hour:hour-12
-    let min = now.getMinutes();
-    console.log(hour)
-    let PA = now.getHours() < 12 ? "오전" : "오후";
-    return PA+' '+hourMod+'시 '+min+'분'
-  }
-  
 
   var messageInput = new Message({
     id: 1,
@@ -169,39 +158,23 @@ const SendSms = () => {
     });
   },[message])
 
-  // CSS
-  const BlockCss = styled.text`
-  font-size: 13px;
-  color: blue;
-  border:0px;
-  background: #e5e5e6;
-  text-decoration: underline;
-  `;
-  const TitleCss = styled.text`
-  font-size: 14px;
-  font-weight:bold;
-  background: #e5e5e6;
-  border:0px;
-  `;
+   const ButtonCss = {
+    width:"100%",
+    padding:"8px 12px",
+    borderRadius:5,
+    fontSize:14,
+    fontWeight:500,
+    lineWeight:1.5,
+    backgroundColor:'#f5f5f5',
+    position:'relative'
+   }
 
-  const BodyCss = styled.text`
-  font-size: 13px;
-  background: #e5e5e6;
-  border:0px;
-  `;
+   const ImageCss = {
+    width:"125%",
+    paddingRight:40,
+    marginLeft:-14,
+   }
 
-  // 미리보기 메시지 내용
-  const messageWithBlockNumber = <>{messageContext}<br/><br/>무료수신거부: <BlockCss>{blockNumber}</BlockCss></>
-  const messageWithTitle = <><TitleCss>{messageTitle}</TitleCss><br/><BodyCss>{messageContext}</BodyCss></>
-  const messageWithBlockerNumberAndTitle = <><TitleCss>{messageTitle}</TitleCss><br/><BodyCss>{messageContext}</BodyCss><br/><br/>무료수신거부:<BlockCss>{blockNumber}</BlockCss></>
-
-  // 메시지 타입 지정
-  const [messageType, setMessageType] = useState()
-  useEffect(() => {
-    selectImage.length != 0 ? setMessageType("MMS") :
-        messageByte > 80 ?
-            setMessageType("LMS") : setMessageType("SMS")
-  });
 
   // 메시지 바이트 변환
   const [messageByte, setMessageByte] = useState()
@@ -216,8 +189,10 @@ const SendSms = () => {
       else if( c.indexOf("%")!=-1 ) l += c.length/3;
     }
 
-    isBlock ? setMessageByte(l+29) : setMessageByte(l)
+    buttonTitle && buttonUrl && buttonType ? setMessageByte(l+29) : setMessageByte(l)
   });
+
+
 
   // SenderNumber 불러오기
   const [senderNumberList, setSenderNumberList] = useState([]);
@@ -226,35 +201,40 @@ const SendSms = () => {
       .then((response) => {
         if (response.data.isSuccess) {
           setSenderNumberList(response.data.result)
+        } else {
+          window.alert(response.data.message)
         }
       })
       .catch((error) => {
-        // 에러핸들링
+        window.alert(error.response.data.message)
       })
   })
 
   // 메시지 전송
   const sendMessage = async()=>{
-    await axios.post('/message/send',{
-      "message":{
+
+    await axios.post('/message/send/kakao',{
+      "kakaoMessageDto":{
         "from": senderMemo,
-        "subject": messageTitle, // 예나가 주제를 구현하고 추가하는 부분
+        "title": messageTitle,
+        "subtitle": messageSubtitle,
         "content": messageContext,
-        "image": selectImage,
-        "messageType":"SMS"
+        "description":messageDescription,
+        "image":selectImage,
+        "kakaoButtonDtoList":[
+          {
+            buttonTitle: buttonTitle,
+            buttonType:buttonType,
+            buttonUrl: buttonUrl
+          }
+        ]
       },
-      "count":10000,
       "senderNumber":senderNumber,
       "receivers":selectContactList.map(contact=>contact.phoneNumber)
     }).then((response) => {
         if (response.data.isSuccess) {
           console.log("시간: ",response)
-          Swal.fire({
-            title: '메시지를 전송했습니다',
-            icon: 'success',
-            showConfirmButton: false,
-            timer: 1000
-          })
+          window.alert(response.data.message)
         } else {
           window.alert(response.data.message)
         }
@@ -278,41 +258,81 @@ const SendSms = () => {
   // 미리보기 출력 텍스트
   useEffect(()=>
   {
-    if(isBlock && isTitle){
-      setMessage(messageWithBlockerNumberAndTitle)
-    } else if(isBlock){
-      setMessage(messageWithBlockNumber)
-    } else if(isTitle){
-      setMessage(messageWithTitle)
-    } else {
-      setMessage(messageContext)}
-  }
-  ,[messageTitle,isBlock,messageContext])
+    let kakaoMessage =
+        <body style={{margin: 0}}>
 
-  const onChangeTitleHandler=(v)=> {
-    if(isTitle){
-      setMessageTitle(v)
-    } else {
-      setIstitle(true)
-      setMessageTitle(v)
-    }
+        {selectImage ? (
+            <>
+              <Image src={selectImage} style={ImageCss}></Image>
+              <br/>
+              <br/>
+            </>
+        ) : null}
+
+        {messageTitle ? (
+            <h2>{messageTitle}</h2>
+        ) : null}
+
+        {messageSubtitle ? (
+            <>
+              <h5 className="text-muted">{messageSubtitle}</h5>
+            </>
+        ) : null}
+
+        <p style={{fontSize:"14px"}}>{messageContext}</p>
+
+        {messageDescription ? (
+            <>
+              <small className="text-muted">{messageDescription}</small>
+              <br/>
+            </>
+        ) : null}
+
+        {buttonUrl && buttonTitle && buttonType ? (
+            <Button style={ButtonCss} href={buttonUrl} className="mt-3 mb-3">{buttonTitle}</Button>
+        ) : null}
+
+        </body>
+
+      setMessage(kakaoMessage)
+  }, [selectImage, messageTitle, messageSubtitle, messageContext, messageDescription, buttonUrl, buttonTitle, buttonType])
+
+
+
+
+  const redirect=async()=>{
+    await Swal.fire({
+      title: '기업 회원만 이용 가능합니다',
+      text:'기업 아이디로 로그인 하세요',
+      icon: 'error',
+      showConfirmButton: false,
+      timer: 3000
+    } )
+    window.location.replace("/admin/sms")
   }
 
+  if (memberType === "COMPANY" )
   return (
     <>
       {/* 발송 설정 모달 */}
-      <MessageRule isShowingMessageRule={isShowingMessageRule} hide={toggleMessageRule} />
-      <SMSTemplateModal
+      <KakaoMessageRule isShowingMessageRule={isShowingMessageRule} hide={toggleMessageRule} />
+      <KakaoTemplateModal
           isShowingTemplate={isShowingTemplate}
           hide={toggleTemplate}
-          selectTemplate={selectTemplate}
-          setSelectTemplate={getSelectTemplate}
+          setMessageTitle={setMessageTitle}
+          setMessageSubtitle={setMessageSubtitle}
+          setMessageContext={setMessageContext}
+          setMessageDescription={setMessageDescription}
+          setButtonTitle={setButtonTitle}
+          setButtonUrl={setButtonUrl}
+          setButtonType={setButtonType}
       />
-      <ImageUpload
+      <KakaoImageUpload
           isShowingImageUpload={isShowingImageUpload}
           hide={toggleImageUpload}
           selectImage={selectImage}
           setSelectImage={getSelectImage}
+          removeSelectImage={removeSelectImage}
       />
       <Receiver
         isShowingReceiver={isShowingReceiver}
@@ -337,91 +357,60 @@ const SendSms = () => {
               <CardHeader className="border-0">
                 <Row>
                   <Col>
-                    <h3 className="mb-0" style={{ paddingTop: 10 }}>SMS 발송 &nbsp;&nbsp;
+                    <h3 className="mb-0" style={{ paddingTop: 10 }}>알림톡 발송 &nbsp;&nbsp;
                     </h3>
                   </Col>
                 </Row>
               </CardHeader>
 
               <CardFooter className="py-3" >
-                <Row >
-                  <Col sm="10">
+                <Row>
                     <div className="d-flex justify-content-between" style={{ paddingBottom: 20, flexDirection: "row" }} align="center" >
-                      <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleImageUpload()}>
 
-                        <span className="btn-inner--icon">
-                          <i className="ni ni-album-2" />
-                        </span>
-                        <span className="btn-inner--text">사진</span>
-                      </Button>
-
-                      {/*발신자 드롭다운*/}
-                      <UncontrolledDropdown>
-                        <DropdownToggle
-                          size="lg"
-                          caret
-                          color="secondary"
-                          type="button"
-                          style={{ width: 150, height: 60, fontSize: 16 }}
-                        >
+                      <Col sm="3">
+                        <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleImageUpload()}>
                           <span className="btn-inner--icon">
-                            <i className="fas fa-phone" />
+                            <i className="ni ni-album-2" />
                           </span>
-                        <span className="btn-inner--text">발신자</span>
-                        </DropdownToggle>
+                          <span className="btn-inner--text">사진</span>
+                        </Button>
+                      </Col>
 
-                        <DropdownMenu aria-labelledby="dropdownMenuButton">
-                          {senderNumberList.map(sn => (
-                            <DropdownItem onClick={(e) => {
-                              setSenderMemo(sn.memo)
-                              setSenderNumber(sn.phoneNumber)
-                              setBlockNumber(sn.blockNumber)
-                            }}>
-                              {"[" + sn.memo + "] " + makeHyphen(sn.phoneNumber)}
-                            </DropdownItem>
-                          ))}
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
-
-                      <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => {
-                        blockNumber == null ? Swal.fire({
-                          title: '발신번호를 선택하세요',
-                          icon: 'warning',
-                          showConfirmButton: false,
-                          timer: 1000
-                        })  :
-                        isBlock == true ? setIsBlock(false) : setIsBlock(true)
-                      }}>
+                      <Col sm="3">
+                        <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleTemplate()}>
                         <span className="btn-inner--icon">
-                          <i className="ni ni-tag" />
-                        </span>
-                        <span className="btn-inner--text">수신거부</span>
-                      </Button>
-                      <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleTemplate()}>
-                      <span className="btn-inner--icon">
-                          <i className="ni ni-caps-small" />
-                        </span>
-                        <span className="btn-inner--text">템플릿</span>
-                      </Button>
-                      <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleMessageRule()}>
-                      <span className="btn-inner--icon">
-                          <i className="ni ni-time-alarm" />
-                        </span>
-                        <span className="btn-inner--text">발송설정</span>
-                      </Button>
-                      <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleReceiver()}>
-                      <span className="btn-inner--icon">
-                          <i className="ni ni-circle-08" />
-                        </span>
-                        <span className="btn-inner--text">수신자</span>
-                      </Button>
+                            <i className="ni ni-caps-small" />
+                          </span>
+                          <span className="btn-inner--text">템플릿</span>
+                        </Button>
+                      </Col>
+
+                      <Col sm="3">
+                        <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleMessageRule()}>
+                        <span className="btn-inner--icon">
+                            <i className="ni ni-time-alarm" />
+                          </span>
+                          <span className="btn-inner--text">발송설정</span>
+                        </Button>
+                      </Col>
+
+                      <Col sm="3">
+                        <Button color="secondary" size="lg" type="button" style={{ width: 150, height: 60, fontSize: 16 }} onClick={(e) => toggleReceiver()}>
+                        <span className="btn-inner--icon">
+                            <i className="ni ni-circle-08" />
+                          </span>
+                          <span className="btn-inner--text">수신자</span>
+                        </Button>
+                      </Col>
+
                     </div>
-                  </Col>
+                </Row>
 
 
-
+                <Row>
                   <Col sm="6">
                     <CardBody style={{ boxShadow: '1px 2px 9px #8c8c8c' }}>
+
                       <FormGroup>
                         <label className="form-control-label">
                           발신자
@@ -432,6 +421,7 @@ const SendSms = () => {
                           </Row>
                         </Container>
                       </FormGroup>
+
                       <FormGroup>
                         <label className="form-control-label">
                           수신자
@@ -449,76 +439,131 @@ const SendSms = () => {
                           </Row>
                         </Container>
                       </FormGroup>
+
                       <FormGroup>
                         <label className="form-control-label">
                           첨부 이미지
                         </label>
                         <Container>
                           <Row>
-                            {selectImage.map((item, index) => (
-                                <div className="col-sm-3" key={index}>
+                            {selectImage ? (
+                                <div className="col-sm-3">
                                   <Image className="d-block w-100 m-1"
-                                       src={item}/>
+                                         src={selectImage}/>
                                 </div>
-                            ))}
+                                ) : null }
                           </Row>
                         </Container>
                       </FormGroup>
+
                       <FormGroup>
                         <label className="form-control-label">
-                          제목
+                          알림톡 제목
                         </label>
                         <Input
-                            // style={{fontWeight:"bold",color:"red"}}
-                            value={messageTitle}
-                            rows="1"
-                            type="textarea"
-                            onChange={(e)=>{onChangeTitleHandler(e.target.value)}}
+                            defaultValue={messageTitle}
+                            type="text"
+                            onChange={(e)=>{setMessageTitle(e.target.value)}}
                         ></Input>
                       </FormGroup>
+
+
                       <FormGroup>
                         <label className="form-control-label">
-                          메시지 내용
+                          알림톡 소제목
                         </label>
                         <Input
-                            value={messageContext}
+                            defaultValue={messageSubtitle}
+                            type="text"
+                            onChange={(e)=>{setMessageSubtitle(e.target.value)}}
+                        ></Input>
+                      </FormGroup>
+
+                      <FormGroup>
+                        <label className="form-control-label">
+                          알림톡 내용
+                        </label>
+                        <Input
+                            defaultValue={messageContext}
                             rows="5"
                             type="textarea"
                             onChange={(e)=>{setMessageContext(e.target.value)}}
                         ></Input>
-                        <p align="right">{messageType}&nbsp;{messageByte}byte</p>
+                        <p align="right">{messageByte}byte</p>
+                        {/* 부가 정보 합산 바이트 */}
                       </FormGroup>
-        
+
                       <FormGroup>
                         <label className="form-control-label">
-                          수신차단번호
+                          부가정보
+                          알림톡 설명
                         </label>
-                        <Container>
-                          {isBlock?
-                              <Row>
-                                <Badge className="badge-md" color="primary">{blockNumber != null ? makeHyphen(blockNumber) : null}</Badge>
-                              </Row>
-                              :null}
-                        </Container>
+                        <Input
+                            defaultValue={messageDescription}
+                            rows="5"
+                            type="textarea"
+                            onChange={(e)=>{setMessageDescription(e.target.value)}}
+
+                        ></Input>
                       </FormGroup>
+
+                      <FormGroup>
+                        <label className="form-control-label">
+                          알림톡 버튼 이름
+                        </label>
+                        <Input
+                            defaultValue={buttonTitle}
+                            type="text"
+                            onChange={(e)=>{setButtonTitle(e.target.value)}}
+                        ></Input>
+                      </FormGroup>
+
+                      <FormGroup>
+                        <label className="form-control-label">
+                          알림톡 버튼 링크
+                        </label>
+                        <Input
+                            defaultValue={buttonUrl}
+                            type="text"
+                            onChange={(e)=>{setButtonUrl(e.target.value)}}
+                        ></Input>
+                      </FormGroup>
+
+                      <FormGroup>
+                        <label className="form-control-label">
+                          알림톡 버튼 종류
+                        </label>
+                        <Input
+                            defaultValue={buttonType}
+                            type="select"
+                            onChange={(e)=>{setButtonType(e.target.value)}}
+                        >
+                          <option>선택</option>
+                          <option value="DS" selected={buttonType === "DS"}>배송 조회</option>
+                          <option value="WL" selected={buttonType === "WL"}>웹 링크</option>
+                          <option value="AL" selected={buttonType === "AL"}>앱 링크</option>
+                          <option value="BK" selected={buttonType === "BK"}>봇 키워드</option>
+                          <option value="MD" selected={buttonType === "MD"}>메시지 전달</option>
+                          <option value="AC" selected={buttonType === "AC"}>채널 추가</option>
+                        </Input>
+                      </FormGroup>
+
                     </CardBody>
                   </Col>
-
-
 
 
                   {/* 메시지 미리보기  */}
                   <Col sm="6" style={{paddingLeft:80}}>
                     <div style={{
-                      backgroundImage: `url(${iphone})`,
+                      backgroundImage: `url(${iphonekakao})`,
                       backgroundRepeat: "no-repeat",
                       backgroundSize: "80%",
                       height: "100%",
                     }}>
-                      <div style={{ height: 110 }}></div>
-                      <div style={{ height: 550, whiteSpace: "pre-wrap", width: 300, margin: 30}}>
-                        <div style={{textAlign:"center", fontSize:10,fontWeight:"bold", color:'#b1b1b4'}}>{`문자 메시지\n(오늘) ${IphoneTime()} `}</div>
-                        <ChatBubble 
+                      <div style={{ height: 250 }}></div>
+                      <div style={{ height: 550, whiteSpace: "pre-wrap", width: 350, margin: 30}}>
+                        {/* <div style={{textAlign:"center", fontSize:10,fontWeight:"bold", color:'#b1b1b4'}}>{`문자 메시지\n(오늘) ${IphoneTime()} `}</div> */}
+                        <ChatBubble
                           message={messageInput}
                           bubbleStyles={
                             {
@@ -527,11 +572,12 @@ const SendSms = () => {
                                 color:'black'
                               },
                               chatbubble: {
+                                borderTop: '40px solid #F7E600',
                                 borderRadius: 20,
                                 paddingLeft:14,
                                 margin:10,
-                                maxWidth:250,
-                                backgroundColor: '#e5e5e6',
+                                width:300,
+                                backgroundColor: 'white',
                               }
                             }
                           }
@@ -542,6 +588,7 @@ const SendSms = () => {
                   </Col>
 
                 </Row>
+
                 <Button className="btn-icon btn-3" size="xl" color="primary" type="button" style={{ width: "15%", height: 54, margin: 10, fontSize: 17, float: "right"}} onClick={(e)=> sendMessage()}>
                   <span className="btn-inner--icon">
                     <i className="ni ni-send text-white" />
@@ -555,6 +602,7 @@ const SendSms = () => {
                   </span>
                   <span className="btn-inner--text">예약 발송</span>
                 </Button>
+
                 <br></br>
               </CardFooter>
             </Card>
@@ -563,6 +611,9 @@ const SendSms = () => {
       </Container>
     </>
   );
+  else {
+    redirect()
+    }
 };
 
-export default SendSms;
+export default SendKakao;

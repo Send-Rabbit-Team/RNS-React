@@ -8,8 +8,8 @@ import {
   import React, {useState,useEffect} from "react";
   import axios from "axios";
 
-  const MessageRule = (props) =>{
-    
+  const SmsMessageRule = (props) =>{
+
     const [smsKTRate, setSmsKTRate] = useState(33);
     const [smsSKTRate, setSmsSKTRate] = useState(33);
     const [smsLGRate, setSmsLGRate] = useState(34);
@@ -43,7 +43,7 @@ import {
           // window.location.reload()
         })
       }
-  
+
       useEffect(async()=>{
         await axios.get(`/msg/rule/getAll`)
         .then((response) => {
@@ -95,7 +95,7 @@ import {
             <Col md="12" >
               <FormGroup style={{display: "flex", alignItems:"flex-end"}}>
                 {/* KT */}
-                
+
                 <p style={{margin:9, paddingRight:20, paddingTop:5, fontSize:17}}>KT</p>
                 <Input
                   style={{ marginLeft: "auto" , width:"55%"}}
@@ -134,7 +134,7 @@ import {
                   id="LGU+"
                   name="LGU+"
                   placeholder={smsLGRate}
-                  type="number" 
+                  type="number"
                   value={smsLGRate}
                   onChange={(e)=> setSmsLGRate(e.target.value)}
                 />
@@ -151,7 +151,7 @@ import {
           </div>
       </Modal>:null
     )
-    
+
   };
 
-  export default MessageRule;
+  export default SmsMessageRule;
