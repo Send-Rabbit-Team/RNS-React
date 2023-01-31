@@ -192,22 +192,22 @@ const SendKakao = () => {
     buttonTitle && buttonUrl && buttonType ? setMessageByte(l+29) : setMessageByte(l)
   });
 
-
-
-  // SenderNumber 불러오기
-  const [senderNumberList, setSenderNumberList] = useState([]);
-  useState(async () => {
-    await axios.get('/sender/all')
-      .then((response) => {
-        if (response.data.isSuccess) {
-          setSenderNumberList(response.data.result)
-        } else {
-          window.alert(response.data.message)
-        }
-      })
-      .catch((error) => {
-        window.alert(error.response.data.message)
-      })
+  // 기업 정보 불러오기
+  const [companyName, setCompanyName] = useState();
+  const [companyKakaoBizId, setCompanyKakaoBizId] = useState();
+  useEffect(async () => {
+    await axios.get("/userinfo")
+        .then((response) => {
+          if (response.data.isSuccess) {
+            setCompanyName(response.data.result.companyName)
+            setCompanyKakaoBizId(response.data.result.kakaoBizId)
+          } else {
+            console.log(response.data.message)
+          }
+        })
+        .catch((error) => {
+          console.log(error.response.data.message)
+        })
   })
 
   // 메시지 전송
@@ -417,7 +417,7 @@ const SendKakao = () => {
                         </label>
                         <Container>
                           <Row>
-                            <Badge className="badge-md m-1" color="primary">{senderNumber != null ? senderMemo + " (" + makeHyphen(senderNumber) + ")" : null}</Badge>
+                            <Badge className="badge-md m-1" color="primary">{companyName + "(" + companyKakaoBizId + ")"}</Badge>
                           </Row>
                         </Container>
                       </FormGroup>

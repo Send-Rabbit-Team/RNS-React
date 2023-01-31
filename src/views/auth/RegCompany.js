@@ -14,6 +14,7 @@ const RegCompany = (props) => {
     const [companyName, setCompanyName] = useState();
     const [companyBsnum, setCompanyBsnum] = useState();
     const [companyPhoneAccess, setCompanyPhoneAccess] = useState();
+    const [companyKakaoBizId, setCompanyKakaoBizId] = useState();
 
     const [companyPhoneCheck, setCompanyPhoneCheck] = useState(false);
     const [companyBsnumCheck, setCompanyBsnumCheck] = useState(false);
@@ -80,7 +81,8 @@ const RegCompany = (props) => {
             "companyName" : companyName,
             "bsNum" : companyBsnum,
             "memberType" : "COMPANY",
-            "loginType" : props.gmail == null ? "DEFAULT" : "GOOGLE"
+            "loginType" : props.gmail == null ? "DEFAULT" : "GOOGLE",
+            "kakaoBizId" : companyKakaoBizId
         }
         props.gmail == null && companyEmail == null ? await Swal.fire({
             title: '이메일을 입력하세요',
@@ -140,8 +142,8 @@ const RegCompany = (props) => {
                                             .then(async(response) => {
                                                 if (response.data.isSuccess == true) {
                                                     await Swal.fire({
-                                                        title: '회원가입에 실패했습니다',
-                                                        icon: 'error',
+                                                        title: '회원가입에 성공했습니다',
+                                                        icon: 'success',
                                                         showConfirmButton: false,
                                                         timer: 1500
                                                       })
@@ -321,6 +323,21 @@ const RegCompany = (props) => {
                         <Button color="primary" outline type="button" onClick={authBsnum}>
                             인증
                         </Button>
+                    </InputGroup>
+                </FormGroup>
+
+                <FormGroup>
+                    <InputGroup className="input-group-alternative mb-3">
+                        <InputGroupAddon addonType="prepend">
+                            <InputGroupText>
+                                <i className="fas fa-comment" />
+                            </InputGroupText>
+                        </InputGroupAddon>
+                        <Input
+                            placeholder="Kakao Business ID"
+                            type="text"
+                            onChange={(e)=>{setCompanyKakaoBizId(e.target.value)}}
+                        />
                     </InputGroup>
                 </FormGroup>
 
