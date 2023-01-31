@@ -234,18 +234,17 @@ const SendSms = () => {
   })
 
   // 메시지 전송
-  const sendMessage = async()=>{
-    await axios.post('/message/send',{
-      "message":{
-        "from": senderMemo,
-        "subject": messageTitle, // 예나가 주제를 구현하고 추가하는 부분
-        "content": messageContext,
-        "image": selectImage,
-        "messageType":"SMS"
+  const sendMessage = async () => {
+    await axios.post('/message/send/sms', {
+      "message"  : {
+        "from"       : senderNumber,
+        "subject"    : messageTitle,
+        "content"    : messageContext,
+        "images"     : selectImage,
+        "messageType": messageType
       },
-      "count":10000,
-      "senderNumber":senderNumber,
-      "receivers":selectContactList.map(contact=>contact.phoneNumber)
+      "count"    : 10000,
+      "receivers": selectContactList.map(contact => contact.phoneNumber)
     }).then((response) => {
         if (response.data.isSuccess) {
           console.log("시간: ",response)
@@ -439,7 +438,7 @@ const SendSms = () => {
                         <Container>
                           <Row>
                             {selectContactList.map(v => (
-                                    <Badge className="badge-md m-1" color="primary">{v.phoneNumber}</Badge>
+                                    <Badge className="badge-md m-1" color="primary">{makeHyphen(v.phoneNumber)}</Badge>
                                 )
                             )}
                             {selectContactGroupList.map(v => (
