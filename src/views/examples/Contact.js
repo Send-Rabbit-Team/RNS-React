@@ -175,12 +175,23 @@ const ContactNumber = () => {
       "memo" : newMemo,
       "phoneNumber" : newPhoneNumber
     })
-    .then((response) => {
+    .then(async(response) => {
       if (response.data.isSuccess) {
-        window.alert(response.data.message)
+        await Swal.fire({
+          title: "연락처를 저장했습니다",
+          icon:'success',
+          showConfirmButton: false,
+            timer: 1000
+        })
         window.location.reload()
       } else {
-        window.alert(response.data.message)
+        await Swal.fire({
+          title: "연락처를 저장하는데 실패했습니다",
+          icon:'error',
+          text: '관리자에게 문의하세요',
+          showConfirmButton: false,
+          timer: 1000
+        })
       }
     })
     .catch((error) => {
