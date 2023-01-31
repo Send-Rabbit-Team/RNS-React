@@ -1,31 +1,22 @@
-import {Modal, Form, Button, Row, Card, CardBody, CardHeader, CardImg} from "reactstrap"
-import React, {useState} from "react";
+import {Modal, Form, Button, Row, Card, CardBody, CardImg} from "reactstrap"
+import React from "react";
 
 const ImageUpload = (props) => {
-    const [imgFile, setImgFile] = useState(null);	//파일
-    const [imgBase64, setImgBase64] = useState([]); // 파일 base64
-
     const handleChangeFile = (event) => {
-        setImgFile(event.target.files);
-        for (var i = 0; i < event.target.files.length; i++) {
-            if (event.target.files[i]) {
-                let reader = new FileReader();
-                reader.readAsDataURL(event.target.files[i]); // 1. 파일을 읽어 버퍼에 저장합니다.
-                reader.onloadend = () => {
-                    // 2. 읽기가 완료되면 아래코드가 실행됩니다.
-                    const base64 = reader.result;
-                    if (base64) {
-                        var base64Sub = base64.toString()
-                        setImgBase64(imgBase64 => [...imgBase64, base64Sub]);
-                    }
+        if (event.target.files[0]) {
+            let reader = new FileReader();
+            reader.readAsDataURL(event.target.files[0]); // 1. 파일을 읽어 버퍼에 저장합니다.
+            reader.onloadend = () => {
+                // 2. 읽기가 완료되면 아래코드가 실행됩니다.
+                const base64 = reader.result;
+                if (base64) {
+                    var base64Sub = base64.toString()
+                    props.setSelectImage(base64Sub);
                 }
             }
         }
-    }
 
-    const removeFile = (item) => {
-        setImgBase64(imgBase64.filter(e => e !== item));
-    };
+    }
 
     return (
         props.isShowingImageUpload?(
@@ -49,7 +40,6 @@ const ImageUpload = (props) => {
                 <Form>
                     <div className="custom-file m-1">
                         <input
-                            multiple
                             accept="image/*"
                             className=" custom-file-input"
                             type="file"
@@ -61,30 +51,30 @@ const ImageUpload = (props) => {
                     </div>
                 </Form>
                 <Row className="mt-3">
-                    {imgBase64.map((item, index) => (
-                        <div className="col-sm-3" key={index}>
+                    {props.selectImage ? (
+                        <div className="col-sm-3">
                             <Card className="m-1">
                                 <CardBody className="p-2">
                                     <button
                                         className="close mb-1"
                                         data-dismiss="modal"
                                         type="button"
-                                        onClick={(e) => removeFile(item)}
+                                        onClick={props.removeSelectImage}
                                     >
                                         <span aria-hidden={true}>×</span>
                                     </button>
                                     <CardImg
                                         className="d-block w-100"
-                                        src={item}/>
+                                        src={props.selectImage}/>
                                 </CardBody>
                             </Card>
                         </div>
-                    ))}
+                    ) : null}
+
                 </Row>
             </div>
             <div className="modal-footer">
                 <Button type="button" color="primary" onClick={(e) => {
-                    props.setSelectImage(imgBase64)
                     props.hide()
                 }}>첨부하기</Button>
             </div>

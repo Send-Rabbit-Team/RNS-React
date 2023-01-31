@@ -55,6 +55,7 @@ const Login = () => {
           if (response.data.result.profileImageURL)
             localStorage.setItem("profile_image", response.data.result.profileImageURL)
           localStorage.setItem("name", response.data.result.name);
+          localStorage.setItem("member_type", response.data.result.memberType);
 
           setAuthorizationToken(response.data.result.jwt);
 
@@ -91,10 +92,13 @@ const Login = () => {
               showConfirmButton: false,
               timer: 2000
             })
+
             localStorage.setItem("bearer", response.data.result.jwt);
             if (response.data.result.profileImageURL)
               localStorage.setItem("profile_image", response.data.result.profileImageURL)
             localStorage.setItem("name", response.data.result.name);
+            localStorage.setItem("member_type", response.data.result.memberType);
+
             window.location.replace("/admin/sms")
             return response.data.code;
           } else{
