@@ -115,8 +115,8 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
       <td>{makeHyphen(searchContactNumber.phoneNumber)}</td>
       {
         isFoundContact(searchContactNumber.phoneNumber)==false?
-        <td><a href="views/admin/send/Receiver#"><i className="fas fa-plus" onClick={(e) => onSelectContactHandler(searchContactNumber)} /></a></td>:
-        <td><a href="views/admin/send/Receiver#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactHandler(searchContactNumber)} /></a></td>
+        <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactHandler(searchContactNumber)} /></a></td>:
+        <td><a href="#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactHandler(searchContactNumber)} /></a></td>
       }
     </tr>
   )
@@ -127,8 +127,8 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
       <td>{searchContactGroup.name}</td>
       {
         isFoundContactGroup(searchContactGroup.name)==false?
-        <td><a href="views/admin/send/Receiver#"><i className="fas fa-plus" onClick={(e) => onSelectContactGroupHandler(searchContactGroup)} /></a></td>:
-        <td><a href="views/admin/send/Receiver#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactGroupHandler(searchContactGroup)} /></a></td>
+        <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactGroupHandler(searchContactGroup)} /></a></td>:
+        <td><a href="#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactGroupHandler(searchContactGroup)} /></a></td>
       }
     </tr>
   )
@@ -140,8 +140,8 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
         <td>{contactGroup.name}</td>
         {
           isFoundContactGroup(contactGroup.name)==false?
-          <td><a href="views/admin/send/Receiver#"><i className="fas fa-plus" onClick={(e) => onSelectContactGroupHandler(contactGroup)} /></a></td>:
-          <td><a href="views/admin/send/Receiver#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactGroupHandler(contactGroup)} /></a></td>
+          <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactGroupHandler(contactGroup)} /></a></td>:
+          <td><a href="#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactGroupHandler(contactGroup)} /></a></td>
         }
       </tr>)
   })
@@ -155,8 +155,8 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
       <td>{makeHyphen(contactNumber.phoneNumber)}</td>
       {
         isFoundContact(contactNumber.phoneNumber)==false?
-        <td><a href="views/admin/send/Receiver#"><i className="fas fa-plus" onClick={(e) => onSelectContactHandler(contactNumber)} /></a></td>:
-        <td><a href="views/admin/send/Receiver#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactHandler(contactNumber)} /></a></td>
+        <td><a href="#"><i className="fas fa-plus" onClick={(e) => onSelectContactHandler(contactNumber)} /></a></td>:
+        <td><a href="#"><i className="fas fa-minus text-red" onClick={(e) => onDeleteContactHandler(contactNumber)} /></a></td>
       }
     </tr>
   )
@@ -215,7 +215,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
           if (response.data.isSuccess) {
             setPageData(pageData => ({ ...pageData, ...response.data.result, page: nowPage }))
             setSearchContactList(response.data.result.dtoList)
-          } 
+          }
         })
         .catch((error) => {
           window.alert(error.response.data.message)
@@ -230,7 +230,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
       .then((response) => {
         if (response.data.isSuccess) {
           setContactGroupList(response.data.result)
-        } 
+        }
       })
       .catch((error) => {
         window.alert(error.response.data.message)

@@ -325,8 +325,8 @@ const ContactNumber = () => {
           <td>{ContactNumber.contactMemo}</td>
           <td>{makeHyphen(ContactNumber.phoneNumber)}</td>
           <td>{ContactNumber.groupName}</td>
-          <td><a href="views/admin/Contact#"><i className="fas fa-trash" onClick={(e) => {deleteContactNumber(ContactNumber.contactId)}}/></a></td>
-          <td><a href="views/admin/Contact#"><i className="ni ni-settings-gear-65" onClick={(e) => {editConatactController(ContactNumber.contactId)}}/></a></td>
+          <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteContactNumber(ContactNumber.contactId)}}/></a></td>
+          <td><a href="#"><i className="ni ni-settings-gear-65" onClick={(e) => {editConatactController(ContactNumber.contactId)}}/></a></td>
       </tr>
     )
   )
@@ -339,8 +339,8 @@ const ContactNumber = () => {
       <td>{makeHyphen(searchContactNumber.phoneNumber)}</td>
       <td>카카오 엔터프라이즈</td>
       <td>{searchContactNumber.memo}</td>
-      <td><a href="views/admin/Contact#"><i className="fas fa-trash" onClick={(e) => {deleteContactNumber(searchContactNumber.id)}}/></a></td>
-      <td><a href="views/admin/Contact#"><i className="ni ni-settings-gear-65" onClick={(e) => {editConatactController(searchContactNumber.id)}}/></a></td>
+      <td><a href="#"><i className="fas fa-trash" onClick={(e) => {deleteContactNumber(searchContactNumber.id)}}/></a></td>
+      <td><a href="#"><i className="ni ni-settings-gear-65" onClick={(e) => {editConatactController(searchContactNumber.id)}}/></a></td>
     </tr>
   )
 )
@@ -545,7 +545,7 @@ const ContactNumber = () => {
                 <Row>
                     <Col>
                       <h3 className="mb-0" style={{paddingTop:10}}>연락처 목록 &nbsp;&nbsp;
-                        <a href="views/admin/Contact#"><i className="fas fa-plus-circle" onClick={(e) => {setCreateModal(true)}}/></a>
+                        <a href="#"><i className="fas fa-plus-circle" onClick={(e) => {setCreateModal(true)}}/></a>
                       </h3>
                     </Col>
                     {/* 연락처 검색 */}
