@@ -226,18 +226,15 @@ const SendSms = () => {
       .then((response) => {
         if (response.data.isSuccess) {
           setSenderNumberList(response.data.result)
-        } else {
-          window.alert(response.data.message)
         }
       })
       .catch((error) => {
-        window.alert(error.response.data.message)
+        // 에러핸들링
       })
   })
 
   // 메시지 전송
   const sendMessage = async()=>{
-
     await axios.post('/message/send',{
       "message":{
         "from": senderMemo,
@@ -252,7 +249,12 @@ const SendSms = () => {
     }).then((response) => {
         if (response.data.isSuccess) {
           console.log("시간: ",response)
-          window.alert(response.data.message)
+          Swal.fire({
+            title: '메시지를 전송했습니다',
+            icon: 'success',
+            showConfirmButton: false,
+            timer: 1000
+          })
         } else {
           window.alert(response.data.message)
         }

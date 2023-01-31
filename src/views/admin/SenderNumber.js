@@ -62,12 +62,10 @@ const SenderNumber = () => {
           if (response.data.isSuccess) {
             setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
             setSenderNumberList(response.data.result.dtoList)
-          } else {
-            window.alert(response.data.message)
           }
         })
         .catch((error) => {
-          window.alert(error.response.data.message)
+          // 에러핸들링
         })
   })
 
@@ -106,12 +104,16 @@ const SenderNumber = () => {
         await axios.post("/sms/valid", {
           "phoneNumber": newPhoneNumber,
           "authToken" : accessNum
-        }).then((response) => {
+        }).then(async(response) => {
           if (response.data.isSuccess) {
             setIsForm(false)
             setIsAccessNumCheck(true)
-            window.alert(response.data.message)
-
+            await Swal.fire({
+              title: '성공적으로 인증되었습니다',
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 1000
+            })
           } else {
             window.alert(response.data.message)
           }
