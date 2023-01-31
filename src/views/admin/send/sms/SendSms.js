@@ -18,13 +18,13 @@ import {
 import Header from "components/Headers/Header.js";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import MessageRule from './modal/MessageRule'
-import Receiver from "./modal/Receiver";
-import SMSTemplateModal from "./modal/SMSTemplateModal";
-import ImageUpload from "./modal/ImageUpload";
+import SmsMessageRule from './SmsMessageRule'
+import Receiver from "../Receiver";
+import SmsTemplateModal from "./SmsTemplateModal";
+import SmsImageUpload from "./SmsImageUpload";
 import {Image} from "react-bootstrap";
-import MessageSchedule from "./modal/MessageSchedule";
-import iphone from '../../assets/img/brand/iphone.jpg';
+import MessageSchedule from "../MessageSchedule";
+import iphone from '../../../../assets/img/brand/iphone.jpg';
 import { ChatBubble, Message } from 'react-chat-ui';
 import styled from "styled-components";
 import Swal from 'sweetalert2'
@@ -154,7 +154,7 @@ const SendSms = () => {
     let PA = now.getHours() < 12 ? "오전" : "오후";
     return PA+' '+hourMod+'시 '+min+'분'
   }
-  
+
 
   var messageInput = new Message({
     id: 1,
@@ -299,14 +299,14 @@ const SendSms = () => {
   return (
     <>
       {/* 발송 설정 모달 */}
-      <MessageRule isShowingMessageRule={isShowingMessageRule} hide={toggleMessageRule} />
-      <SMSTemplateModal
+      <SmsMessageRule isShowingMessageRule={isShowingMessageRule} hide={toggleMessageRule} />
+      <SmsTemplateModal
           isShowingTemplate={isShowingTemplate}
           hide={toggleTemplate}
           selectTemplate={selectTemplate}
           setSelectTemplate={getSelectTemplate}
       />
-      <ImageUpload
+      <SmsImageUpload
           isShowingImageUpload={isShowingImageUpload}
           hide={toggleImageUpload}
           selectImage={selectImage}
@@ -486,7 +486,7 @@ const SendSms = () => {
                         ></Input>
                         <p align="right">{messageType}&nbsp;{messageByte}byte</p>
                       </FormGroup>
-        
+
                       <FormGroup>
                         <label className="form-control-label">
                           수신차단번호
@@ -516,7 +516,7 @@ const SendSms = () => {
                       <div style={{ height: 110 }}></div>
                       <div style={{ height: 550, whiteSpace: "pre-wrap", width: 300, margin: 30}}>
                         <div style={{textAlign:"center", fontSize:10,fontWeight:"bold", color:'#b1b1b4'}}>{`문자 메시지\n(오늘) ${IphoneTime()} `}</div>
-                        <ChatBubble 
+                        <ChatBubble
                           message={messageInput}
                           bubbleStyles={
                             {

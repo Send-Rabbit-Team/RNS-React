@@ -15,14 +15,14 @@ import Header from "components/Headers/Header.js";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import 'react-chat-elements/dist/main.css'
-import Receiver from "./modal/Receiver";
-import KakaoTemplateModal from "./modal/KakaoTemplateModal";
-import KakaoImageUpload from "./modal/KakaoImageUpload";
+import Receiver from "../Receiver";
+import KakaoTemplateModal from "./KakaoTemplateModal";
+import KakaoImageUpload from "./KakaoImageUpload";
 import {Image} from "react-bootstrap";
-import MessageSchedule from "./modal/MessageSchedule";
-import iphonekakao from '../../assets/img/brand/iphonekakao.png';
+import MessageSchedule from "../MessageSchedule";
+import iphonekakao from '../../../../assets/img/brand/iphonekakao.png';
 import { ChatBubble, Message } from 'react-chat-ui';
-import KakaoMessageRule from "./modal/KakaoMessageRule";
+import KakaoMessageRule from "./KakaoMessageRule";
 import Swal from "sweetalert2";
 
 const SendKakao = () => {
@@ -290,7 +290,7 @@ const SendKakao = () => {
             </>
         ) : null}
 
-        <p>{messageContext}</p>
+        <p style={{fontSize:"14px"}}>{messageContext}</p>
 
         {messageDescription ? (
             <>
@@ -306,7 +306,7 @@ const SendKakao = () => {
         </body>
 
       setMessage(kakaoMessage)
-  }, [selectImage, messageTitle, messageSubtitle, messageContext, messageDescription, buttonUrl, buttonTitle, buttonType  ])
+  }, [selectImage, messageTitle, messageSubtitle, messageContext, messageDescription, buttonUrl, buttonTitle, buttonType])
 
 
   if (memberType === "COMPANY" )

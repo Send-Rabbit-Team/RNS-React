@@ -3,7 +3,7 @@ import React, {useState} from "react";
 import axios from "axios";
 
 
-const SMSTemplateModal = (props) => {
+const SmsTemplateModal = (props) => {
     const [templateList, setTemplateList] = useState([]);
 
     // 탬플릿 불러오기
@@ -63,4 +63,4 @@ const SMSTemplateModal = (props) => {
     )
 
 }
-export default SMSTemplateModal
+export default SmsTemplateModal

@@ -6,11 +6,10 @@ import Login from "views/auth/Login.js";
 import Tables from "views/admin/SenderNumber.js";
 import Icons from "views/examples/Icons.js";
 import SenderNumber from "./views/admin/SenderNumber";
-import ContactNumber from "views/examples/Contact.js";
+import ContactNumber from "views/admin/Contact.js";
 import ContactGroup from "./views/admin/ContactGroup";
-import SendSms from "./views/admin/SendSms"
-import SendKakao from "./views/admin/SendKakao"
-import MakeTemplate from "./views/admin/MakeTemplate";
+import SendSms from "./views/admin/send/sms/SendSms"
+import SendKakao from "./views/admin/send/kakao/SendKakao"
 import Template from "./views/admin/template/Template";
 
 var routes = [
