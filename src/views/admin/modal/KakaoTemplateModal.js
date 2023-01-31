@@ -46,7 +46,7 @@ const KakaoTemplateModal = (props) => {
                             <Button block className="lg p-0" style={{textAlign : "left"}}
                                 onClick={(e) => {
                                     props.setMessageTitle(template.title)
-                                    props.setMessageSubTitle(template.subTitle)
+                                    props.setMessageSubtitle(template.subTitle)
                                     props.setMessageContext(template.content)
                                     props.setMessageDescription(template.description)
                                     props.setButtonTitle(template.buttonTitle)
