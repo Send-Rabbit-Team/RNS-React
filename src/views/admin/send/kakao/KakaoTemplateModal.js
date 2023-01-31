@@ -12,9 +12,7 @@ const KakaoTemplateModal = (props) => {
                 if (response.data.isSuccess) {
                     setTemplateList(response.data.result)
                 }
-                else {
-                    window.alert(response.data.message)
-                }
+                
             })
             .catch((error) => {
                 window.alert(error.response.data.message)

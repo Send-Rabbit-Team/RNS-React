@@ -5,7 +5,6 @@ import RegMember from "./RegMember";
 import RegCompany from "./RegCompany";
 import axios from "axios";
 import {GoogleLogin, GoogleOAuthProvider} from "@react-oauth/google";
-import Swal from 'sweetalert2'
 
 class Register extends React.Component {
 

@@ -60,8 +60,6 @@ const SmsTemplate = () => {
                 if (response.data.isSuccess) {
                     setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
                     setTemplateList(response.data.result.dtoList)
-                } else {
-                    window.alert(response.data.message)
                 }
             })
             .catch((error) => {

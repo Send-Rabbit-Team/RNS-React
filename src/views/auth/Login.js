@@ -49,7 +49,7 @@ const Login = () => {
             title: '로그인에 성공했습니다',
             icon: 'success',
             showConfirmButton: false,
-            timer: 1500
+            timer: 1000
           })
           localStorage.setItem("bearer", response.data.result.jwt);
           if (response.data.result.profileImageURL)

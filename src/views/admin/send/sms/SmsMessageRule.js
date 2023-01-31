@@ -58,7 +58,7 @@ import {
               }
             })
           } else {
-            window.alert(response.data.message)
+            // 에러핸들링
           }
         })
         .catch((error) => {

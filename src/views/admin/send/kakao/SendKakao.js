@@ -145,17 +145,6 @@ const SendKakao = () => {
 
   const [message, setMessage] = useState("");
 
-  const IphoneTime = ()=>{
-    let now = new Date();
-    let hour = now.getHours();
-    let hourMod = hour<=12?hour:hour-12
-    let min = now.getMinutes();
-    console.log(hour)
-    let PA = now.getHours() < 12 ? "오전" : "오후";
-    return PA+' '+hourMod+'시 '+min+'분'
-  }
-
-
   var messageInput = new Message({
     id: 1,
     message: message,
@@ -308,6 +297,19 @@ const SendKakao = () => {
       setMessage(kakaoMessage)
   }, [selectImage, messageTitle, messageSubtitle, messageContext, messageDescription, buttonUrl, buttonTitle, buttonType])
 
+
+
+
+  const redirect=async()=>{
+    await Swal.fire({
+      title: '기업 회원만 이용 가능합니다',
+      text:'기업 아이디로 로그인 하세요',
+      icon: 'error',
+      showConfirmButton: false,
+      timer: 3000
+    } )
+    window.location.replace("/admin/sms")
+  }
 
   if (memberType === "COMPANY" )
   return (
@@ -610,15 +612,7 @@ const SendKakao = () => {
     </>
   );
   else {
-    Swal.fire({
-        title: '기업 회원만 이용 가능합니다',
-        text:'기업 아이디로 로그인 하세요',
-        icon: 'error',
-        showConfirmButton: false,
-        timer: 3000
-      } )
-      window.location.replace("/admin/sms")
-
+    redirect()
     }
 };
 

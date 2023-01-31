@@ -17,7 +17,12 @@ const RegMember = (props) => {
     const [memberModalOpen, setMemberModalOpen] = useState(false)
 
     const authPhone = async () => {
-        memberPhone == null ? window.alert("인증할 휴대폰 번호를 입력하세요") :
+        memberPhone == null ? await Swal.fire({
+            title: '휴대폰번호를 입력하세요',
+            icon: 'warning',
+            showConfirmButton: false,
+            timer: 1000
+          }) :
             await axios.post("/sms/send", {"to" : memberPhone})
                 .then((response) => {
                     console.log(response)
@@ -30,7 +35,12 @@ const RegMember = (props) => {
     }
 
     const authAccessNum = async () => {
-        memberPhoneAccess == null ? window.alert("인증 번호를 입력하세요") :
+        memberPhoneAccess == null ? await Swal.fire({
+            title: '인증번호를 입력하세요',
+            icon: 'warning',
+            showConfirmButton: false,
+            timer: 1000
+          })  :
             await axios.post("/sms/valid", {
                 "phoneNumber": memberPhone,
                 "authToken" : memberPhoneAccess
@@ -39,7 +49,6 @@ const RegMember = (props) => {
                     setMemberModalOpen(false)
                     setMemberPhoneCheck(true)
                     window.alert(response.data.message)
-
                 } else {
                     setMemberModalOpen(false)
                     setMemberPhoneCheck(false)

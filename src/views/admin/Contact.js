@@ -82,13 +82,10 @@ const ContactNumber = () => {
               setContactNumberList(response.data.result.dtoList)
               console.log('전체 연락처 불러오기 성공: ', response.data.result.dtoList)
           } else {
-            window.alert(response.data.message)
             console.log('전체 연락처 불러오기 실패: ', response.data)
           }
         })
         .catch((error) => {
-          console.log('그냥 에러: ', error)
-          window.alert(error.response.data.message)
         })
      }
     )
@@ -101,15 +98,12 @@ const ContactNumber = () => {
           if (response.data.isSuccess) {
               setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
               setSearchContactNumberList(response.data.result.dtoList)
-            console.log('검색 성공: ', response.data)
           } else {
-            window.alert(response.data.message)
             console.log('검색 실패: ', response.data)
           }
         })
         .catch((error) => {
           console.log('그냥 에러: ', error)
-          window.alert(error.response.data.message)
         })
      },[searchInput]
     )
@@ -120,7 +114,7 @@ const ContactNumber = () => {
           if(response.data.isSuccess){
             setContactGroupList([...response.data.result])
           } else{
-            window.alert(response.data.message)
+            // 에러핸들링
           }
         })
       }
@@ -169,18 +163,34 @@ const ContactNumber = () => {
 
   // 연락처 추가 메소드
   const registerContactNumber = async () => {
-    newPhoneNumber == null ?  window.alert("전화번호를 입력하세요") :
+    newPhoneNumber == null ?  await Swal.fire({
+      title: "전화번호를 입력하세요",
+      icon:'success',
+      showConfirmButton: false,
+        timer: 1000
+    }) :
     await axios.post("/contact/create", {
       "contactGroupId":newGroupId,
       "memo" : newMemo,
       "phoneNumber" : newPhoneNumber
     })
-    .then((response) => {
+    .then(async(response) => {
       if (response.data.isSuccess) {
-        window.alert(response.data.message)
+        await Swal.fire({
+          title: "연락처를 저장했습니다",
+          icon:'success',
+          showConfirmButton: false,
+            timer: 1000
+        })
         window.location.reload()
       } else {
-        window.alert(response.data.message)
+        await Swal.fire({
+          title: "연락처를 저장하는데 실패했습니다",
+          icon:'error',
+          text: '관리자에게 문의하세요',
+          showConfirmButton: false,
+          timer: 1000
+        })
       }
     })
     .catch((error) => {

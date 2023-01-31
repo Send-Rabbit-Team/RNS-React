@@ -197,7 +197,6 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
           setContactNumberList(response.data.result.contacts)
           console.log('전체 연락처 불러오기 성공: ', response.data.result.contacts)
         } else {
-          window.alert(response.data.message)
           console.log('전체 연락처 불러오기 실패: ', response.data)
         }
       })
@@ -216,9 +215,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
           if (response.data.isSuccess) {
             setPageData(pageData => ({ ...pageData, ...response.data.result, page: nowPage }))
             setSearchContactList(response.data.result.dtoList)
-          } else {
-            window.alert(response.data.message)
-          }
+          } 
         })
         .catch((error) => {
           window.alert(error.response.data.message)
@@ -233,9 +230,7 @@ const Receiver = ({ isShowingReceiver, hide, selectContactChild, selectContactGr
       .then((response) => {
         if (response.data.isSuccess) {
           setContactGroupList(response.data.result)
-        } else {
-          window.alert(response.data.message)
-        }
+        } 
       })
       .catch((error) => {
         window.alert(error.response.data.message)
