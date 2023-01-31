@@ -1,7 +1,7 @@
 import {Modal, Form, Button, Row, Card, CardBody, CardHeader, CardImg} from "reactstrap"
 import React, {useState} from "react";
 
-const ImageUpload = (props) => {
+const SmsImageUpload = (props) => {
     const [imgFile, setImgFile] = useState(null);	//파일
     const [imgBase64, setImgBase64] = useState([]); // 파일 base64
 
@@ -93,4 +93,4 @@ const ImageUpload = (props) => {
     )
 
 }
-export default ImageUpload
+export default SmsImageUpload
