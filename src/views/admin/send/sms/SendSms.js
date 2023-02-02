@@ -243,7 +243,6 @@ const SendSms = () => {
         "images"     : selectImage,
         "messageType": messageType
       },
-      "count"    : 10000,
       "receivers": selectContactList.map(contact => contact.phoneNumber)
     }).then((response) => {
         if (response.data.isSuccess) {
