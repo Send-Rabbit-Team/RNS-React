@@ -215,21 +215,16 @@ const SendKakao = () => {
 
     await axios.post('/message/send/kakao',{
       "kakaoMessageDto":{
-        "from": senderMemo,
+        "from": companyKakaoBizId,
         "title": messageTitle,
         "subtitle": messageSubtitle,
         "content": messageContext,
         "description":messageDescription,
         "image":selectImage,
-        "kakaoButtonDtoList":[
-          {
-            buttonTitle: buttonTitle,
-            buttonType:buttonType,
-            buttonUrl: buttonUrl
-          }
-        ]
+        "buttonTitle": buttonTitle,
+        "buttonType" : buttonType,
+        "buttonUrl"  : buttonUrl,
       },
-      "senderNumber":senderNumber,
       "receivers":selectContactList.map(contact=>contact.phoneNumber)
     }).then((response) => {
         if (response.data.isSuccess) {
