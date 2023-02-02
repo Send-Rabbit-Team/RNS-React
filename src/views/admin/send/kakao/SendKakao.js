@@ -99,9 +99,15 @@ const SendKakao = () => {
   const [senderNumber, setSenderNumber] = useState();
   const [senderMemo, setSenderMemo] = useState();
 
-  // 수신자 모달 -> 메인페이지 데이타 전달
+  // 수신자 모달 -> 메인페이지 데이터 전달
   const [selectContactList, setSelectContactList] = useState([]);
+  const getSelectContactList = (data) => {
+    setSelectContactList(data);
+  }
   const [selectContactGroupList, setSelectContactGroupList] = useState([]);
+  const getSelectContactGroupList = (data) => {
+    setSelectContactGroupList(data);
+  }
 
   // 탬플릿 모달 -> 메인페이지 데이터 전달
   const [selectTemplate, setSelectTemplate] = useState();
@@ -330,12 +336,12 @@ const SendKakao = () => {
           removeSelectImage={removeSelectImage}
       />
       <Receiver
-        isShowingReceiver={isShowingReceiver}
-        selectContactChild={selectContactChild}
-        selectContactGroupChild={selectContactGroupChild}
-        hide={toggleReceiver}
-        selectContactListParent={selectContactList}
-        selectContactGroupListParent={selectContactGroupList}
+          isShowingReceiver={isShowingReceiver}
+          hide={toggleReceiver}
+          selectContactList={selectContactList}
+          selectContactGroupList={selectContactGroupList}
+          setSelectContactList={getSelectContactList}
+          setSelectContactGroupList={getSelectContactGroupList}
       />
       <MessageSchedule
           isShowingMessageSchedule={isShowingMessageSchedule}
@@ -423,14 +429,18 @@ const SendKakao = () => {
                         </label>
                         <Container>
                           <Row>
-                            {selectContactList.map(v => (
-                                    <Badge className="badge-md m-1" color="primary">{v.phoneNumber}</Badge>
-                                )
-                            )}
-                            {selectContactGroupList.map(v => (
-                                    <Badge className="badge-md m-1" color="info">{v.name}</Badge>
-                                )
-                            )}
+                            {selectContactGroupList.map(contactGroup => (
+                                <p>
+                                  <Badge className="badge-md m-1"
+                                         color="info">{contactGroup.name}</Badge>
+                                  {selectContactList.map((contact) => (
+                                      (contact.groupId === contactGroup.id) ? (
+                                          <Badge className="badge-md m-1"
+                                                 color="primary">{makeHyphen(contact.phoneNumber)}</Badge>
+                                      ) : null
+                                  ))}
+                                </p>
+                            ))}
                           </Row>
                         </Container>
                       </FormGroup>
