@@ -1,16 +1,12 @@
-import Index from "views/Index.js";
-import Profile from "views/examples/Profile.js";
-import Maps from "views/examples/Maps.js";
 import Register from "views/auth/Register.js";
 import Login from "views/auth/Login.js";
-import Tables from "views/admin/SenderNumber.js";
-import Icons from "views/examples/Icons.js";
 import SenderNumber from "./views/admin/SenderNumber";
 import ContactNumber from "views/admin/Contact.js";
 import ContactGroup from "./views/admin/ContactGroup";
 import SendSms from "./views/admin/send/sms/SendSms"
 import SendKakao from "./views/admin/send/kakao/SendKakao"
 import Template from "./views/admin/template/Template";
+import MessageResult from "./views/admin/MessageResult";
 
 var routes = [
   {
@@ -20,14 +16,6 @@ var routes = [
     component: Register,
     layout: "/auth",
     sidebar:false
-  },
-  {
-    path: "/group/:page",
-    name: "수신자 그룹 관리",
-    icon: "fas fa-users",
-    component: ContactGroup,
-    layout: "/admin",
-    sidebar:true
   },
   {
     path: "/onboarding",
@@ -46,18 +34,26 @@ var routes = [
     sidebar:false
   },
   {
-    path: "/sender/:page",
-    name: "발신번호 관리",
-    icon: "fas fa-phone",
-    component: SenderNumber,
-    layout: "/admin",
-    sidebar:true
-  },
-  {
     path: "/contact/:page",
     name: "연락처 관리",
     icon: "fas fa-book",
     component: ContactNumber,
+    layout: "/admin",
+    sidebar:true
+  },
+  {
+    path: "/group/:page",
+    name: "연락처 그룹 관리",
+    icon: "fas fa-users",
+    component: ContactGroup,
+    layout: "/admin",
+    sidebar:true
+  },
+  {
+    path: "/sender/:page",
+    name: "발신번호 관리",
+    icon: "fas fa-phone",
+    component: SenderNumber,
     layout: "/admin",
     sidebar:true
   },
@@ -72,7 +68,7 @@ var routes = [
   {
     path: "/kakao",
     name: "알림톡 발송",
-    icon: "ni ni-send",
+    icon: "fas fa-comment",
     component: SendKakao,
     layout: "/admin",
     sidebar:true
@@ -84,6 +80,14 @@ var routes = [
     component: Template                                                                     ,
     layout: "/admin",
     sidebar:true
-  }
+  },
+  {
+    path: "/result/sms/:page",
+    name: "메시지 발송 결과",
+    icon: "fas fa-envelope",
+    component: MessageResult                                                                     ,
+    layout: "/admin",
+    sidebar:true
+  },
 ];
 export default routes;
