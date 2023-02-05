@@ -135,7 +135,10 @@ const SendSms = () => {
     const [cron, setCron] = useState("");
     const getCron = (data) => {
         setCron(data);
-        console.log(cron)
+    }
+    const [cronText, setCronText] = useState("");
+    const getCronText = (data) => {
+        setCronText(data);
     }
 
 
@@ -249,7 +252,9 @@ const SendSms = () => {
                 "subject"    : messageTitle,
                 "content"    : messageContext,
                 "images"     : selectImage,
-                "messageType": messageType
+                "messageType": messageType,
+                "cronExpression" : cron,
+                "cronText" : cronText,
             },
             "receivers": selectContactList.map(contact => contact.phoneNumber)
         }).then((response) => {
@@ -322,6 +327,7 @@ const SendSms = () => {
                 isShowingMessageSchedule={isShowingMessageSchedule}
                 hide={toggleMessageSchedule}
                 setCron={getCron}
+                setCronText={getCronText}
             />
 
             {/* 메인 페이지 */}
@@ -451,7 +457,7 @@ const SendSms = () => {
                                                                 {selectContactList.map((contact) => (
                                                                     (contact.groupId === contactGroup.id) ? (
                                                                         <Badge className="badge-md m-1"
-                                                                               color="primary">{makeHyphen(contact.phoneNumber)}</Badge>
+                                                                               color="primary">{contact.memo} ({makeHyphen(contact.phoneNumber)})</Badge>
                                                                     ) : null
                                                                 ))}
                                                             </p>
@@ -514,6 +520,17 @@ const SendSms = () => {
                                                                    color="primary">{blockNumber != null ? makeHyphen(blockNumber) : null}</Badge>
                                                         </Row>
                                                         : null}
+                                                </Container>
+                                            </FormGroup>
+
+                                            <FormGroup>
+                                                <label className="form-control-label">
+                                                    예약 발송 정보
+                                                </label>
+                                                <Container>
+                                                    <Row>
+                                                        <Badge className="badge-md" color="primary">{cronText}</Badge>
+                                                    </Row>
                                                 </Container>
                                             </FormGroup>
                                         </CardBody>
