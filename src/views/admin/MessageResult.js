@@ -12,8 +12,8 @@ import {
     DropdownToggle,
     DropdownMenu,
     DropdownItem,
-    Col,
-    InputGroupAddon, Input, InputGroup
+    Col, Popover,
+    InputGroupAddon, Input, InputGroup, UncontrolledPopover, PopoverBody
 } from "reactstrap";
 import Header from "components/Headers/Header.js";
 import React, {useEffect, useState} from "react";
@@ -26,6 +26,13 @@ const MessageResult = () => {
     // 페이지네이션
     const params = useParams();
     const nowPage = isNaN(params.page) ? 1 : params.page
+    const nowType = params.type === ":type" ? "all" : params.type
+    const nowKeyword = params.keyword
+
+    // console.log("nowPage : " + nowPage)
+    // console.log("nowType : " + nowType)
+    // console.log("nowKeyword : " + nowKeyword)
+
     const [pageData, setPageData] = useState({
         totalPage: 0,
         page     : 1,
@@ -38,19 +45,15 @@ const MessageResult = () => {
     })
 
     // 현재 화면에 띄울 리스트
-    const [nowList, setNowList] = useState([])
     useEffect(() => {
-        if (isFilter) {
-            setNowList(filterMessageResultList)
-        } else if (searchInput !== "") {
-            setNowList(searchMessageResultList)
+        if (nowType === "all") {
+            getAllMessageResult()
+        } else if (nowType === "filter") {
+            getFilterMessageResult()
         } else {
-            setNowList(messageResultList)
+            getSearchMessageResult()
         }
     })
-
-    // 필터
-    const [isFilter, setIsFilter] = useState(false)
 
     // 검색
     const [searchInput, setSearchInput] = useState("")
@@ -58,12 +61,14 @@ const MessageResult = () => {
 
     // 메시지 결과 리스트
     const [messageResultList, setMessageResultList] = useState([])
-    const [filterMessageResultList, setFilterMessageResultList] = useState([])
-    const [searchMessageResultList, setSearchMessageResultList] = useState([])
     const [messageResultInfoList, setMessageResultInfoList] = useState([])
 
     // 모달
-    const [isModal, setIsModal] = useState(false);
+    const [isInfoModal, setIsInfoModal] = useState(false);
+    const [isContentModal, setIsContentModal] = useState(false);
+
+    // 메시지 내용
+    const [messageContent, setMessageContent] = useState("");
 
     // 연락처 format 수정 메소드
     const makeHyphen = (number) => {
@@ -75,8 +80,8 @@ const MessageResult = () => {
         return date.split("T")[0] + " " + date.split("T")[1]
     }
 
-    // 메시지 결과 조회
-    useState(async () => {
+    // 전체 메시지 결과 조회
+    const getAllMessageResult = async () => {
         await axios.get(`/message/result/${nowPage}`)
             .then((response) => {
                 if (response.data.isSuccess) {
@@ -89,18 +94,19 @@ const MessageResult = () => {
             .catch((error) => {
                 console.log(error)
             })
-    })
+    }
 
     // 메시지 종류에 따른 메시지 결과 조회
     const getFilterMessageResult = async (messageType) => {
         await axios.get(`/message/result/filter/type/${nowPage}`,{
             params : {
-                "type" : messageType
+                "type" : nowKeyword
             }
         })
             .then((response) => {
                 if (response.data.isSuccess) {
-                    setFilterMessageResultList(response.data.result)
+                    setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
+                    setMessageResultList(response.data.result.dtoList)
                 } else {
                     console.log(response.data.message)
                 }
@@ -112,18 +118,16 @@ const MessageResult = () => {
 
     // 메시지 검색에 따른 메시지 결과 조회
     const getSearchMessageResult = async () => {
-        searchType === "" ? window.alert("검색 유형을 선택하세요") :
-            searchInput === "" ? window.alert("검색 내용을 입력하세요") :
-                await axios.get(`/message/result/search/${nowPage}`,{
-                    params : {
-                        "type" : searchType,
-                        "keyword" : searchInput
-                    }
-                })
+        await axios.get(`/message/result/search/${nowPage}`,{
+            params : {
+                "type" : nowType,
+                "keyword" : nowKeyword
+            }
+        })
             .then((response) => {
                 if (response.data.isSuccess) {
-                    console.log(response)
-                    setSearchMessageResultList(response.data.result)
+                    setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
+                    setMessageResultList(response.data.result.dtoList)
 
                 } else {
                     console.log(response.data.message)
@@ -166,12 +170,16 @@ const MessageResult = () => {
     }
 
     // 메시지 상태 차트 정보 저장
+    const [messageStatusChartLabels, setMessageStatusChartLabels] = useState([]);
     const [messageStatusChartData, setMessageStatusChartData] = useState([]);
     const setMessageStatusData = (messageStatus) => {
+        const labels = []
         const data = []
         for (const status in messageStatus) {
+            labels.push(status)
             data.push(messageStatus[status])
         }
+        setMessageStatusChartLabels(labels)
         setMessageStatusChartData(data)
     }
 
@@ -196,13 +204,13 @@ const MessageResult = () => {
 
     // 메시지 상태 차트 데이터
     const messageStatusChart = {
-        labels: ["SUCCESS", "PENDING", "FAIL"],
+        labels: messageStatusChartLabels,
         datasets: [
             {
                 data: messageStatusChartData,
                 backgroundColor: [
-                    'rgba(75, 192, 192, 0.5)',
                     'rgba(54, 162, 235, 0.5)',
+                    'rgba(75, 192, 192, 0.5)',
                     'rgba(255, 99, 132, 0.5)'
                 ],
                 borderWidth: 1,
@@ -215,7 +223,7 @@ const MessageResult = () => {
             {/*modal*/}
             <Modal
                 className="modal-dialog-centered"
-                isOpen={isModal}
+                isOpen={isInfoModal}
                 size="xl"
             >
 
@@ -229,7 +237,7 @@ const MessageResult = () => {
                         className="close"
                         data-dismiss="modal"
                         type="button"
-                        onClick={() => setIsModal(false)}
+                        onClick={() => setIsInfoModal(false)}
                     >
                         <span aria-hidden={true}>×</span>
                     </button>
@@ -302,9 +310,29 @@ const MessageResult = () => {
 
                 {/*modal footer*/}
                 <div className="modal-footer">
-                    <Button color="primary" type="button" onClick={(e) => setIsModal(false)}>
+                    <Button color="primary" type="button" onClick={(e) => setIsInfoModal(false)}>
                         닫기
                     </Button>
+                </div>
+            </Modal>
+
+            <Modal
+                className="modal-dialog-centered"
+                isOpen={isContentModal}
+            >
+                <div className="modal-body">
+                    <button
+                        aria-label="Close"
+                        className="close"
+                        data-dismiss="modal"
+                        type="button"
+                        onClick={() => setIsContentModal(false)}
+                    >
+                        <span aria-hidden={true}>×</span>
+                    </button>
+                    {messageContent.split('\n').map( line => (
+                        <span>{line}<br/></span>
+                    ))}
                 </div>
             </Modal>
 
@@ -343,14 +371,17 @@ const MessageResult = () => {
                                                 color="primary"
                                                 outline
                                                 type="button"
-                                                onClick={(e) => getSearchMessageResult()}
+                                                onClick={(e) => {
+                                                    searchType === "" ? window.alert("검색 유형을 선택하세요") :
+                                                        searchInput === "" ? window.alert("검색 내용을 입력하세요") :
+                                                            window.location.replace(`/admin/result/sms/${searchType}/${searchInput}/1`)
+                                                }}
                                             >검색
                                             </Button>
                                         </InputGroup>
                                     </Col>
                                 </Row>
                             </CardHeader>
-
                             {/*table*/}
                             <Table className="align-items-center table-flush" responsive>
                                 <thead className="thead-light">
@@ -370,28 +401,25 @@ const MessageResult = () => {
 
                                             <DropdownMenu aria-labelledby="dropdownMenuButton">
                                                 <DropdownItem onClick={(e) => {
-                                                    setIsFilter(false)
+                                                    window.location.replace("/admin/result/sms/all/:keyword/1")
                                                 }}>
                                                     None
                                                 </DropdownItem>
 
                                                 <DropdownItem onClick={(e) => {
-                                                    setIsFilter(true)
-                                                    getFilterMessageResult("SMS")
+                                                    window.location.replace("/admin/result/sms/filter/SMS/1")
                                                 }}>
                                                     SMS
                                                 </DropdownItem>
 
                                                 <DropdownItem onClick={(e) => {
-                                                    setIsFilter(true)
-                                                    getFilterMessageResult("LMS")
+                                                    window.location.replace("/admin/result/sms/filter/LMS/1")
                                                 }}>
                                                     LMS
                                                 </DropdownItem>
 
                                                 <DropdownItem onClick={(e) => {
-                                                    setIsFilter(true)
-                                                    getFilterMessageResult("MMS")
+                                                    window.location.replace("/admin/result/sms/filter/MMS/1")
                                                 }}>
                                                     MMS
                                                 </DropdownItem>
@@ -402,23 +430,32 @@ const MessageResult = () => {
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {nowList.map((messageResult, index) => (
+                                {messageResultList.map((messageResult, index) => (
                                     <tr>
                                         <th scope="row" className="text-center" key={messageResult.messageId}>
                                             {(nowPage - 1) * pageData.size + index + 1}
                                         </th>
                                         <td className="text-center">{makeDate(messageResult.createdAt)}</td>
                                         <td className="text-center">{makeHyphen(messageResult.senderNumber)}</td>
-                                        <td>{messageResult.content}</td>
+                                        <td style={{textOverflow:"ellipsis", overflow:"hidden", maxWidth:"250px"}}>
+                                            <a className="text-dark" href="#" onClick={(e) => {
+                                                setIsContentModal(true)
+                                                setMessageContent(messageResult.content)
+                                            }}>
+                                                {messageResult.content}
+                                            </a>
+                                        </td>
                                         <td className="text-center">{messageResult.messageType}</td>
                                         <td className="text-center"><a href="#"><i className="fas fa-eye" onClick={(e) => {
-                                            setIsModal(true);
+                                            setIsInfoModal(true);
                                             getMessageResultInfo(messageResult.messageId);
                                         }}/></a></td>
                                     </tr>
                                 ))}
                                 </tbody>
                             </Table>
+
+
 
                             {/*pagination*/}
                             <CardFooter className="py-4">
@@ -431,7 +468,7 @@ const MessageResult = () => {
                                         {/*prev*/}
                                         <PaginationItem className={pageData.prev ? "active" : "disabled"}>
                                             <PaginationLink
-                                                href={"/admin/result/sms/" + (pageData.start - 1).toString()}
+                                                href={`/admin/result/sms/${nowType}/${nowKeyword}/` + (pageData.start - 1).toString()}
                                                 tabIndex="-1"
                                             >
                                                 <i className="fas fa-angle-left"/>
@@ -444,7 +481,7 @@ const MessageResult = () => {
                                             <PaginationItem
                                                 className={item == parseInt(nowPage) ? "active" : "inactive"}>
                                                 <PaginationLink
-                                                    href={"/admin/result/sms/" + item}
+                                                    href={`/admin/result/sms/${nowType}/${nowKeyword}/` + item}
                                                 >
                                                     {item}
                                                 </PaginationLink>
@@ -454,7 +491,7 @@ const MessageResult = () => {
                                         {/*next*/}
                                         <PaginationItem className={pageData.next ? "active" : "disabled"}>
                                             <PaginationLink
-                                                href={"/admin/result/sms/" + (pageData.end + 1).toString()}
+                                                href={`/admin/result/sms/${nowType}/${nowKeyword}/` + (pageData.end + 1).toString()}
                                             >
                                                 <i className="fas fa-angle-right"/>
                                                 <span className="sr-only">Next</span>
