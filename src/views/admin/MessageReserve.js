@@ -53,7 +53,7 @@ const MessageReserve = () => {
 
     // 예약 메시지 조회
     useState(async () => {
-        await axios.get(`/message/result/${nowPage}`)
+        await axios.get(`/message/result/reserve/${nowPage}`)
             .then((response) => {
                 if (response.data.isSuccess) {
                     setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
@@ -69,10 +69,10 @@ const MessageReserve = () => {
 
     // 예약 메시지 수신자 조회
     const getMessageResultInfo = async (messageId) => {
-        await axios.get(`/message/result/info/${messageId}`)
+        await axios.get(`/message/reserve/contact/${messageId}`)
             .then((response) => {
                 if (response.data.isSuccess) {
-                    setReserveReceiverList(response.data.result.messageResultRes)
+                    setReserveReceiverList(response.data.result.contacts)
                 } else {
                     console.log(response.data.message)
                 }
@@ -84,7 +84,7 @@ const MessageReserve = () => {
 
     // 예약 메시지 취소
     const cancelReservedMessage = async (messageId) => {
-        await axios.get(`/message/reserve/${messageId}`)
+        await axios.get(`/message/reserve/cancel/${messageId}`)
             .then((response) => {
                 if (response.data.isSuccess) {
                     window.alert("메시지 예약이 취소됐습니다.")
@@ -138,8 +138,8 @@ const MessageReserve = () => {
                                     {index + 1}
                                 </th>
                                 <td className="text-center">{messageResultInfo.memo}</td>
-                                <td className="text-center">{makeHyphen(messageResultInfo.contactPhoneNumber)}</td>
-                                <td className="text-center">{messageResultInfo.contactGroup}</td>
+                                <td className="text-center">{makeHyphen(messageResultInfo.phoneNumber)}</td>
+                                <td className="text-center">{messageResultInfo.groupName}</td>
                             </tr>
                         ))}
                         </tbody>
@@ -192,7 +192,8 @@ const MessageReserve = () => {
                                 <thead className="thead-light">
                                 <tr>
                                     <th scope="col" className="text-center">No</th>
-                                    <th scope="col" className="text-center">예약 일시</th>
+                                    {/*<th scope="col" className="text-center">예약 일시</th>*/}
+                                    <th scope="col">반복 일정</th>
                                     <th scope="col" className="text-center">예약 상태</th>
                                     <th scope="col" className="text-center">발신자 번호</th>
                                     <th scope="col">내용</th>
@@ -207,8 +208,13 @@ const MessageReserve = () => {
                                         <th scope="row" className="text-center" key={message.messageId}>
                                             {(nowPage - 1) * pageData.size + index + 1}
                                         </th>
-                                        <td className="text-center">매일 09시 58분</td>
-                                        <td className="text-center text-success">발송 완료</td>
+                                        {/*<td className="text-center">{makeDate(message.createdAt)}</td>*/}
+                                        <td>{message.cronText}</td>
+                                        {message.reserveStatus === "PROCESSING" ? (
+                                            <td className="text-center text-success">{message.reserveStatus}</td>
+                                        ) : (
+                                            <td className="text-center text-warning">{message.reserveStatus}</td>
+                                        )}
                                         <td className="text-center">{makeHyphen(message.senderNumber)}</td>
                                         <td style={{textOverflow:"ellipsis", overflow:"hidden", maxWidth:"250px"}}>
                                             <a className="text-dark" href="#" onClick={(e) => {
@@ -223,9 +229,12 @@ const MessageReserve = () => {
                                             setIsReceiverModal(true);
                                             getMessageResultInfo(message.messageId);
                                         }}/></a></td>
-                                        <td className="text-center"><a href="#">
-                                            <i className="fas fa-history" onClick={(e) => cancelReservedMessage(message.messageId)}/>
-                                        </a></td>
+                                        {message.reserveStatus === "PROCESSING" ? (
+                                            <td className="text-center"><a href="#">
+                                                <i className="fas fa-history" onClick={(e) => cancelReservedMessage(message.messageId)}/>
+                                            </a></td>
+                                        ) : null}
+
                                     </tr>
                                 ))}
                                 </tbody>
