@@ -99,9 +99,15 @@ const SendKakao = () => {
   const [senderNumber, setSenderNumber] = useState();
   const [senderMemo, setSenderMemo] = useState();
 
-  // 수신자 모달 -> 메인페이지 데이타 전달
+  // 수신자 모달 -> 메인페이지 데이터 전달
   const [selectContactList, setSelectContactList] = useState([]);
+  const getSelectContactList = (data) => {
+    setSelectContactList(data);
+  }
   const [selectContactGroupList, setSelectContactGroupList] = useState([]);
+  const getSelectContactGroupList = (data) => {
+    setSelectContactGroupList(data);
+  }
 
   // 탬플릿 모달 -> 메인페이지 데이터 전달
   const [selectTemplate, setSelectTemplate] = useState();
@@ -192,22 +198,22 @@ const SendKakao = () => {
     buttonTitle && buttonUrl && buttonType ? setMessageByte(l+29) : setMessageByte(l)
   });
 
-
-
-  // SenderNumber 불러오기
-  const [senderNumberList, setSenderNumberList] = useState([]);
-  useState(async () => {
-    await axios.get('/sender/all')
-      .then((response) => {
-        if (response.data.isSuccess) {
-          setSenderNumberList(response.data.result)
-        } else {
-          window.alert(response.data.message)
-        }
-      })
-      .catch((error) => {
-        window.alert(error.response.data.message)
-      })
+  // 기업 정보 불러오기
+  const [companyName, setCompanyName] = useState();
+  const [companyKakaoBizId, setCompanyKakaoBizId] = useState();
+  useEffect(async () => {
+    await axios.get("/userinfo")
+        .then((response) => {
+          if (response.data.isSuccess) {
+            setCompanyName(response.data.result.companyName)
+            setCompanyKakaoBizId(response.data.result.kakaoBizId)
+          } else {
+            console.log(response.data.message)
+          }
+        })
+        .catch((error) => {
+          console.log(error.response.data.message)
+        })
   })
 
   // 메시지 전송
@@ -215,21 +221,16 @@ const SendKakao = () => {
 
     await axios.post('/message/send/kakao',{
       "kakaoMessageDto":{
-        "from": senderMemo,
+        "from": companyKakaoBizId,
         "title": messageTitle,
         "subtitle": messageSubtitle,
         "content": messageContext,
         "description":messageDescription,
         "image":selectImage,
-        "kakaoButtonDtoList":[
-          {
-            buttonTitle: buttonTitle,
-            buttonType:buttonType,
-            buttonUrl: buttonUrl
-          }
-        ]
+        "buttonTitle": buttonTitle,
+        "buttonType" : buttonType,
+        "buttonUrl"  : buttonUrl,
       },
-      "senderNumber":senderNumber,
       "receivers":selectContactList.map(contact=>contact.phoneNumber)
     }).then((response) => {
         if (response.data.isSuccess) {
@@ -335,12 +336,12 @@ const SendKakao = () => {
           removeSelectImage={removeSelectImage}
       />
       <Receiver
-        isShowingReceiver={isShowingReceiver}
-        selectContactChild={selectContactChild}
-        selectContactGroupChild={selectContactGroupChild}
-        hide={toggleReceiver}
-        selectContactListParent={selectContactList}
-        selectContactGroupListParent={selectContactGroupList}
+          isShowingReceiver={isShowingReceiver}
+          hide={toggleReceiver}
+          selectContactList={selectContactList}
+          selectContactGroupList={selectContactGroupList}
+          setSelectContactList={getSelectContactList}
+          setSelectContactGroupList={getSelectContactGroupList}
       />
       <MessageSchedule
           isShowingMessageSchedule={isShowingMessageSchedule}
@@ -417,7 +418,7 @@ const SendKakao = () => {
                         </label>
                         <Container>
                           <Row>
-                            <Badge className="badge-md m-1" color="primary">{senderNumber != null ? senderMemo + " (" + makeHyphen(senderNumber) + ")" : null}</Badge>
+                            <Badge className="badge-md m-1" color="primary">{companyName + "(" + companyKakaoBizId + ")"}</Badge>
                           </Row>
                         </Container>
                       </FormGroup>
@@ -428,14 +429,18 @@ const SendKakao = () => {
                         </label>
                         <Container>
                           <Row>
-                            {selectContactList.map(v => (
-                                    <Badge className="badge-md m-1" color="primary">{v.phoneNumber}</Badge>
-                                )
-                            )}
-                            {selectContactGroupList.map(v => (
-                                    <Badge className="badge-md m-1" color="info">{v.name}</Badge>
-                                )
-                            )}
+                            {selectContactGroupList.map(contactGroup => (
+                                <p>
+                                  <Badge className="badge-md m-1"
+                                         color="info">{contactGroup.name}</Badge>
+                                  {selectContactList.map((contact) => (
+                                      (contact.groupId === contactGroup.id) ? (
+                                          <Badge className="badge-md m-1"
+                                                 color="primary">{makeHyphen(contact.phoneNumber)}</Badge>
+                                      ) : null
+                                  ))}
+                                </p>
+                            ))}
                           </Row>
                         </Container>
                       </FormGroup>

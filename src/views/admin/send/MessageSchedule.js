@@ -9,7 +9,7 @@ const MessageSchedule = (props) => {
     ]
 
     const month = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Nov', 'Dec'
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ]
 
     const [dayMin, setDayMin] = useState("30");
@@ -28,7 +28,7 @@ const MessageSchedule = (props) => {
     const [monthHour, setMonthHour] = useState("10");
 
     const [yearChecked, setYearChecked] = useState();
-    const [yearMonth, setYearMonth] = useState("JAN");
+    const [yearMonth, setYearMonth] = useState("1");
     const [yearDay, setYearDay] = useState("1");
     const [yearNum, setYearNum] = useState("1");
     const [yearWeek, setYearWeek] = useState("MON");
@@ -37,26 +37,32 @@ const MessageSchedule = (props) => {
 
     useEffect(() => {
         if (checked === "day") {
-            props.setCron("0 " + dayMin + " " + dayHour + " * * ? *")
+            props.setCron("0 " + dayMin + " " + dayHour + " * * ?")
+            props.setCronText("매일 " + dayHour + "시 " + dayMin + "분")
         }
         if (checked === "week") {
-            props.setCron("0 " + weekMin + " " + weekHour + " ? * " + weekSelect + " *")
+            props.setCron("0 " + weekMin + " " + weekHour + " ? * " + weekSelect)
+            props.setCronText("매주 " + weekSelect + " " + weekHour + "시 " + weekMin + " 분")
         }
         if (checked === "month") {
             if (monthChecked === 1) {
-                props.setCron("0 " + monthMin + " " + monthHour + " " + monthDay + " 1/" + monthPeriod + " ? *")
+                props.setCron("0 " + monthMin + " " + monthHour + " " + monthDay + " 1/" + monthPeriod + " ?")
+                props.setCronText("매월 " + monthDay + "일 " + monthHour + "시 " + monthMin + " 분 " + monthPeriod + "개월 마다")
             }
             if (monthChecked === 2) {
-                props.setCron("0 " + monthMin + " " + monthHour + " ? 1/" + monthPeriod + " " + monthWeek + "#" + monthNum + " *")
+                props.setCron("0 " + monthMin + " " + monthHour + " ? 1/" + monthPeriod + " " + monthWeek + "#" + monthNum)
+                props.setCronText("매월 " + monthNum + "째주 " + monthWeek + " " + monthHour + "시 " + monthMin + "분 " + monthPeriod + "개월 마다")
             }
 
         }
         if (checked === "year") {
             if (yearChecked === 1) {
-                props.setCron("0 " + yearMin + " " + yearHour + " " + yearDay + " " + yearMonth + " ? *")
+                props.setCron("0 " + yearMin + " " + yearHour + " " + yearDay + " " + yearMonth + " ?")
+                props.setCronText("매년 " + yearMonth + "월 " + yearDay + "일 " + yearHour + "시 " + yearMin + "분")
             }
             if (yearChecked === 2) {
-                props.setCron("0 " + yearMin + " " + yearHour + " ? " + yearMonth + " " + yearWeek + "#" + yearNum + " *")
+                props.setCron("0 " + yearMin + " " + yearHour + " ? " + yearMonth + " " + yearWeek + "#" + yearNum)
+                props.setCronText("매년 " + yearMonth + "월 " + yearNum + "째주 " + yearWeek + " " + yearHour + "시 " + yearMin + "분")
             }
         }
     });

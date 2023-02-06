@@ -109,6 +109,7 @@ const Login = () => {
               showConfirmButton: false,
               timer: 2000
             })
+            window.location.replace("/auth/register")
           }
          }
         )
