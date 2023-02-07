@@ -53,7 +53,7 @@ const MessageResult = () => {
         } else {
             getSearchMessageResult()
         }
-    })
+    }, [nowType])
 
     // 검색
     const [searchInput, setSearchInput] = useState("")
