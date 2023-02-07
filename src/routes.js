@@ -8,6 +8,7 @@ import SendKakao from "./views/admin/send/kakao/SendKakao"
 import Template from "./views/admin/template/Template";
 import MessageResult from "./views/admin/MessageResult";
 import MessageReserve from "./views/admin/MessageReserve";
+import KakaoMessageResult from "./views/admin/KakaoMessageResult";
 
 var routes = [
   {
@@ -87,6 +88,14 @@ var routes = [
     name: "메시지 발송 결과",
     icon: "fas fa-envelope",
     component: MessageResult                                                                     ,
+    layout: "/admin",
+    sidebar:true
+  },
+  {
+    path: "/result/kakao/:type/:keyword/:page",
+    name: "알림톡 발송 결과",
+    icon: "fas fa-envelope",
+    component: KakaoMessageResult                                                                     ,
     layout: "/admin",
     sidebar:true
   },
