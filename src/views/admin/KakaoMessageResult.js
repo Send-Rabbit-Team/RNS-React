@@ -53,7 +53,7 @@ const MessageResult = () => {
         } else {
             getSearchMessageResult()
         }
-    })
+    }, [nowType])
 
     // 검색
     const [searchInput, setSearchInput] = useState("")
@@ -148,14 +148,22 @@ const MessageResult = () => {
             })
     }
 
+    if (nowType === "all") {
+        getAllMessageResult()
+    } else if (nowType === "filter") {
+        getFilterMessageResult()
+    } else {
+        getSearchMessageResult()
+    }
+
     // 알림톡 상세 결과 조회
     const getMessageResultInfo = async (messageId) => {
         await axios.get(`/kakao/message/result/info/${messageId}`)
             .then((response) => {
                 if (response.data.isSuccess) {
-                    setMessageResultInfoList(response.data.result)
-                    // setBrokerData(response.data.result.broker)
-                    // setMessageStatusData(response.data.result.messageStatus)
+                    setMessageResultInfoList(response.data.result.kakaoMessageResultResList)
+                    setBrokerData(response.data.result.kakaoBrokerMap)
+                    setMessageStatusData(response.data.result.messageStatusMap)
                 } else {
                     console.log(response.data.message)
                 }
@@ -219,8 +227,8 @@ const MessageResult = () => {
             {
                 data: messageStatusChartData,
                 backgroundColor: [
-                    'rgba(54, 162, 235, 0.5)',
                     'rgba(75, 192, 192, 0.5)',
+                    'rgba(54, 162, 235, 0.5)',
                     'rgba(255, 99, 132, 0.5)'
                 ],
                 borderWidth: 1,
@@ -300,7 +308,7 @@ const MessageResult = () => {
                                 <th scope="row" className="text-center" key={messageResultInfo.id}>
                                     {index + 1}
                                 </th>
-                                <td className="text-center">{makeDate(messageResultInfo.createAt)}</td>
+                                <td className="text-center">{makeDate(messageResultInfo.createdAt)}</td>
                                 <td className="text-center">{messageResultInfo.contactMemo} ({makeHyphen(messageResultInfo.contactNumber)})</td>
                                 <td className="text-center">{messageResultInfo.contactGroup}</td>
                                 <td className="text-center">{messageResultInfo.kakaoBrokerName}</td>
