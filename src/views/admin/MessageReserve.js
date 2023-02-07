@@ -229,12 +229,13 @@ const MessageReserve = () => {
                                             setIsReceiverModal(true);
                                             getMessageResultInfo(message.messageId);
                                         }}/></a></td>
+                                        <td className="text-center">
                                         {message.reserveStatus === "PROCESSING" ? (
-                                            <td className="text-center"><a href="#">
+                                            <a href="#">
                                                 <i className="fas fa-history" onClick={(e) => cancelReservedMessage(message.messageId)}/>
-                                            </a></td>
+                                            </a>
                                         ) : null}
-
+                                        </td>
                                     </tr>
                                 ))}
                                 </tbody>

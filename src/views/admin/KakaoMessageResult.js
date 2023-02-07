@@ -363,10 +363,8 @@ const MessageResult = () => {
                                 )) : null}
                             </p>
                             <p className="card-text"><small className="text-muted">{message.description}</small></p>
-                        </CardBody>
-                        <CardFooter>
                             <Button block style={{backgroundColor : "whitesmoke"}} href={message.buttonUrl}>{message.buttonTitle}</Button>
-                        </CardFooter>
+                        </CardBody>
                     </Card>
                 </div>
             </Modal>
@@ -489,7 +487,7 @@ const MessageResult = () => {
                                             {(nowPage - 1) * pageData.size + index + 1}
                                         </th>
                                         <td className="text-center">{makeDate(messageResult.createAt)}</td>
-                                        <td className="text-center"><a href="#" className="text-dark" onClick={(e) => {
+                                        <td><a href="#" className="text-dark" onClick={(e) => {
                                             setIsContentModal(true);
                                             setMessage(messageResult)
                                         }}>{messageResult.title + " " + messageResult.subTitle}</a></td>
