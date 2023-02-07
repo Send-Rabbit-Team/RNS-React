@@ -95,9 +95,6 @@ const SendKakao = () => {
   const { isShowingImageUpload, toggleImageUpload } = useModalImageUpload();
   const { isShowingMessageSchedule, toggleMessageSchedule } = useModalMessageSchedule();
 
-  // 발신자 번호 변수
-  const [senderNumber, setSenderNumber] = useState();
-  const [senderMemo, setSenderMemo] = useState();
 
   // 수신자 모달 -> 메인페이지 데이터 전달
   const [selectContactList, setSelectContactList] = useState([]);
@@ -129,7 +126,10 @@ const SendKakao = () => {
   const [cron, setCron] = useState("");
   const getCron = (data) => {
     setCron(data);
-    console.log(cron)
+  }
+  const [cronText, setCronText] = useState("");
+  const getCronText = (data) => {
+    setCronText(data);
   }
 
 
@@ -230,6 +230,8 @@ const SendKakao = () => {
         "buttonTitle": buttonTitle,
         "buttonType" : buttonType,
         "buttonUrl"  : buttonUrl,
+        "cronExpression" : cron,
+        "cronText" : cronText,
       },
       "receivers":selectContactList.map(contact=>contact.phoneNumber)
     }).then((response) => {
@@ -244,16 +246,6 @@ const SendKakao = () => {
         window.alert(error.response.data.message)
       })
   }
-
-  // 테스트 중
-  const selectContactGroupChild = (data) => {
-    setSelectContactGroupList([...data])
-  }
-
-  const selectContactChild = (data) => {
-    setSelectContactList([...data])
-  }
-
 
 
   // 미리보기 출력 텍스트
@@ -347,6 +339,7 @@ const SendKakao = () => {
           isShowingMessageSchedule={isShowingMessageSchedule}
           hide={toggleMessageSchedule}
           setCron={getCron}
+          setCronText={getCronText}
       />
 
       {/* 메인 페이지 */}
@@ -551,6 +544,17 @@ const SendKakao = () => {
                           <option value="MD" selected={buttonType === "MD"}>메시지 전달</option>
                           <option value="AC" selected={buttonType === "AC"}>채널 추가</option>
                         </Input>
+                      </FormGroup>
+
+                      <FormGroup>
+                        <label className="form-control-label">
+                          예약 발송 정보
+                        </label>
+                        <Container>
+                          <Row>
+                            <Badge className="badge-md" color="primary">{cronText}</Badge>
+                          </Row>
+                        </Container>
                       </FormGroup>
 
                     </CardBody>
