@@ -9,6 +9,7 @@ import Template from "./views/admin/template/Template";
 import MessageResult from "./views/admin/MessageResult";
 import MessageReserve from "./views/admin/MessageReserve";
 import KakaoMessageResult from "./views/admin/KakaoMessageResult";
+import KakaoMessageReserve from "./views/admin/KakaoMessageReserve";
 
 var routes = [
   {
@@ -104,6 +105,14 @@ var routes = [
     name: "메시지 예약 발송",
     icon: "fas fa-clock",
     component: MessageReserve                                                                     ,
+    layout: "/admin",
+    sidebar:true
+  },
+  {
+    path: "/reserve/kakao/:page",
+    name: "알림톡 예약 발송",
+    icon: "fas fa-clock",
+    component: KakaoMessageReserve                                                                     ,
     layout: "/admin",
     sidebar:true
   },
