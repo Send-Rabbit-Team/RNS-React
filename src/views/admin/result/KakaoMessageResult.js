@@ -13,7 +13,7 @@ import {
     DropdownMenu,
     DropdownItem,
     Col,
-    InputGroupAddon, Input, InputGroup
+    InputGroupAddon, Input, InputGroup, CardBody
 } from "reactstrap";
 import Header from "components/Headers/Header.js";
 import React, {useEffect, useState} from "react";
@@ -26,6 +26,13 @@ const MessageResult = () => {
     // 페이지네이션
     const params = useParams();
     const nowPage = isNaN(params.page) ? 1 : params.page
+    const nowType = params.type === ":type" ? "all" : params.type
+    const nowKeyword = params.keyword
+
+    // console.log("nowPage : " + nowPage)
+    // console.log("nowType : " + nowType)
+    // console.log("nowKeyword : " + nowKeyword)
+
     const [pageData, setPageData] = useState({
         totalPage: 0,
         page     : 1,
@@ -38,19 +45,15 @@ const MessageResult = () => {
     })
 
     // 현재 화면에 띄울 리스트
-    const [nowList, setNowList] = useState([])
     useEffect(() => {
-        if (isFilter) {
-            setNowList(filterMessageResultList)
-        } else if (searchInput !== "") {
-            setNowList(searchMessageResultList)
+        if (nowType === "all") {
+            getAllMessageResult()
+        } else if (nowType === "filter") {
+            getFilterMessageResult()
         } else {
-            setNowList(messageResultList)
+            getSearchMessageResult()
         }
-    })
-
-    // 필터
-    const [isFilter, setIsFilter] = useState(false)
+    }, [nowType])
 
     // 검색
     const [searchInput, setSearchInput] = useState("")
@@ -58,12 +61,24 @@ const MessageResult = () => {
 
     // 메시지 결과 리스트
     const [messageResultList, setMessageResultList] = useState([])
-    const [filterMessageResultList, setFilterMessageResultList] = useState([])
-    const [searchMessageResultList, setSearchMessageResultList] = useState([])
     const [messageResultInfoList, setMessageResultInfoList] = useState([])
 
     // 모달
-    const [isModal, setIsModal] = useState(false);
+    const [isInfoModal, setIsInfoModal] = useState(false);
+    const [isContentModal, setIsContentModal] = useState(false);
+
+    // 메시지 내용
+    const [message, setMessage] = useState({});
+
+    // 알림톡 버튼 종류
+    const buttonType = {
+        "DS" : "배송 조회",
+        "WL" : "웹 링크",
+        "AL" : "앱 링크",
+        "BK" : "봇 링크",
+        "MD" : "메시지 전달",
+        "AC" : "채널 추가"
+    }
 
     // 연락처 format 수정 메소드
     const makeHyphen = (number) => {
@@ -75,9 +90,9 @@ const MessageResult = () => {
         return date.split("T")[0] + " " + date.split("T")[1]
     }
 
-    // 메시지 결과 조회
-    useState(async () => {
-        await axios.get(`/message/result/${nowPage}`)
+    // 전체 알림톡 결과 조회
+    const getAllMessageResult = async () => {
+        await axios.get(`/kakao/message/result/${nowPage}`)
             .then((response) => {
                 if (response.data.isSuccess) {
                     setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
@@ -89,18 +104,19 @@ const MessageResult = () => {
             .catch((error) => {
                 console.log(error)
             })
-    })
+    }
 
-    // 메시지 종류에 따른 메시지 결과 조회
+    // 알림톡 버튼 종류에 따른 알림톡 결과 조회
     const getFilterMessageResult = async (messageType) => {
-        await axios.get(`/message/result/filter/type/${nowPage}`,{
+        await axios.get(`/kakao/message/result/filter/${nowPage}`,{
             params : {
-                "type" : messageType
+                "type" : nowKeyword
             }
         })
             .then((response) => {
                 if (response.data.isSuccess) {
-                    setFilterMessageResultList(response.data.result)
+                    setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
+                    setMessageResultList(response.data.result.dtoList)
                 } else {
                     console.log(response.data.message)
                 }
@@ -110,20 +126,18 @@ const MessageResult = () => {
             })
     }
 
-    // 메시지 검색에 따른 메시지 결과 조회
+    // 알림톡 검색에 따른 알림톡 결과 조회
     const getSearchMessageResult = async () => {
-        searchType === "" ? window.alert("검색 유형을 선택하세요") :
-            searchInput === "" ? window.alert("검색 내용을 입력하세요") :
-                await axios.get(`/message/result/search/${nowPage}`,{
-                    params : {
-                        "type" : searchType,
-                        "keyword" : searchInput
-                    }
-                })
+        await axios.get(`/kakao/message/result/search/${nowPage}`,{
+            params : {
+                "type" : nowType,
+                "keyword" : nowKeyword
+            }
+        })
             .then((response) => {
                 if (response.data.isSuccess) {
-                    console.log(response)
-                    setSearchMessageResultList(response.data.result)
+                    setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
+                    setMessageResultList(response.data.result.dtoList)
 
                 } else {
                     console.log(response.data.message)
@@ -134,14 +148,22 @@ const MessageResult = () => {
             })
     }
 
-    // 메시지 상세 결과 조회
+    if (nowType === "all") {
+        getAllMessageResult()
+    } else if (nowType === "filter") {
+        getFilterMessageResult()
+    } else {
+        getSearchMessageResult()
+    }
+
+    // 알림톡 상세 결과 조회
     const getMessageResultInfo = async (messageId) => {
-        await axios.get(`/message/result/info/${messageId}`)
+        await axios.get(`/kakao/message/result/info/${messageId}`)
             .then((response) => {
                 if (response.data.isSuccess) {
-                    setMessageResultInfoList(response.data.result.messageResultRes)
-                    setBrokerData(response.data.result.broker)
-                    setMessageStatusData(response.data.result.messageStatus)
+                    setMessageResultInfoList(response.data.result.kakaoMessageResultResList)
+                    setBrokerData(response.data.result.kakaoBrokerMap)
+                    setMessageStatusData(response.data.result.messageStatusMap)
                 } else {
                     console.log(response.data.message)
                 }
@@ -166,12 +188,16 @@ const MessageResult = () => {
     }
 
     // 메시지 상태 차트 정보 저장
+    const [messageStatusChartLabels, setMessageStatusChartLabels] = useState([]);
     const [messageStatusChartData, setMessageStatusChartData] = useState([]);
     const setMessageStatusData = (messageStatus) => {
+        const labels = []
         const data = []
         for (const status in messageStatus) {
+            labels.push(status)
             data.push(messageStatus[status])
         }
+        setMessageStatusChartLabels(labels)
         setMessageStatusChartData(data)
     }
 
@@ -196,7 +222,7 @@ const MessageResult = () => {
 
     // 메시지 상태 차트 데이터
     const messageStatusChart = {
-        labels: ["SUCCESS", "PENDING", "FAIL"],
+        labels: messageStatusChartLabels,
         datasets: [
             {
                 data: messageStatusChartData,
@@ -212,24 +238,24 @@ const MessageResult = () => {
 
     return (
         <>
-            {/*modal*/}
+            {/*알림톡 상세 결과 열람 모달*/}
             <Modal
                 className="modal-dialog-centered"
-                isOpen={isModal}
+                isOpen={isInfoModal}
                 size="xl"
             >
 
                 {/*modal header*/}
                 <div className="modal-header">
                     <h3 className="modal-title" id="modal-title-default">
-                        메시지 발송 결과 상세
+                        알림톡 발송 결과 상세
                     </h3>
                     <button
                         aria-label="Close"
                         className="close"
                         data-dismiss="modal"
                         type="button"
-                        onClick={() => setIsModal(false)}
+                        onClick={() => setIsInfoModal(false)}
                     >
                         <span aria-hidden={true}>×</span>
                     </button>
@@ -279,13 +305,13 @@ const MessageResult = () => {
                         <tbody>
                         {messageResultInfoList.map((messageResultInfo, index) => (
                             <tr>
-                                <th scope="row" className="text-center" key={messageResultInfo.id}>
+                                <th scope="row" className="text-center" key={messageResultInfo.kakaoMessageId}>
                                     {index + 1}
                                 </th>
                                 <td className="text-center">{makeDate(messageResultInfo.createdAt)}</td>
-                                <td className="text-center">{messageResultInfo.memo} ({makeHyphen(messageResultInfo.contactPhoneNumber)})</td>
+                                <td className="text-center">{messageResultInfo.contactMemo} ({makeHyphen(messageResultInfo.contactNumber)})</td>
                                 <td className="text-center">{messageResultInfo.contactGroup}</td>
-                                <td className="text-center">{messageResultInfo.brokerName}</td>
+                                <td className="text-center">{messageResultInfo.kakaoBrokerName}</td>
                                 {messageResultInfo.messageStatus === "SUCCESS" ? (
                                     <td className="text-center text-success">{messageResultInfo.messageStatus}</td>
                                 ): messageResultInfo.messageStatus === "FAIL" ? (
@@ -302,14 +328,49 @@ const MessageResult = () => {
 
                 {/*modal footer*/}
                 <div className="modal-footer">
-                    <Button color="primary" type="button" onClick={(e) => setIsModal(false)}>
+                    <Button color="primary" type="button" onClick={(e) => setIsInfoModal(false)}>
                         닫기
                     </Button>
                 </div>
             </Modal>
 
+            {/*알림톡 제목+내용 열람 모달*/}
+            <Modal
+                className="modal-dialog-centered"
+                isOpen={isContentModal}
+            >
+                <div className="modal-header pb-0">
+                    <button
+                        aria-label="Close"
+                        className="close"
+                        data-dismiss="modal"
+                        type="button"
+                        onClick={() => setIsContentModal(false)}
+                    >
+                        <span aria-hidden={true}>×</span>
+                    </button>
+                </div>
+                <div className="modal-body">
+                    <Card className="m-0">
+                        <CardHeader className="bg-yellow">알림톡 도착</CardHeader>
+                        <CardBody>
+                            <h2 className="card-title">{message.title}</h2>
+                            <h5 className="card-subtitle mb-2 text-muted">{message.subTitle}</h5>
+                            <br/>
+                            <p className="card-text">
+                                {message.content != null ? message.content.split('\n').map( line => (
+                                    <span>{line}<br/></span>
+                                )) : null}
+                            </p>
+                            <p className="card-text"><small className="text-muted">{message.description}</small></p>
+                            <Button block style={{backgroundColor : "whitesmoke"}} href={message.buttonUrl}>{message.buttonTitle}</Button>
+                        </CardBody>
+                    </Card>
+                </div>
+            </Modal>
+
             <Header/>
-            {/* Page content */}
+
             <Container className="mt--7" fluid>
                 <Row>
                     <div className="col">
@@ -317,84 +378,104 @@ const MessageResult = () => {
                             <CardHeader className="border-0">
                                 <Row>
                                     <Col>
-                                        <h3 className="mb-0">메시지 발송 결과 목록</h3>
+                                        <h3 className="mb-0">알림톡 발송 결과 목록</h3>
                                     </Col>
                                     <Col>
 
                                         {/*search*/}
-                                        <InputGroup>
-                                            <InputGroupAddon addonType="append">
+                                        <InputGroup className="input-group-alternative">
+                                            <InputGroupAddon addonType="prepend">
                                                 <Input
                                                     type="select"
                                                     onClick={(e) => setSearchType(e.target.value)}
                                                 >
                                                     <option value="">검색 유형</option>
-                                                    <option value="SENDER">발신자 번호</option>
-                                                    <option value="RECEIVER">수신자 번호</option>
+                                                    <option value="NUMBER">수신자 번호</option>
                                                     <option value="MEMO">수신자 메모</option>
-                                                    <option value="MESSAGE">메시지 내용</option>
+                                                    <option value="TITLE">알림톡 제목</option>
+                                                    <option value="CONTENT">알림톡 내용</option>
                                                 </Input>
                                             </InputGroupAddon>
                                             <Input
                                                 type="text"
                                                 onChange={(e) => setSearchInput(e.target.value)}
                                             />
-                                            <Button
-                                                color="primary"
-                                                outline
-                                                type="button"
-                                                onClick={(e) => getSearchMessageResult()}
-                                            >검색
-                                            </Button>
+                                            <InputGroupAddon addonType="append">
+                                                <Button
+                                                    color="primary"
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        searchType === "" ? window.alert("검색 유형을 선택하세요") :
+                                                            searchInput === "" ? window.alert("검색 내용을 입력하세요") :
+                                                                window.location.replace(`/admin/result/kakao/${searchType}/${searchInput}/1`)
+                                                    }}
+                                                >검색
+                                                </Button>
+                                            </InputGroupAddon>
+
                                         </InputGroup>
                                     </Col>
                                 </Row>
                             </CardHeader>
-
                             {/*table*/}
                             <Table className="align-items-center table-flush" responsive>
                                 <thead className="thead-light">
                                 <tr>
                                     <th scope="col" className="text-center">No</th>
                                     <th scope="col" className="text-center">발송 일시</th>
-                                    <th scope="col" className="text-center">발신자 번호</th>
-                                    <th scope="col">내용</th>
+                                    <th scope="col" className="text-center">제목</th>
                                     <th scope="col" className="text-center">
                                         <UncontrolledDropdown>
                                             <DropdownToggle
                                                 nav="true"
                                                 type="text"
                                             >
-                                                메시지 유형 ▼
+                                                알림톡 버튼 유형 ▼
                                             </DropdownToggle>
 
                                             <DropdownMenu aria-labelledby="dropdownMenuButton">
                                                 <DropdownItem onClick={(e) => {
-                                                    setIsFilter(false)
+                                                    window.location.replace("/admin/result/kakao/all/:keyword/1")
                                                 }}>
                                                     None
                                                 </DropdownItem>
 
                                                 <DropdownItem onClick={(e) => {
-                                                    setIsFilter(true)
-                                                    getFilterMessageResult("SMS")
+                                                    window.location.replace(`/admin/result/kakao/filter/DS/1`)
                                                 }}>
-                                                    SMS
+                                                    배송 조회
                                                 </DropdownItem>
 
                                                 <DropdownItem onClick={(e) => {
-                                                    setIsFilter(true)
-                                                    getFilterMessageResult("LMS")
+                                                    window.location.replace(`/admin/result/kakao/filter/WL/1`)
                                                 }}>
-                                                    LMS
+                                                    웹 링크
                                                 </DropdownItem>
 
                                                 <DropdownItem onClick={(e) => {
-                                                    setIsFilter(true)
-                                                    getFilterMessageResult("MMS")
+                                                    window.location.replace(`/admin/result/kakao/filter/AL/1`)
                                                 }}>
-                                                    MMS
+                                                    앱 링크
                                                 </DropdownItem>
+
+                                                <DropdownItem onClick={(e) => {
+                                                    window.location.replace(`/admin/result/kakao/filter/BK/1`)
+                                                }}>
+                                                    봇 링크
+                                                </DropdownItem>
+
+                                                <DropdownItem onClick={(e) => {
+                                                    window.location.replace(`/admin/result/kakao/filter/MD/1`)
+                                                }}>
+                                                    메시지 전달
+                                                </DropdownItem>
+
+                                                <DropdownItem onClick={(e) => {
+                                                    window.location.replace(`/admin/result/kakao/filter/AC/1`)
+                                                }}>
+                                                    채널 추가
+                                                </DropdownItem>
+
                                             </DropdownMenu>
                                         </UncontrolledDropdown>
                                     </th>
@@ -402,23 +483,27 @@ const MessageResult = () => {
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {nowList.map((messageResult, index) => (
+                                {messageResultList.map((messageResult, index) => (
                                     <tr>
                                         <th scope="row" className="text-center" key={messageResult.messageId}>
                                             {(nowPage - 1) * pageData.size + index + 1}
                                         </th>
-                                        <td className="text-center">{makeDate(messageResult.createdAt)}</td>
-                                        <td className="text-center">{makeHyphen(messageResult.senderNumber)}</td>
-                                        <td>{messageResult.content}</td>
-                                        <td className="text-center">{messageResult.messageType}</td>
-                                        <td className="text-center"><a href="#"><i className="fas fa-eye" onClick={(e) => {
-                                            setIsModal(true);
+                                        <td className="text-center">{makeDate(messageResult.createAt)}</td>
+                                        <td><a href="views/admin/result/KakaoMessageResult#" className="text-dark" onClick={(e) => {
+                                            setIsContentModal(true);
+                                            setMessage(messageResult)
+                                        }}>{messageResult.title + " " + messageResult.subTitle}</a></td>
+                                        <td className="text-center">{buttonType[messageResult.buttonType]}</td>
+                                        <td className="text-center"><a href="views/admin/result/KakaoMessageResult#"><i className="fas fa-eye" onClick={(e) => {
+                                            setIsInfoModal(true);
                                             getMessageResultInfo(messageResult.messageId);
                                         }}/></a></td>
                                     </tr>
                                 ))}
                                 </tbody>
                             </Table>
+
+
 
                             {/*pagination*/}
                             <CardFooter className="py-4">
@@ -431,7 +516,7 @@ const MessageResult = () => {
                                         {/*prev*/}
                                         <PaginationItem className={pageData.prev ? "active" : "disabled"}>
                                             <PaginationLink
-                                                href={"/admin/result/sms/" + (pageData.start - 1).toString()}
+                                                href={`/admin/result/kakao/${nowType}/${nowKeyword}/` + (pageData.start - 1).toString()}
                                                 tabIndex="-1"
                                             >
                                                 <i className="fas fa-angle-left"/>
@@ -444,7 +529,7 @@ const MessageResult = () => {
                                             <PaginationItem
                                                 className={item == parseInt(nowPage) ? "active" : "inactive"}>
                                                 <PaginationLink
-                                                    href={"/admin/result/sms/" + item}
+                                                    href={`/admin/result/kakao/${nowType}/${nowKeyword}/` + item}
                                                 >
                                                     {item}
                                                 </PaginationLink>
@@ -454,7 +539,7 @@ const MessageResult = () => {
                                         {/*next*/}
                                         <PaginationItem className={pageData.next ? "active" : "disabled"}>
                                             <PaginationLink
-                                                href={"/admin/result/sms/" + (pageData.end + 1).toString()}
+                                                href={`/admin/result/kakao/${nowType}/${nowKeyword}/` + (pageData.end + 1).toString()}
                                             >
                                                 <i className="fas fa-angle-right"/>
                                                 <span className="sr-only">Next</span>

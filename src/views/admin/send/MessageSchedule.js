@@ -42,7 +42,7 @@ const MessageSchedule = (props) => {
         }
         if (checked === "week") {
             props.setCron("0 " + weekMin + " " + weekHour + " ? * " + weekSelect)
-            props.setCronText("매주 " + weekSelect + " " + weekHour + "시 " + weekMin + " 분")
+            props.setCronText("매주 " + weekSelect + " " + weekHour + "시 " + weekMin + "분")
         }
         if (checked === "month") {
             if (monthChecked === 1) {

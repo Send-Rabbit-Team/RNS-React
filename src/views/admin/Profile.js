@@ -8,14 +8,137 @@ import {
   Input,
   Container,
   Row,
-  Col
+  Col, Modal, InputGroup, InputGroupAddon, InputGroupText, Label
 } from "reactstrap";
 // core components
 import UserHeader from "components/Headers/UserHeader.js";
+import axios from "axios";
+import React, {useEffect, useState} from "react";
 
 const Profile = () => {
+
+  const [isModal, setIsModal] = useState(false);
+
+  const [pointInfo, setPointInfo] = useState({});
+
+  const [smsPoint, setSmsPoint] = useState(0);
+  const [kakaoPoint, setKakaoPoint] = useState(0);
+
+  useEffect(async () => {
+    await axios.get("/point/get")
+        .then((response) => {
+          if (response.data.isSuccess) {
+            setPointInfo(response.data.result)
+          } else {
+            console.log(response.data.error)
+          }
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+  }, [pointInfo])
+
+  const chargePoint = async () => {
+    // (smsPoint & kakaoPoint) === 0 ? window.alert("구매할 당근의 개수를 입력하세요") :
+    //   window.confirm(`메시지 당근 ${smsPoint}개와 카카오 당근 ${kakaoPoint}개를 결제하시겠습니까?`) ?
+        await axios.get("/point/charge",{
+          params : {
+            smsPoint : smsPoint,
+            kakaoPoint : kakaoPoint,
+          }
+        }).then((response) => {
+          if (response.data.isSuccess) {
+            window.location.replace(response.data.result)
+          }
+        })
+  // : null
+  }
   return (
     <>
+      {/* modal */}
+      <Modal
+          className="modal-dialog-centered"
+          isOpen={isModal}
+      >
+
+        {/*modal header*/}
+        <div className="modal-header">
+          <h3 className="modal-title" id="modal-title-default">
+            당근 충전하기
+          </h3>
+          <button
+              aria-label="Close"
+              className="close"
+              data-dismiss="modal"
+              type="button"
+              onClick={() => setIsModal(false)}
+          >
+            <span aria-hidden={true}>×</span>
+          </button>
+        </div>
+
+        {/*modal body*/}
+        <div className="modal-body ml-4 mr-5">
+
+          {/*input memo*/}
+          <Row className="mb-3">
+            <label className="form-control-label m-auto col-4">
+              문자 당근
+            </label>
+            <InputGroup className="input-group-alternative col-8">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fa fa-envelope" />
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                  min="0"
+                  className="form-control-alternative"
+                  defaultValue={smsPoint}
+                  type="number"
+                  onChange={(e) => {setSmsPoint(e.target.value)}}
+              />
+              <InputGroupAddon addonType="append">
+                <InputGroupText>개</InputGroupText>
+              </InputGroupAddon>
+            </InputGroup>
+          </Row>
+
+          {/*input phoneNumber*/}
+          <Row className="mb-3">
+            <label className="form-control-label m-auto col-4">
+              알림톡 당근
+            </label>
+            <InputGroup className="input-group-alternative col-8">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fas fa-comment" />
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                  min="0"
+                  className="form-control-alternative"
+                  defaultValue={kakaoPoint}
+                  type="number"
+                  onChange={(e) => {setKakaoPoint(e.target.value)}}
+              />
+              <InputGroupAddon addonType="append">
+                <InputGroupText>개</InputGroupText>
+              </InputGroupAddon>
+            </InputGroup>
+          </Row>
+
+        </div>
+
+        {/*modal footer*/}
+        <div className="modal-footer">
+          <Button color="primary" type="button" onClick={(e) => chargePoint()}>
+            충전하기
+          </Button>
+        </div>
+      </Modal>
+
+
       <UserHeader />
       {/* Page content */}
       <Container className="mt--7" fluid>
@@ -25,7 +148,7 @@ const Profile = () => {
               <Row className="justify-content-center">
                 <Col className="order-lg-2" lg="3">
                   <div className="card-profile-image">
-                    <a href="#pablo" onClick={(e) => e.preventDefault()}>
+                    <a href="views/admin/Profile#pablo" onClick={(e) => e.preventDefault()}>
                       <img
                         alt="..."
                         className="rounded-circle"
@@ -36,42 +159,19 @@ const Profile = () => {
                 </Col>
               </Row>
               <CardHeader className="text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
-                <div className="d-flex justify-content-between">
-                  <Button
-                    className="mr-4"
-                    color="info"
-                    href="#pablo"
-                    onClick={(e) => e.preventDefault()}
-                    size="sm"
-                  >
-                    Connect
-                  </Button>
-                  <Button
-                    className="float-right"
-                    color="default"
-                    href="#pablo"
-                    onClick={(e) => e.preventDefault()}
-                    size="sm"
-                  >
-                    Message
-                  </Button>
-                </div>
+
               </CardHeader>
               <CardBody className="pt-0 pt-md-4">
                 <Row>
                   <div className="col">
                     <div className="card-profile-stats d-flex justify-content-center mt-md-5">
                       <div>
-                        <span className="heading">22</span>
-                        <span className="description">Friends</span>
+                        <span className="heading">{pointInfo.smsPoint}개</span>
+                        <span className="description">메시지 당근 <i className="fa fa-carrot"/></span>
                       </div>
                       <div>
-                        <span className="heading">10</span>
-                        <span className="description">Photos</span>
-                      </div>
-                      <div>
-                        <span className="heading">89</span>
-                        <span className="description">Comments</span>
+                        <span className="heading">{pointInfo.kakaoPoint}개</span>
+                        <span className="description">알림톡 당근 <i className="fa fa-carrot"/></span>
                       </div>
                     </div>
                   </div>
@@ -94,14 +194,16 @@ const Profile = () => {
                     University of Computer Science
                   </div>
                   <hr className="my-4" />
-                  <p>
-                    Ryan — the name taken by Melbourne-raised, Brooklyn-based
-                    Nick Murphy — writes, performs and records all of his own
-                    music.
-                  </p>
-                  <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                    Show more
-                  </a>
+                  <div>
+                    <Button
+                        size="lg"
+                        style={{backgroundColor : "#f9e000"}}
+                        href="#pablo"
+                        onClick={(e) => setIsModal(true)}
+                    ><i className="fa fa-comment"/>&nbsp;
+                      카카오페이로 충전하기
+                    </Button>
+                  </div>
                 </div>
               </CardBody>
             </Card>

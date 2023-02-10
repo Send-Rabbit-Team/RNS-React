@@ -6,7 +6,12 @@ import ContactGroup from "./views/admin/ContactGroup";
 import SendSms from "./views/admin/send/sms/SendSms"
 import SendKakao from "./views/admin/send/kakao/SendKakao"
 import Template from "./views/admin/template/Template";
-import MessageResult from "./views/admin/MessageResult";
+import MessageResult from "./views/admin/result/MessageResult";
+import MessageReserve from "./views/admin/reserve/MessageReserve";
+import KakaoMessageResult from "./views/admin/result/KakaoMessageResult";
+import KakaoMessageReserve from "./views/admin/reserve/KakaoMessageReserve";
+import Profile from "./views/admin/Profile";
+import Index from "./views/Index";
 
 var routes = [
   {
@@ -82,12 +87,44 @@ var routes = [
     sidebar:true
   },
   {
-    path: "/result/sms/:page",
+    path: "/result/sms/:type/:keyword/:page",
     name: "메시지 발송 결과",
     icon: "fas fa-envelope",
     component: MessageResult                                                                     ,
     layout: "/admin",
     sidebar:true
+  },
+  {
+    path: "/result/kakao/:type/:keyword/:page",
+    name: "알림톡 발송 결과",
+    icon: "fas fa-envelope",
+    component: KakaoMessageResult                                                                     ,
+    layout: "/admin",
+    sidebar:true
+  },
+  {
+    path: "/reserve/sms/:page",
+    name: "메시지 예약 발송",
+    icon: "fas fa-clock",
+    component: MessageReserve                                                                     ,
+    layout: "/admin",
+    sidebar:true
+  },
+  {
+    path: "/reserve/kakao/:page",
+    name: "알림톡 예약 발송",
+    icon: "fas fa-clock",
+    component: KakaoMessageReserve                                                                     ,
+    layout: "/admin",
+    sidebar:true
+  },
+  {
+    path: "/profile",
+    name: "프로필",
+    icon: "fas fa-clock",
+    component: Profile                                                                     ,
+    layout: "/admin",
+    sidebar: false
   },
 ];
 export default routes;
