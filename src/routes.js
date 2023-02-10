@@ -6,10 +6,12 @@ import ContactGroup from "./views/admin/ContactGroup";
 import SendSms from "./views/admin/send/sms/SendSms"
 import SendKakao from "./views/admin/send/kakao/SendKakao"
 import Template from "./views/admin/template/Template";
-import MessageResult from "./views/admin/MessageResult";
-import MessageReserve from "./views/admin/MessageReserve";
-import KakaoMessageResult from "./views/admin/KakaoMessageResult";
-import KakaoMessageReserve from "./views/admin/KakaoMessageReserve";
+import MessageResult from "./views/admin/result/MessageResult";
+import MessageReserve from "./views/admin/reserve/MessageReserve";
+import KakaoMessageResult from "./views/admin/result/KakaoMessageResult";
+import KakaoMessageReserve from "./views/admin/reserve/KakaoMessageReserve";
+import Profile from "./views/admin/Profile";
+import Index from "./views/Index";
 
 var routes = [
   {
@@ -115,6 +117,14 @@ var routes = [
     component: KakaoMessageReserve                                                                     ,
     layout: "/admin",
     sidebar:true
+  },
+  {
+    path: "/profile",
+    name: "프로필",
+    icon: "fas fa-clock",
+    component: Profile                                                                     ,
+    layout: "/admin",
+    sidebar: false
   },
 ];
 export default routes;
