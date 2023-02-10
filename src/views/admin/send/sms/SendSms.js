@@ -132,11 +132,11 @@ const SendSms = () => {
     }
 
     // 예약발송 모달 -> 메인페이지 데이터 전달
-    const [cron, setCron] = useState("");
+    const [cron, setCron] = useState(null);
     const getCron = (data) => {
         setCron(data);
     }
-    const [cronText, setCronText] = useState("");
+    const [cronText, setCronText] = useState(null);
     const getCronText = (data) => {
         setCronText(data);
     }
@@ -244,17 +244,88 @@ const SendSms = () => {
             })
     })
 
+    const [smsPoint, setSmsPoint] = useState(0)
+
+    useEffect(async () => {
+        await axios.get("/point/get")
+            .then(response => {
+                if (response.data.isSuccess) {
+                    setSmsPoint(response.data.result.smsPoint)
+                } else {
+                    console.log(response.data.message)
+                }
+            }).catch(error => console.log(error))
+    })
+
+    const messageCost = {
+        "SMS": 1,
+        "LMS": 3,
+        "MMS": 6
+    }
+
+    const validPoint = async () => {
+        await axios.get("/point/valid", {
+            params: {
+                smsPoint  : selectContactList.length * messageCost[messageType],
+                kakaoPoint: 0
+            }
+        }).then(async (response) => {
+            if (response.data.isSuccess) {
+                sendMessage()
+            } else {
+                await Swal.fire({
+                    title            : `당근 ${selectContactList.length * messageCost[messageType] - smsPoint}개가 부족하여 결제 창으로 이동합니다.`,
+                    icon             : 'warning',
+                    showConfirmButton: false,
+                    timer            : 2000
+                })
+                chargePoint()
+            }
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+
+    const chargePoint = async () => {
+        await axios.get("/point/charge", {
+            params: {
+                smsPoint  : selectContactList.length * messageCost[messageType] - smsPoint,
+                kakaoPoint: 0
+            }
+        }).then(response => {
+            if (response.data.isSuccess) {
+                window.open(response.data.result)
+                window.close()
+            }
+        })
+    }
+
     // 메시지 전송
     const sendMessage = async () => {
-        await axios.post('/message/send/sms', {
+        !senderNumber ? Swal.fire({
+            title            : "발신번호를 선택하세요",
+            icon             : 'error',
+            showConfirmButton: false,
+            timer            : 1000
+        }) : !messageContext ? Swal.fire({
+            title            : "메시지 내용을 입력하세요",
+            icon             : 'error',
+            showConfirmButton: false,
+            timer            : 1000
+        }) : selectContactList.length === 0 ? Swal.fire({
+            title            : "수신번호를 선택하세요",
+            icon             : 'error',
+            showConfirmButton: false,
+            timer            : 1000
+        }) : await axios.post('/message/send/sms', {
             "message"  : {
-                "from"       : senderNumber,
-                "subject"    : messageTitle,
-                "content"    : messageContext,
-                "images"     : selectImage,
-                "messageType": messageType,
-                "cronExpression" : cron,
-                "cronText" : cronText,
+                "from"          : senderNumber,
+                "subject"       : messageTitle,
+                "content"       : messageContext,
+                "images"        : selectImage,
+                "messageType"   : messageType,
+                "cronExpression": cron,
+                "cronText"      : cronText,
             },
             "receivers": selectContactList.map(contact => contact.phoneNumber)
         }).then((response) => {
@@ -266,13 +337,23 @@ const SendSms = () => {
                     showConfirmButton: false,
                     timer            : 1000
                 })
+                window.location.replace("/admin/result/sms/:type/:keyword/:page")
             } else {
-                window.alert(response.data.message)
+                Swal.fire({
+                    title            : response.data.message,
+                    icon             : 'error',
+                    showConfirmButton: false,
+                    timer            : 1000
+                })
             }
-        })
-            .catch((error) => {
-                window.alert(error.response.data.message)
+        }).catch((error) => {
+            Swal.fire({
+                title            : "메시지 전송에 실패했습니다",
+                icon             : 'error',
+                showConfirmButton: false,
+                timer            : 1000
             })
+        })
     }
 
 
@@ -345,7 +426,7 @@ const SendSms = () => {
                                 </Row>
                             </CardHeader>
 
-                            <CardFooter className="py-3">
+                            <CardBody className="py-3">
                                 <Row>
                                     <Col sm="10">
                                         <div className="d-flex justify-content-between"
@@ -577,25 +658,28 @@ const SendSms = () => {
                                     </Col>
 
                                 </Row>
-                                <Button className="btn-icon btn-3" size="xl" color="primary" type="button"
-                                        style={{width: "15%", height: 54, margin: 10, fontSize: 17, float: "right"}}
-                                        onClick={(e) => sendMessage()}>
-                  <span className="btn-inner--icon">
-                    <i className="ni ni-send text-white"/>
-                  </span>
+                            </CardBody>
+
+                            <CardFooter className="border-0">
+                                <Button className="text-lg ml-3 btn-icon btn-3" size="xxl" color="primary" type="button"
+                                        style={{float: "right"}}
+                                        onClick={(e) => validPoint()}>
+                                    <span className="btn-inner--icon">
+                                        <i className="ni ni-send text-white"/>
+                                    </span>
                                     <span className="btn-inner--text">발송하기</span>
                                 </Button>
 
-                                <Button className="btn-icon btn-3" size="xl" color="primary" type="button"
-                                        style={{width: "15%", height: 54, margin: 10, fontSize: 17, float: "right",}}
+                                <Button className="text-lg btn-icon btn-3" size="xxl" color="primary" type="button"
+                                        style={{float: "right",}}
                                         onClick={(e) => toggleMessageSchedule()}>
-                  <span className="btn-inner--icon">
-                    <i className="ni ni-time-alarm"/>
-                  </span>
+                                    <span className="btn-inner--icon">
+                                        <i className="ni ni-time-alarm"/>
+                                    </span>
                                     <span className="btn-inner--text">예약 발송</span>
                                 </Button>
-                                <br></br>
                             </CardFooter>
+
                         </Card>
                     </div>
                 </Row>
