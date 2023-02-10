@@ -350,8 +350,8 @@ const MessageResult = () => {
                                     <Col>
 
                                         {/*search*/}
-                                        <InputGroup>
-                                            <InputGroupAddon addonType="append">
+                                        <InputGroup className="input-group-alternative">
+                                            <InputGroupAddon addonType="prepend">
                                                 <Input
                                                     type="select"
                                                     onClick={(e) => setSearchType(e.target.value)}
@@ -367,17 +367,19 @@ const MessageResult = () => {
                                                 type="text"
                                                 onChange={(e) => setSearchInput(e.target.value)}
                                             />
-                                            <Button
-                                                color="primary"
-                                                outline
-                                                type="button"
-                                                onClick={(e) => {
-                                                    searchType === "" ? window.alert("검색 유형을 선택하세요") :
-                                                        searchInput === "" ? window.alert("검색 내용을 입력하세요") :
-                                                            window.location.replace(`/admin/result/sms/${searchType}/${searchInput}/1`)
-                                                }}
-                                            >검색
-                                            </Button>
+                                            <InputGroupAddon addonType="append">
+                                                <Button
+                                                    color="primary"
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        searchType === "" ? window.alert("검색 유형을 선택하세요") :
+                                                            searchInput === "" ? window.alert("검색 내용을 입력하세요") :
+                                                                window.location.replace(`/admin/result/sms/${searchType}/${searchInput}/1`)
+                                                    }}
+                                                >검색
+                                                </Button>
+                                            </InputGroupAddon>
+
                                         </InputGroup>
                                     </Col>
                                 </Row>
@@ -438,7 +440,7 @@ const MessageResult = () => {
                                         <td className="text-center">{makeDate(messageResult.createdAt)}</td>
                                         <td className="text-center">{makeHyphen(messageResult.senderNumber)}</td>
                                         <td style={{textOverflow:"ellipsis", overflow:"hidden", maxWidth:"250px"}}>
-                                            <a className="text-dark" href="#" onClick={(e) => {
+                                            <a className="text-dark" href="views/admin/result/MessageResult#" onClick={(e) => {
                                                 setIsContentModal(true)
                                                 setMessageContent(messageResult.content)
                                             }}>
@@ -446,7 +448,7 @@ const MessageResult = () => {
                                             </a>
                                         </td>
                                         <td className="text-center">{messageResult.messageType}</td>
-                                        <td className="text-center"><a href="#"><i className="fas fa-eye" onClick={(e) => {
+                                        <td className="text-center"><a href="views/admin/result/MessageResult#"><i className="fas fa-eye" onClick={(e) => {
                                             setIsInfoModal(true);
                                             getMessageResultInfo(messageResult.messageId);
                                         }}/></a></td>

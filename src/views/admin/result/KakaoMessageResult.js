@@ -305,7 +305,7 @@ const MessageResult = () => {
                         <tbody>
                         {messageResultInfoList.map((messageResultInfo, index) => (
                             <tr>
-                                <th scope="row" className="text-center" key={messageResultInfo.id}>
+                                <th scope="row" className="text-center" key={messageResultInfo.kakaoMessageId}>
                                     {index + 1}
                                 </th>
                                 <td className="text-center">{makeDate(messageResultInfo.createdAt)}</td>
@@ -383,8 +383,8 @@ const MessageResult = () => {
                                     <Col>
 
                                         {/*search*/}
-                                        <InputGroup>
-                                            <InputGroupAddon addonType="append">
+                                        <InputGroup className="input-group-alternative">
+                                            <InputGroupAddon addonType="prepend">
                                                 <Input
                                                     type="select"
                                                     onClick={(e) => setSearchType(e.target.value)}
@@ -400,17 +400,19 @@ const MessageResult = () => {
                                                 type="text"
                                                 onChange={(e) => setSearchInput(e.target.value)}
                                             />
-                                            <Button
-                                                color="primary"
-                                                outline
-                                                type="button"
-                                                onClick={(e) => {
-                                                    searchType === "" ? window.alert("검색 유형을 선택하세요") :
-                                                        searchInput === "" ? window.alert("검색 내용을 입력하세요") :
-                                                            window.location.replace(`/admin/result/kakao/${searchType}/${searchInput}/1`)
-                                                }}
-                                            >검색
-                                            </Button>
+                                            <InputGroupAddon addonType="append">
+                                                <Button
+                                                    color="primary"
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        searchType === "" ? window.alert("검색 유형을 선택하세요") :
+                                                            searchInput === "" ? window.alert("검색 내용을 입력하세요") :
+                                                                window.location.replace(`/admin/result/kakao/${searchType}/${searchInput}/1`)
+                                                    }}
+                                                >검색
+                                                </Button>
+                                            </InputGroupAddon>
+
                                         </InputGroup>
                                     </Col>
                                 </Row>
@@ -487,12 +489,12 @@ const MessageResult = () => {
                                             {(nowPage - 1) * pageData.size + index + 1}
                                         </th>
                                         <td className="text-center">{makeDate(messageResult.createAt)}</td>
-                                        <td><a href="#" className="text-dark" onClick={(e) => {
+                                        <td><a href="views/admin/result/KakaoMessageResult#" className="text-dark" onClick={(e) => {
                                             setIsContentModal(true);
                                             setMessage(messageResult)
                                         }}>{messageResult.title + " " + messageResult.subTitle}</a></td>
                                         <td className="text-center">{buttonType[messageResult.buttonType]}</td>
-                                        <td className="text-center"><a href="#"><i className="fas fa-eye" onClick={(e) => {
+                                        <td className="text-center"><a href="views/admin/result/KakaoMessageResult#"><i className="fas fa-eye" onClick={(e) => {
                                             setIsInfoModal(true);
                                             getMessageResultInfo(messageResult.messageId);
                                         }}/></a></td>
