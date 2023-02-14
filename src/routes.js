@@ -11,23 +11,22 @@ import MessageReserve from "./views/admin/reserve/MessageReserve";
 import KakaoMessageResult from "./views/admin/result/KakaoMessageResult";
 import KakaoMessageReserve from "./views/admin/reserve/KakaoMessageReserve";
 import Profile from "./views/admin/Profile";
-import Index from "./views/Index";
 
 var routes = [
-  {
-    path: "/register",
-    name: "메시지 관리",
-    icon: "ni ni-email-83",
-    component: Register,
-    layout: "/auth",
-    sidebar:false
-  },
   {
     path: "/onboarding",
     name: "온보딩",
     icon: "ni ni-send text-blue",
     component: Register,
     layout: "/main",
+    sidebar:false
+  },
+  {
+    path: "/register",
+    name: "회원가입",
+    icon: "ni ni-send text-blue",
+    component: Register,
+    layout: "/auth",
     sidebar:false
   },
   {
@@ -39,6 +38,34 @@ var routes = [
     sidebar:false
   },
   {
+    path: "/profile",
+    name: "프로필",
+    icon: "fas fa-clock",
+    component: Profile                                                                     ,
+    layout: "/admin",
+    sidebar: false
+  },
+  //  category: 발송 관리
+  {
+    category: "setting",
+    path: "/sender/:page",
+    name: "발신번호 관리",
+    icon: "fas fa-phone-alt",
+    component: SenderNumber,
+    layout: "/admin",
+    sidebar:true
+  },
+  {
+    category: "setting",
+    path: "/group/:page",
+    name: "그룹 관리",
+    icon: "fas fa-users",
+    component: ContactGroup,
+    layout: "/admin",
+    sidebar:true
+  },
+  {
+    category: "setting",
     path: "/contact/:page",
     name: "연락처 관리",
     icon: "fas fa-book",
@@ -47,38 +74,7 @@ var routes = [
     sidebar:true
   },
   {
-    path: "/group/:page",
-    name: "연락처 그룹 관리",
-    icon: "fas fa-users",
-    component: ContactGroup,
-    layout: "/admin",
-    sidebar:true
-  },
-  {
-    path: "/sender/:page",
-    name: "발신번호 관리",
-    icon: "fas fa-phone",
-    component: SenderNumber,
-    layout: "/admin",
-    sidebar:true
-  },
-  {
-    path: "/sms",
-    name: "SMS 발송",
-    icon: "ni ni-send",
-    component: SendSms,
-    layout: "/admin",
-    sidebar:true
-  },
-  {
-    path: "/kakao",
-    name: "알림톡 발송",
-    icon: "fas fa-comment",
-    component: SendKakao,
-    layout: "/admin",
-    sidebar:true
-  },
-  {
+    category: "setting",
     path: "/template/:type/:page",
     name: "탬플릿 관리",
     icon: "fas fa-cog",
@@ -86,45 +82,61 @@ var routes = [
     layout: "/admin",
     sidebar:true
   },
+  //  category: 발송
   {
+    category: "send",
+    path: "/sms",
+    name: "메시지 발송",
+    icon: "fas fa-mail-bulk",
+    component: SendSms,
+    layout: "/admin",
+    sidebar:true
+  },
+  {
+    category: "send",
+    path: "/kakao",
+    name: "알림톡 발송",
+    icon: "fas fa-comments",
+    component: SendKakao,
+    layout: "/admin",
+    sidebar:true
+  },
+  // category: 발송 결과
+  {
+    category: "result",
     path: "/result/sms/:type/:keyword/:page",
     name: "메시지 발송 결과",
-    icon: "fas fa-envelope",
+    icon: "ni ni-email-83",
     component: MessageResult                                                                     ,
     layout: "/admin",
     sidebar:true
   },
   {
+    category: "result",
     path: "/result/kakao/:type/:keyword/:page",
     name: "알림톡 발송 결과",
-    icon: "fas fa-envelope",
+    icon: "ni ni-chat-round",
     component: KakaoMessageResult                                                                     ,
     layout: "/admin",
     sidebar:true
   },
   {
+    category: "result",
     path: "/reserve/sms/:page",
-    name: "메시지 예약 발송",
+    name: "메시지 예약 결과",
     icon: "fas fa-clock",
     component: MessageReserve                                                                     ,
     layout: "/admin",
     sidebar:true
   },
   {
+    category: "result",
     path: "/reserve/kakao/:page",
-    name: "알림톡 예약 발송",
-    icon: "fas fa-clock",
+    name: "알림톡 예약 결과",
+    icon: "ni ni-time-alarm",
     component: KakaoMessageReserve                                                                     ,
     layout: "/admin",
     sidebar:true
-  },
-  {
-    path: "/profile",
-    name: "프로필",
-    icon: "fas fa-clock",
-    component: Profile                                                                     ,
-    layout: "/admin",
-    sidebar: false
   },
 ];
 export default routes;
