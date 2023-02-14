@@ -127,7 +127,7 @@ const Receiver = ({
     const onSelectContactHandler = (value) => {
         setSelectContactList([...selectContactList, value]);
         contactGroupList.map((contactGroup) => {
-            if (value.groupId === contactGroup.id)
+            if (value.groupId === contactGroup.id && !selectContactGroupList.includes(contactGroup))
                 setSelectContactGroupList([...selectContactGroupList, contactGroup])
         })
     }
@@ -165,12 +165,11 @@ const Receiver = ({
                     if (response.data.isSuccess) {
                         setContactList(response.data.result.contacts)
                     } else {
-                        console.log('전체 연락처 불러오기 실패: ', response.data)
+                        console.log(response.data.message)
                     }
                 })
                 .catch((error) => {
-                    console.log('그냥 에러: ', error)
-                    window.alert(error.response.data.message)
+                    console.log(error)
                 })
         }
     )
@@ -181,10 +180,12 @@ const Receiver = ({
             .then((response) => {
                 if (response.data.isSuccess) {
                     setContactGroupList(response.data.result)
+                } else {
+                    console.log(response.data.message)
                 }
             })
             .catch((error) => {
-                window.alert(error.response.data.message)
+                console.log(error)
             })
     })
 
@@ -197,6 +198,7 @@ const Receiver = ({
                 size="xl"
             >
                 <div className="modal-header">
+                    <h3 className="modal-title">수신자 추가하기</h3>
                     <button
                         aria-label="Close"
                         className="close"
@@ -323,7 +325,7 @@ const Receiver = ({
                     {/* 선택 목록 */}
                     <div className="col-lg-12">
                         <Card className="shadow m-3">
-                            <CardHeader>수신자 목록</CardHeader>
+                            <CardHeader><h4>수신자 목록</h4></CardHeader>
                             <CardBody className="p-0">
                                 {selectContactGroupList.map(selectGroup => (
                                     <Card className="m-3">
@@ -342,6 +344,21 @@ const Receiver = ({
                                         </CardBody>
                                     </Card>
                                 ))}
+                                <Card className="m-3">
+                                    <CardBody className="p-1">
+                                        <CardTitle className="m-3">그룹 없음</CardTitle>
+                                        {selectContactList.map(selectContact => (
+                                            selectContact.groupId === 0? (
+                                                <Button color="primary" type="button" className="m-1"
+                                                        onClick={(e) => onDeleteContactHandler(selectContact)}>
+                                                    <span>{selectContact.memo} ({makeHyphen(selectContact.phoneNumber)})</span>
+                                                    <Badge className="badge-black" color="black"
+                                                           style={{width: 10}}>X</Badge>
+                                                </Button>
+                                            ) : null
+                                        ))}
+                                    </CardBody>
+                                </Card>
 
                             </CardBody>
                         </Card>
@@ -350,7 +367,7 @@ const Receiver = ({
 
 
                 <div className="modal-footer">
-                    <Button color="secondary" style={{width: 150}} onClick={(e) => {
+                    <Button color="primary" style={{width: 150}} onClick={(e) => {
                         hide()
                     }}>
                         완료
