@@ -1,4 +1,4 @@
-import {Button, Modal, Card, CardBody, Row, Col, CardHeader, CardFooter} from "reactstrap";
+import {Button, Modal, Card, CardBody, Row, Col, CardHeader, CardFooter, CardTitle, CardText} from "reactstrap";
 import React, {useState} from "react";
 import axios from "axios";
 
@@ -14,11 +14,11 @@ const SmsTemplateModal = (props) => {
                     setTemplateList(response.data.result)
                 }
                 else {
-                    window.alert(response.data.message)
+                    console.log(response.data.message)
                 }
             })
             .catch((error) => {
-                window.alert(error.response.data.message)
+                console.log(error.response.data.message)
             })
     })
 
@@ -44,17 +44,23 @@ const SmsTemplateModal = (props) => {
                 <Row>
                     {templateList != null ? templateList.map((template) => (
                         <div className="col-sm-4 mb-3">
-                            <h4>{template.title}</h4>
-                            <Button block outline className="lg" color="default" style={{textAlign : "left"}}
-                                onClick={(e) => {props.setSelectTemplate(template.content); props.hide()}}
+                            <Button block className="lg p-0"
+                                onClick={(e) => {
+                                    props.setSelectTemplateTitle(template.title);
+                                    props.setSelectTemplateContent(template.content);
+                                    props.hide()}}
                             >
-                                {template.content.split('\n').map( line => (
-                                    <span>{line}<br/></span>
-                                ))}
-                                {/*<p>{template.content.map()}</p>*/}
+                                <Card>
+                                    <CardBody className="text-left">
+                                        <CardTitle>{template.title}</CardTitle>
+                                        {template.content.split('\n').map( line => (
+                                            <span style={{fontWeight : "normal"}}>{line}<br/></span>
+                                        ))}
+                                    </CardBody>
+                                </Card>
                             </Button>
                         </div>
-                    )) : (<p className="m-3">템플릿이 없습니다</p>)}
+                    )) : null }
 
                 </Row>
             </div>
