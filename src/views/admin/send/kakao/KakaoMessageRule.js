@@ -1,6 +1,7 @@
 import {Row, Col, Button, Modal, Input, FormGroup, Label} from "reactstrap";
 import React, {useState, useEffect} from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const KakaoMessageRule = (props) => {
 
@@ -9,16 +10,31 @@ const KakaoMessageRule = (props) => {
     // 발송 규칙 수정
     const editKakaoMsgRule = async () => {
         await axios.patch('/kakao/msg/rule/edit', kakaoMessageRule)
-            .then((response) => {
+            .then(async (response) => {
             if (response.data.isSuccess) {
-                window.alert('발송 설정을 변경했습니다.')
+                await Swal.fire({
+                    title            : "발송 설정을 변경했습니다",
+                    icon             : "success",
+                    showConfirmButton: true,
+                    timer            : 1000
+                })
                 window.location.reload()
             } else {
-                window.alert('발송 설정을 변경하는데 실패했습니다.')
+                await Swal.fire({
+                    title            : response.data.message,
+                    icon             : "error",
+                    showConfirmButton: true,
+                    timer            : 1000
+                })
             }
         })
-            .catch((error) => {
-                console.log("발송 설정 변경하는데 실패했고, 다른 유형의 에러입니다. ", error)
+            .catch(async (error) => {
+                await Swal.fire({
+                    title            : "발송 설정 변경에 실패했습니다",
+                    icon             : "error",
+                    showConfirmButton: true,
+                    timer            : 1000
+                })
             })
     }
 
@@ -28,10 +44,12 @@ const KakaoMessageRule = (props) => {
             .then((response) => {
                 if (response.data.isSuccess) {
                     setKakaoMessageRule(response.data.result);
+                } else {
+                    console.log(response.data.message)
                 }
             })
             .catch((error) => {
-                window.alert(error.response.data.message)
+                console.log(error)
             })
     }, [])
 

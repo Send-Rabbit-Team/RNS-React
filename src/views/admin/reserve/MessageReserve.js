@@ -14,6 +14,7 @@ import Header from "components/Headers/Header.js";
 import React, {useState} from "react";
 import {useParams} from 'react-router-dom';
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const MessageReserve = () => {
 
@@ -84,18 +85,44 @@ const MessageReserve = () => {
 
     // 예약 메시지 취소
     const cancelReservedMessage = async (messageId) => {
-        await axios.get(`/message/reserve/cancel/${messageId}`)
-            .then((response) => {
-                if (response.data.isSuccess) {
-                    window.alert("메시지 예약이 취소됐습니다.")
-                    window.location.reload()
-                } else {
-                    console.log(response.data.message)
-                }
-            })
-            .catch((error) => {
-                console.log(error)
-            })
+        Swal.fire({
+            title            : "메시지 예약을 취소하시겠습니까?",
+            text             : "메시지 예약 취소시 복구가 불가능합니다",
+            icon             : "question",
+            showDenyButton   : true,
+            confirmButtonText: "네",
+            denyButtonText   : "아니요",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await axios.patch(`/message/reserve/cancel/${messageId}`)
+                    .then(async (response) => {
+                        if (response.data.isSuccess) {
+                            await Swal.fire({
+                                title            : "메시지 예약이 취소되었습니다",
+                                icon             : "success",
+                                showConfirmButton: false,
+                                timer            : 1000
+                            })
+                            window.location.reload()
+                        } else {
+                            await Swal.fire({
+                                title            : response.data.message,
+                                icon             : "error",
+                                showConfirmButton: false,
+                                timer            : 1000
+                            })
+                        }
+                    })
+                    .catch(async (error) => {
+                        await Swal.fire({
+                            title            : "메시지 예약 취소에 실패했습니다",
+                            icon             : "erorr",
+                            showConfirmButton: false,
+                            timer            : 1000
+                        })
+                    })
+            }
+        })
     }
 
     return (
