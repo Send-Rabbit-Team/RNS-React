@@ -20,6 +20,7 @@ import React, {useEffect, useState} from "react";
 import {useParams} from 'react-router-dom';
 import axios from "axios";
 import {Doughnut, Pie} from "react-chartjs-2";
+import Swal from "sweetalert2";
 
 const MessageResult = () => {
 
@@ -98,9 +99,9 @@ const MessageResult = () => {
 
     // 메시지 종류에 따른 메시지 결과 조회
     const getFilterMessageResult = async (messageType) => {
-        await axios.get(`/message/result/filter/type/${nowPage}`,{
-            params : {
-                "type" : nowKeyword
+        await axios.get(`/message/result/filter/type/${nowPage}`, {
+            params: {
+                "type": nowKeyword
             }
         })
             .then((response) => {
@@ -118,10 +119,10 @@ const MessageResult = () => {
 
     // 메시지 검색에 따른 메시지 결과 조회
     const getSearchMessageResult = async () => {
-        await axios.get(`/message/result/search/${nowPage}`,{
-            params : {
-                "type" : nowType,
-                "keyword" : nowKeyword
+        await axios.get(`/message/result/search/${nowPage}`, {
+            params: {
+                "type"   : nowType,
+                "keyword": nowKeyword
             }
         })
             .then((response) => {
@@ -185,10 +186,10 @@ const MessageResult = () => {
 
     // 브로커 차트 데이터
     const brokerChart = {
-        labels: brokerChartLabels,
+        labels  : brokerChartLabels,
         datasets: [
             {
-                data: brokerChartData,
+                data           : brokerChartData,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.5)',
                     'rgba(54, 162, 235, 0.5)',
@@ -197,23 +198,23 @@ const MessageResult = () => {
                     'rgba(153, 102, 255, 0.5)',
                     'rgba(255, 159, 64, 0.5)',
                 ],
-                borderWidth: 1,
+                borderWidth    : 1,
             },
         ],
     };
 
     // 메시지 상태 차트 데이터
     const messageStatusChart = {
-        labels: messageStatusChartLabels,
+        labels  : messageStatusChartLabels,
         datasets: [
             {
-                data: messageStatusChartData,
+                data           : messageStatusChartData,
                 backgroundColor: [
                     'rgba(54, 162, 235, 0.5)',
                     'rgba(75, 192, 192, 0.5)',
                     'rgba(255, 99, 132, 0.5)'
                 ],
-                borderWidth: 1,
+                borderWidth    : 1,
             },
         ],
     };
@@ -252,9 +253,9 @@ const MessageResult = () => {
                             <Doughnut
                                 data={brokerChart}
                                 options={{
-                                    title:{
+                                    title: {
                                         display: true,
-                                        text: "중계사 정보"
+                                        text   : "중계사 정보"
                                     }
                                 }}
                             ></Doughnut>
@@ -263,7 +264,7 @@ const MessageResult = () => {
                             <Pie
                                 data={messageStatusChart}
                                 options={{
-                                    title : {
+                                    title: {
                                         display: true,
                                         text   : "메시지 상태"
                                     }
@@ -296,7 +297,7 @@ const MessageResult = () => {
                                 <td className="text-center">{messageResultInfo.brokerName}</td>
                                 {messageResultInfo.messageStatus === "SUCCESS" ? (
                                     <td className="text-center text-success">{messageResultInfo.messageStatus}</td>
-                                ): messageResultInfo.messageStatus === "FAIL" ? (
+                                ) : messageResultInfo.messageStatus === "FAIL" ? (
                                     <td className="text-center text-warning">{messageResultInfo.messageStatus}</td>
                                 ) : (
                                     <td className="text-center text-primary">{messageResultInfo.messageStatus}</td>
@@ -330,7 +331,7 @@ const MessageResult = () => {
                     >
                         <span aria-hidden={true}>×</span>
                     </button>
-                    {messageContent.split('\n').map( line => (
+                    {messageContent.split('\n').map(line => (
                         <span>{line}<br/></span>
                     ))}
                 </div>
@@ -364,6 +365,7 @@ const MessageResult = () => {
                                                 </Input>
                                             </InputGroupAddon>
                                             <Input
+                                                className="pl-3"
                                                 type="text"
                                                 onChange={(e) => setSearchInput(e.target.value)}
                                             />
@@ -371,9 +373,19 @@ const MessageResult = () => {
                                                 <Button
                                                     color="primary"
                                                     type="button"
-                                                    onClick={(e) => {
-                                                        searchType === "" ? window.alert("검색 유형을 선택하세요") :
-                                                            searchInput === "" ? window.alert("검색 내용을 입력하세요") :
+                                                    onClick={async (e) => {
+                                                        searchType === "" ? await Swal.fire({
+                                                                title            : "검색 유형을 선택하세요",
+                                                                icon             : "warning",
+                                                                showConfirmButton: false,
+                                                                timer            : 1000
+                                                            }) :
+                                                            searchInput === "" ? await Swal.fire({
+                                                                    title            : "검색 내용을 입력하세요",
+                                                                    icon             : "warning",
+                                                                    showConfirmButton: false,
+                                                                    timer            : 1000
+                                                                }) :
                                                                 window.location.replace(`/admin/result/sms/${searchType}/${searchInput}/1`)
                                                     }}
                                                 >검색
@@ -391,7 +403,7 @@ const MessageResult = () => {
                                     <th scope="col" className="text-center">No</th>
                                     <th scope="col" className="text-center">발송 일시</th>
                                     <th scope="col" className="text-center">발신자 번호</th>
-                                    <th scope="col">내용</th>
+                                    <th scope="col" className="text-center">내용</th>
                                     <th scope="col" className="text-center">
                                         <UncontrolledDropdown>
                                             <DropdownToggle
@@ -439,8 +451,8 @@ const MessageResult = () => {
                                         </th>
                                         <td className="text-center">{makeDate(messageResult.createdAt)}</td>
                                         <td className="text-center">{makeHyphen(messageResult.senderNumber)}</td>
-                                        <td style={{textOverflow:"ellipsis", overflow:"hidden", maxWidth:"250px"}}>
-                                            <a className="text-dark" href="views/admin/result/MessageResult#" onClick={(e) => {
+                                        <td style={{textOverflow: "ellipsis", overflow: "hidden", maxWidth: "250px"}}>
+                                            <a className="text-dark" href="#" onClick={(e) => {
                                                 setIsContentModal(true)
                                                 setMessageContent(messageResult.content)
                                             }}>
@@ -448,15 +460,19 @@ const MessageResult = () => {
                                             </a>
                                         </td>
                                         <td className="text-center">{messageResult.messageType}</td>
-                                        <td className="text-center"><a href="views/admin/result/MessageResult#"><i className="fas fa-eye" onClick={(e) => {
-                                            setIsInfoModal(true);
-                                            getMessageResultInfo(messageResult.messageId);
-                                        }}/></a></td>
+                                        <td className="text-center">
+                                            <a href="#">
+                                                <i className="fas fa-eye"
+                                                   onClick={(e) => {
+                                                       setIsInfoModal(true);
+                                                       getMessageResultInfo(messageResult.messageId);
+                                                   }}/>
+                                            </a>
+                                        </td>
                                     </tr>
                                 ))}
                                 </tbody>
                             </Table>
-
 
 
                             {/*pagination*/}
