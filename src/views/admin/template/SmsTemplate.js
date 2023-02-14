@@ -2,7 +2,6 @@ import {
     Card,
     CardFooter,
     CardHeader,
-    Container,
     Pagination,
     PaginationItem,
     PaginationLink,
@@ -10,12 +9,12 @@ import {
     CardBody,
     Button,
     Input,
-    Col,
     InputGroup
 } from "reactstrap";
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const SmsTemplate = () => {
     const params = useParams();
@@ -23,35 +22,35 @@ const SmsTemplate = () => {
 
     const [pageData, setPageData] = useState({
         totalPage: 0,
-        page: 1,
-        size: 0,
-        start: 0,
-        end: 0,
-        prev: false,
-        next: false,
-        pageList: []
+        page     : 1,
+        size     : 0,
+        start    : 0,
+        end      : 0,
+        prev     : false,
+        next     : false,
+        pageList : []
     })
 
     const [templateList, setTemplateList] = useState([]);
 
-    const [newTitle, setNewTitle] = useState();
+    const [newTitle, setNewTitle] = useState("");
     const [newContent, setNewContent] = useState("");
 
     let patchTemplateReq = {}
 
-   const calculateByte = (msg) => {
-       var l = 0;
+    const calculateByte = (msg) => {
+        var l = 0;
 
-       for (var idx = 0; idx < msg.length; idx++) {
-           var c = escape(msg.charAt(idx));
+        for (var idx = 0; idx < msg.length; idx++) {
+            var c = escape(msg.charAt(idx));
 
-           if (c.length == 1) l++;
-           else if (c.indexOf("%u") != -1) l += 2;
-           else if (c.indexOf("%") != -1) l += c.length / 3;
-       }
+            if (c.length == 1) l++;
+            else if (c.indexOf("%u") != -1) l += 2;
+            else if (c.indexOf("%") != -1) l += c.length / 3;
+        }
 
-       return l;
-   }
+        return l;
+    }
 
     // 탬플릿 불러오기
     useState(async () => {
@@ -60,32 +59,54 @@ const SmsTemplate = () => {
                 if (response.data.isSuccess) {
                     setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
                     setTemplateList(response.data.result.dtoList)
+                } else {
+                    console.log(response.data.message)
                 }
             })
             .catch((error) => {
-                window.alert(error.response.data.message)
+                console.log(error)
             })
     })
 
     // 탬플릿 생성하기
     const registerTemplate = async () => {
-        newTitle == "" ?  window.alert("탬플릿 제목을 입력하세요") :
-            newContent == "" ? window.alert("탬플릿 내용을 입력하세요") :
-                await axios.post("/template/register", {
-                    "title" : newTitle,
-                    "content" : newContent
+        newContent == "" ? await Swal.fire({
+                title            : "탬플릿 내용을 입력하세요",
+                icon             : "warning",
+                showConfirmButton: false,
+                timer            : 1000
+            })
+            :
+            await axios.post("/template/register", {
+                "title"  : newTitle,
+                "content": newContent
+            })
+                .then(async (response) => {
+                    if (response.data.isSuccess) {
+                        await Swal.fire({
+                            title            : "탬플릿을 생성했습니다",
+                            icon             : "success",
+                            showConfirmButton: false,
+                            timer            : 1000
+                        })
+                        window.location.replace("/admin/template/sms/1")
+                    } else {
+                        await Swal.fire({
+                            title            : response.data.message,
+                            icon             : "error",
+                            showConfirmButton: false,
+                            timer            : 1000
+                        })
+                    }
                 })
-                    .then((response) => {
-                        if (response.data.isSuccess) {
-                            window.alert(response.data.message)
-                            window.location.replace("/admin/template/sms/1")
-                        } else {
-                            window.alert(response.data.message)
-                        }
+                .catch(async (error) => {
+                    await Swal.fire({
+                        title            : "탬플릿 생성에 실패했습니다",
+                        icon             : "error",
+                        showConfirmButton: false,
+                        timer            : 1000
                     })
-                    .catch((error) => {
-                        window.alert(error.response.data.message)
-                    })
+                })
     }
 
     // 탬플릿 수정하기
@@ -93,44 +114,99 @@ const SmsTemplate = () => {
         templateList.map((t) => {
             if (t.templateId === templateId) {
                 patchTemplateReq = {
-                    "templateId" : templateId,
-                    "title" : t.title,
-                    "content" : t.content
+                    "templateId": templateId,
+                    "title"     : t.title,
+                    "content"   : t.content
                 }
             }
         })
-        patchTemplateReq.title == "" ?  window.alert("탬플릿 제목을 입력하세요") :
-            patchTemplateReq.content == "" ?  window.alert("탬플릿 내용을 입력하세요") :
-                await axios.patch("/template/edit", patchTemplateReq)
-                    .then((response) => {
-                        if (response.data.isSuccess) {
-                            window.alert(response.data.message)
-                            window.location.reload()
-                        } else {
-                            window.alert(response.data.message)
-                        }
-                    })
-                    .catch((error) => {
-                        window.alert(error.response.data.message)
-                    })
+        patchTemplateReq.content == "" ?
+            await Swal.fire({
+                title            : "탬플릿 내용을 입력하세요",
+                icon             : "warning",
+                showConfirmButton: false,
+                timer            : 1000
+            }) : Swal.fire({
+                title            : "탬플릿을 수정하시겠습니까?",
+                icon             : "question",
+                showDenyButton   : true,
+                confirmButtonText: "네",
+                denyButtonText   : "아니요",
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    await axios.patch("/template/edit", patchTemplateReq)
+                        .then(async (response) => {
+                            if (response.data.isSuccess) {
+                                await Swal.fire({
+                                    title            : "탬플릿을 수정했습니다",
+                                    icon             : "success",
+                                    showConfirmButton: false,
+                                    timer            : 1000
+                                })
+                                window.location.reload()
+                            } else {
+                                await Swal.fire({
+                                    title            : response.data.message,
+                                    icon             : "error",
+                                    showConfirmButton: false,
+                                    timer            : 1000
+                                })
+                            }
+                        })
+                        .catch(async (error) => {
+                            await Swal.fire({
+                                title            : "탬플릿 수정에 실패했습니다",
+                                icon             : "error",
+                                showConfirmButton: false,
+                                timer            : 1000
+                            })
+                        })
+                }
+            })
+
     }
 
     // 탬플릿 삭제하기
     const deleteTemplate = async (templateId) => {
-        if (window.confirm("정말 삭제하시겠습니까?")) {
-            await axios.patch(`/template/delete/${templateId}`)
-                .then((response) => {
-                    if (response.data.isSuccess) {
-                        window.alert(response.data.message)
-                        window.location.replace("/admin/template/sms/1")
-                    } else {
-                        window.alert(response.data.message)
-                    }
-                })
-                .catch((error) => {
-                    window.alert(error.response.data.message)
-                })
-        }
+        Swal.fire({
+            title            : "탬플릿을 삭제하시겠습니까?",
+            text             : "탬플릿 삭제시 복구가 불가능합니다",
+            icon             : "question",
+            showDenyButton   : true,
+            confirmButtonText: "네",
+            denyButtonText   : "아니요",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await axios.patch(`/template/delete/${templateId}`)
+                    .then(async (response) => {
+                        if (response.data.isSuccess) {
+                            await Swal.fire({
+                                title            : "탬플릿을 삭제했습니다",
+                                icon             : "success",
+                                showConfirmButton: false,
+                                timer            : 1000
+                            })
+                            window.location.replace("/admin/template/sms/1")
+                        } else {
+                            await Swal.fire({
+                                title            : response.data.message,
+                                icon             : "error",
+                                showConfirmButton: false,
+                                timer            : 1000
+                            })
+                        }
+                    })
+                    .catch(async (error) => {
+                        await Swal.fire({
+                            title            : "탬플릿 삭제에 실패했습니다",
+                            icon             : "error",
+                            showConfirmButton: false,
+                            timer            : 1000
+                        })
+                    })
+            }
+
+        })
     }
 
 
@@ -146,9 +222,12 @@ const SmsTemplate = () => {
                             <CardBody>
                                 <button
                                     className="close mb-3"
-                                    onClick={(e) => {setNewTitle(""); setNewContent("")}}
+                                    onClick={(e) => {
+                                        setNewTitle("");
+                                        setNewContent("")
+                                    }}
                                 >
-                                    <span aria-hidden={true} style={{fontSize:"25px"}}>×</span>
+                                    <span aria-hidden={true} style={{fontSize: "25px"}}>×</span>
                                 </button>
                                 <InputGroup>
                                     <Input
@@ -156,7 +235,9 @@ const SmsTemplate = () => {
                                         className="mb-3"
                                         placeholder="탬플릿 제목"
                                         type="text"
-                                        onChange={(e) => {setNewTitle(e.target.value)}}
+                                        onChange={(e) => {
+                                            setNewTitle(e.target.value)
+                                        }}
                                     />
                                 </InputGroup>
 
@@ -166,9 +247,11 @@ const SmsTemplate = () => {
                                     placeholder="탬플릿 내용을 입력하세요"
                                     rows="7"
                                     type="textarea"
-                                    onChange={(e) => {setNewContent(e.target.value)}}
+                                    onChange={(e) => {
+                                        setNewContent(e.target.value)
+                                    }}
                                 />
-                                <p align="right">{newContent != null ? calculateByte(newContent) : 0}자</p>
+                                <p align="right">{newContent != null ? calculateByte(newContent) : 0}byte</p>
                                 <Button
                                     block
                                     color="primary"
@@ -196,9 +279,11 @@ const SmsTemplate = () => {
                                         <CardBody>
                                             <button
                                                 className="close mb-3"
-                                                onClick={(e) => {deleteTemplate(template.templateId)}}
+                                                onClick={(e) => {
+                                                    deleteTemplate(template.templateId)
+                                                }}
                                             >
-                                                <span aria-hidden={true} style={{fontSize:"25px"}}>×</span>
+                                                <span aria-hidden={true} style={{fontSize: "25px"}}>×</span>
                                             </button>
                                             <Input
                                                 value={template.title}
@@ -208,7 +293,10 @@ const SmsTemplate = () => {
                                                 onChange={(e) => {
                                                     setTemplateList(
                                                         templateList.map((t) =>
-                                                            t.templateId === template.templateId ? { ...t, title: e.target.value } : t
+                                                            t.templateId === template.templateId ? {
+                                                                ...t,
+                                                                title: e.target.value
+                                                            } : t
                                                         )
                                                     );
                                                 }}
@@ -222,16 +310,21 @@ const SmsTemplate = () => {
                                                 onChange={(e) => {
                                                     setTemplateList(
                                                         templateList.map((t) =>
-                                                            t.templateId === template.templateId ? { ...t, content: e.target.value } : t
+                                                            t.templateId === template.templateId ? {
+                                                                ...t,
+                                                                content: e.target.value
+                                                            } : t
                                                         )
                                                     );
                                                 }}
                                             />
-                                            <p align="right">{calculateByte(template.content)}자</p>
+                                            <p align="right">{calculateByte(template.content)}byte</p>
                                             <Button
                                                 block
                                                 color="primary"
-                                                onClick={(e) => {editTemplate(template.templateId)}}
+                                                onClick={(e) => {
+                                                    editTemplate(template.templateId)
+                                                }}
                                             >
                                                 수정
                                             </Button>
@@ -253,10 +346,10 @@ const SmsTemplate = () => {
                                 {/*prev*/}
                                 <PaginationItem className={pageData.prev ? "active" : "disabled"}>
                                     <PaginationLink
-                                        href={"/admin/template/sms/" + (pageData.start-1).toString()}
+                                        href={"/admin/template/sms/" + (pageData.start - 1).toString()}
                                         tabIndex="-1"
                                     >
-                                        <i className="fas fa-angle-left" />
+                                        <i className="fas fa-angle-left"/>
                                         <span className="sr-only">Previous</span>
                                     </PaginationLink>
                                 </PaginationItem>
@@ -275,9 +368,9 @@ const SmsTemplate = () => {
                                 {/*next*/}
                                 <PaginationItem className={pageData.next ? "active" : "disabled"}>
                                     <PaginationLink
-                                        href={"/admin/template/sms/" + (pageData.end+1).toString()}
+                                        href={"/admin/template/sms/" + (pageData.end + 1).toString()}
                                     >
-                                        <i className="fas fa-angle-right" />
+                                        <i className="fas fa-angle-right"/>
                                         <span className="sr-only">Next</span>
                                     </PaginationLink>
                                 </PaginationItem>
