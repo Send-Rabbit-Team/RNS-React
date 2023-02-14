@@ -6,6 +6,18 @@ import Swal from "sweetalert2";
 const KakaoMessageRule = (props) => {
 
     const [kakaoMessageRule, setKakaoMessageRule] = useState([])
+    const [isSum, setIsSum] = useState();
+
+    useEffect(() => {
+        let sum = 0;
+        kakaoMessageRule.map(kmr => {
+            sum += parseInt(kmr.kakaoBrokerRate);
+        })
+        if (sum === 100)
+            setIsSum(true)
+        else
+            setIsSum(false)
+    }, [kakaoMessageRule, isSum])
 
     // 발송 규칙 수정
     const editKakaoMsgRule = async () => {
@@ -18,7 +30,7 @@ const KakaoMessageRule = (props) => {
                     showConfirmButton: true,
                     timer            : 1000
                 })
-                window.location.reload()
+                props.hide()
             } else {
                 await Swal.fire({
                     title            : response.data.message,
@@ -90,7 +102,8 @@ const KakaoMessageRule = (props) => {
                                             kakaoMessageRule.map((k) =>
                                                 k.kakaoMessageRuleId === item.kakaoMessageRuleId ? {...k, kakaoBrokerRate:e.target.value} : k
                                             )
-                                        )}}
+                                        )
+                                    }}
                                 ></Input>
                             </Col>
                             <Col sm="1" className="pl-0">
@@ -100,12 +113,16 @@ const KakaoMessageRule = (props) => {
                     ))}
                 </div>
 
+                {isSum ? (
+                    <div className="modal-footer">
+                        <Button color="primary" onClick={(e) => {editKakaoMsgRule()}}>
+                            설정하기
+                        </Button>
+                    </div>
+                ) : (
+                    <p className="text-center text-danger">발송 비율의 합이 100이 아닙니다</p>
+                )}
 
-                <div className="modal-footer">
-                    <Button color="primary" onClick={(e) => {editKakaoMsgRule()}}>
-                        설정하기
-                    </Button>
-                </div>
 
             </Modal> : null
     )
