@@ -27,7 +27,7 @@ const KakaoMessageRule = (props) => {
                 await Swal.fire({
                     title            : "발송 설정을 변경했습니다",
                     icon             : "success",
-                    showConfirmButton: true,
+                    showConfirmButton: false,
                     timer            : 1000
                 })
                 props.hide()

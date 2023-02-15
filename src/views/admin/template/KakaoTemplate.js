@@ -154,7 +154,7 @@ const KakaoTemplate = () => {
                                     showConfirmButton: false,
                                     timer            : 1000
                                 })
-                                window.location.reload()
+                                window.location.replace("/admin/template/kakao/1")
                             } else {
                                 await Swal.fire({
                                     title            : response.data.message,
