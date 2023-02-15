@@ -1,5 +1,5 @@
-import {Button, Modal, Card, CardBody, Row, Col, CardHeader, CardFooter, CardTitle, CardText} from "reactstrap";
-import React, {useState} from "react";
+import {Button, Modal, Card, CardBody, Row, CardTitle} from "reactstrap";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
 
 
@@ -7,10 +7,11 @@ const SmsTemplateModal = (props) => {
     const [templateList, setTemplateList] = useState([]);
 
     // 탬플릿 불러오기
-    useState(async () => {
+    useEffect(async () => {
         await axios.get('/templates/all')
             .then((response) => {
                 if (response.data.isSuccess) {
+                    console.log(response.data.result)
                     setTemplateList(response.data.result)
                 }
                 else {
@@ -20,7 +21,7 @@ const SmsTemplateModal = (props) => {
             .catch((error) => {
                 console.log(error.response.data.message)
             })
-    })
+    }, [])
 
     return (
         props.isShowingTemplate?(
