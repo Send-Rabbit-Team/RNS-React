@@ -159,26 +159,27 @@ const Receiver = ({
 
 
     // 연락처 불러오기
-    useState(async () => {
-            await axios.get(`/contact/list`)
-                .then((response) => {
-                    if (response.data.isSuccess) {
-                        setContactList(response.data.result.contacts)
-                    } else {
-                        console.log(response.data.message)
-                    }
-                })
-                .catch((error) => {
-                    console.log(error)
-                })
-        }
-    )
+    useEffect(async () => {
+        await axios.get(`/contact/list`)
+            .then((response) => {
+                if (response.data.isSuccess) {
+                    console.log(response.data.result.contacts)
+                    setContactList(response.data.result.contacts)
+                } else {
+                    console.log(response.data.message)
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }, [])
 
     // 그룹 불러오기
-    useState(async () => {
+    useEffect(async () => {
         await axios.get(`/group/getAll`)
             .then((response) => {
                 if (response.data.isSuccess) {
+                    console.log(response.data.result)
                     setContactGroupList(response.data.result)
                 } else {
                     console.log(response.data.message)
@@ -187,7 +188,7 @@ const Receiver = ({
             .catch((error) => {
                 console.log(error)
             })
-    })
+    }, [])
 
 
     return (
