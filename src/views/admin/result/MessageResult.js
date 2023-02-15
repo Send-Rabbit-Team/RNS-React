@@ -69,7 +69,7 @@ const MessageResult = () => {
     const [isContentModal, setIsContentModal] = useState(false);
 
     // 메시지 내용
-    const [messageContent, setMessageContent] = useState("");
+    const [message, setMessage] = useState({});
 
     // 연락처 format 수정 메소드
     const makeHyphen = (number) => {
@@ -171,18 +171,7 @@ const MessageResult = () => {
     }
 
     // 메시지 상태 차트 정보 저장
-    const [messageStatusChartLabels, setMessageStatusChartLabels] = useState([]);
-    const [messageStatusChartData, setMessageStatusChartData] = useState([]);
-    const setMessageStatusData = (messageStatus) => {
-        const labels = []
-        const data = []
-        for (const status in messageStatus) {
-            labels.push(status)
-            data.push(messageStatus[status])
-        }
-        setMessageStatusChartLabels(labels)
-        setMessageStatusChartData(data)
-    }
+    const [messageStatusData, setMessageStatusData] = useState({});
 
     // 브로커 차트 데이터
     const brokerChart = {
@@ -205,14 +194,20 @@ const MessageResult = () => {
 
     // 메시지 상태 차트 데이터
     const messageStatusChart = {
-        labels  : messageStatusChartLabels,
-        datasets: [
+        labels  : ["발송 성공", "발송 실패", "발송 중", "재발송"],
+            datasets: [
             {
-                data           : messageStatusChartData,
+                data           : [
+                    messageStatusData["SUCCESS"],
+                    messageStatusData["FAIL"],
+                    messageStatusData["PENDING"],
+                    messageStatusData["RESEND"]
+                ],
                 backgroundColor: [
-                    'rgba(54, 162, 235, 0.5)',
                     'rgba(75, 192, 192, 0.5)',
-                    'rgba(255, 99, 132, 0.5)'
+                    'rgba(255, 99, 132, 0.5)',
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(255, 206, 86, 0.5)',
                 ],
                 borderWidth    : 1,
             },
@@ -283,6 +278,7 @@ const MessageResult = () => {
                             <th scope="col" className="text-center">그룹</th>
                             <th scope="col" className="text-center">중계사</th>
                             <th scope="col" className="text-center">상태</th>
+                            <th scope="col" className="text-center">실패 사유</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -299,10 +295,14 @@ const MessageResult = () => {
                                     <td className="text-center text-success">{messageResultInfo.messageStatus}</td>
                                 ) : messageResultInfo.messageStatus === "FAIL" ? (
                                     <td className="text-center text-warning">{messageResultInfo.messageStatus}</td>
-                                ) : (
+                                ) : messageResultInfo.messageStatus === "PENDING" ? (
                                     <td className="text-center text-primary">{messageResultInfo.messageStatus}</td>
-                                )
+                                ) : messageResultInfo.messageStatus === "RESEND" ? (
+                                    <td className="text-center text-yellow">{messageResultInfo.messageStatus}</td>
+                                ) : null
                                 }
+                                {/*<td className="text-center">{messageResultInfo.description}</td>*/}
+                                <td className="text-center">중계사 오류 kt -> skt -> lg 2메시지 당근 환불</td>
                             </tr>
                         ))}
                         </tbody>
@@ -331,9 +331,11 @@ const MessageResult = () => {
                     >
                         <span aria-hidden={true}>×</span>
                     </button>
-                    {messageContent.split('\n').map(line => (
+                    <b>{message.title}</b>
+                    <br/>
+                    {message.content != null ? message.content.split('\n').map(line => (
                         <span>{line}<br/></span>
-                    ))}
+                    )) : null}
                 </div>
             </Modal>
 
@@ -440,6 +442,7 @@ const MessageResult = () => {
                                             </DropdownMenu>
                                         </UncontrolledDropdown>
                                     </th>
+                                    <th scope="col" className="text-center">사용 당근</th>
                                     <th scope="col" className="text-center">발송 결과</th>
                                 </tr>
                                 </thead>
@@ -454,12 +457,15 @@ const MessageResult = () => {
                                         <td style={{textOverflow: "ellipsis", overflow: "hidden", maxWidth: "250px"}}>
                                             <a className="text-dark" href="#" onClick={(e) => {
                                                 setIsContentModal(true)
-                                                setMessageContent(messageResult.content)
+                                                setMessage(messageResult)
                                             }}>
+                                                <b>{messageResult.title}</b>
+                                                &nbsp;
                                                 {messageResult.content}
                                             </a>
                                         </td>
                                         <td className="text-center">{messageResult.messageType}</td>
+                                        <td className="text-center">0개</td>
                                         <td className="text-center">
                                             <a href="#">
                                                 <i className="fas fa-eye"
