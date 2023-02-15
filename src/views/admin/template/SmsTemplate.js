@@ -143,7 +143,7 @@ const SmsTemplate = () => {
                                     showConfirmButton: false,
                                     timer            : 1000
                                 })
-                                window.location.reload()
+                                window.location.replace("/admin/template/sms/1")
                             } else {
                                 await Swal.fire({
                                     title            : response.data.message,
