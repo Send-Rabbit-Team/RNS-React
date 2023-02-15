@@ -18,16 +18,17 @@ import {
 import Header from "components/Headers/Header.js";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import SmsMessageRule from './SmsMessageRule'
+import SmsMessageRule from "./SmsMessageRule"
 import Receiver from "../Receiver";
 import SmsTemplateModal from "./SmsTemplateModal";
 import SmsImageUpload from "./SmsImageUpload";
 import {Image} from "react-bootstrap";
 import MessageSchedule from "../MessageSchedule";
-import iphone from '../../../../assets/img/brand/iphone.jpg';
-import {ChatBubble, Message} from 'react-chat-ui';
+import iphone from "../../../../assets/img/brand/iphone.jpg";
+import {ChatBubble, Message} from "react-chat-ui";
 import styled from "styled-components";
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2"
+import {Pie} from "react-chartjs-2";
 
 const SendSms = () => {
 
@@ -108,6 +109,20 @@ const SendSms = () => {
     const [blockNumber, setBlockNumber] = useState();
     const [senderMemo, setSenderMemo] = useState();
 
+    // 발송 규칙 모달 -> 메인페이지 데이터 전달
+    const [smsKTRate, setSmsKTRate] = useState(0);
+    const getSmsKTRate = (data) => {
+        setSmsKTRate(data);
+    }
+    const [smsSKTRate, setSmsSKTRate] = useState(0);
+    const getSmsSKTRate = (data) => {
+        setSmsSKTRate(data);
+    }
+    const [smsLGRate, setSmsLGRate] = useState(0);
+    const getSmsLGRate = (data) => {
+        setSmsLGRate(data);
+    }
+
     // 수신자 모달 -> 메인페이지 데이터 전달
     const [selectContactList, setSelectContactList] = useState([]);
     const getSelectContactList = (data) => {
@@ -119,10 +134,15 @@ const SendSms = () => {
     }
 
     // 탬플릿 모달 -> 메인페이지 데이터 전달
-    const [selectTemplate, setSelectTemplate] = useState();
-    const getSelectTemplate = (data) => {
-        setSelectTemplate(data);
-        setMessageContext(messageContext + data)
+    const [selectTemplateTitle, setSelectTemplateTitle] = useState();
+    const getSelectTemplateTitle = (data) => {
+        setSelectTemplateTitle(data);
+        setMessageTitle(data)
+    }
+    const [selectTemplateContent, setSelectTemplateContent] = useState();
+    const getSelectTemplateContent = (data) => {
+        setSelectTemplateContent(data);
+        setMessageContext(data)
     }
 
     // 이미지 모달 -> 메인페이지 데이터 전달
@@ -152,6 +172,7 @@ const SendSms = () => {
     // 미리보기화면
     const [messageContext, setMessageContext] = useState("")
     const [messageTitle, setMessageTitle] = useState("")
+    const [messageBlock, setMessageBlock] = useState("")
     const [isBlock, setIsBlock] = useState(false);
     const [isTitle, setIstitle] = useState(false);
     const [message, setMessage] = useState("");
@@ -160,9 +181,9 @@ const SendSms = () => {
         let hour = now.getHours();
         let hourMod = hour <= 12 ? hour : hour - 12
         let min = now.getMinutes();
-        console.log(hour)
+        // console.log(hour)
         let PA = now.getHours() < 12 ? "오전" : "오후";
-        return PA + ' ' + hourMod + '시 ' + min + '분'
+        return PA + " " + hourMod + "시 " + min + "분"
     }
 
 
@@ -201,10 +222,26 @@ const SendSms = () => {
   `;
 
     // 미리보기 메시지 내용
-    const messageWithBlockNumber = <>{messageContext}<br/><br/>무료수신거부: <BlockCss>{blockNumber}</BlockCss></>
-    const messageWithTitle = <><TitleCss>{messageTitle}</TitleCss><br/><BodyCss>{messageContext}</BodyCss></>
-    const messageWithBlockerNumberAndTitle = <>
-        <TitleCss>{messageTitle}</TitleCss><br/><BodyCss>{messageContext}</BodyCss><br/><br/>무료수신거부:<BlockCss>{blockNumber}</BlockCss></>
+    useEffect(() => {
+        let message =
+            <>
+                {messageTitle ? (
+                    <>
+                        <TitleCss>{messageTitle}</TitleCss>
+                        <br/>
+                    </>
+                ) : null}
+
+                <BodyCss>{messageContext}</BodyCss>
+
+                {isBlock ? (
+                    <>
+                        <BlockCss>{messageBlock}</BlockCss>
+                    </>
+                ) : null}
+            </>
+        setMessage(message)
+    }, [messageTitle, messageContext, isBlock, blockNumber])
 
     // 메시지 타입 지정
     const [messageType, setMessageType] = useState()
@@ -217,32 +254,34 @@ const SendSms = () => {
     // 메시지 바이트 변환
     const [messageByte, setMessageByte] = useState()
     useEffect(() => {
+        var messageTotal = isBlock ? messageTitle + messageContext + messageBlock : messageTitle + messageContext;
         var l = 0;
 
-        for (var idx = 0; idx < messageContext.length; idx++) {
-            var c = escape(messageContext.charAt(idx));
+        for (var idx = 0; idx < messageTotal.length; idx++) {
+            var c = escape(messageTotal.charAt(idx));
 
             if (c.length == 1) l++;
             else if (c.indexOf("%u") != -1) l += 2;
             else if (c.indexOf("%") != -1) l += c.length / 3;
         }
 
-        isBlock ? setMessageByte(l + 29) : setMessageByte(l)
+        setMessageByte(l)
     });
 
     // SenderNumber 불러오기
     const [senderNumberList, setSenderNumberList] = useState([]);
-    useState(async () => {
-        await axios.get('/sender/all')
+    useEffect(async () => {
+        await axios.get("/sender/all")
             .then((response) => {
                 if (response.data.isSuccess) {
+                    console.log(response.data.result)
                     setSenderNumberList(response.data.result)
+                } else {
+                    console.log(response.data.messagge)
                 }
             })
-            .catch((error) => {
-                // 에러핸들링
-            })
-    })
+            .catch((error) => console.log(error))
+    }, [])
 
     const [smsPoint, setSmsPoint] = useState(0)
 
@@ -250,12 +289,13 @@ const SendSms = () => {
         await axios.get("/point/get")
             .then(response => {
                 if (response.data.isSuccess) {
+                    console.log(response.data.result.smsPoint)
                     setSmsPoint(response.data.result.smsPoint)
                 } else {
                     console.log(response.data.message)
                 }
             }).catch(error => console.log(error))
-    })
+    }, [])
 
     const messageCost = {
         "SMS": 1,
@@ -273,103 +313,118 @@ const SendSms = () => {
             if (response.data.isSuccess) {
                 sendMessage()
             } else {
-                await Swal.fire({
-                    title            : `당근 ${selectContactList.length * messageCost[messageType] - smsPoint}개가 부족하여 결제 창으로 이동합니다.`,
-                    icon             : 'warning',
-                    showConfirmButton: false,
-                    timer            : 2000
-                })
                 chargePoint()
             }
-        }).catch((error) => {
+        }).catch(async (error) => {
+            await Swal.fire({
+                title            : error.response.data.message,
+                icon             : "error",
+                showConfirmButton: false,
+                timer            : 1000
+            })
             console.log(error)
         })
     }
 
     const chargePoint = async () => {
-        await axios.get("/point/charge", {
-            params: {
-                smsPoint  : selectContactList.length * messageCost[messageType] - smsPoint,
-                kakaoPoint: 0
-            }
-        }).then(response => {
-            if (response.data.isSuccess) {
-                window.open(response.data.result)
-                window.close()
+        Swal.fire({
+            title            : "카카오 페이로 결제하시겠습니까?",
+            text             : `당근 ${selectContactList.length * messageCost[messageType] - smsPoint}개가 부족합니다`,
+            icon             : "question",
+            showDenyButton   : true,
+            confirmButtonText: "네",
+            denyButtonText   : "아니요",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await axios.get("/point/charge", {
+                    params: {
+                        smsPoint  : selectContactList.length * messageCost[messageType] - smsPoint,
+                        kakaoPoint: 0
+                    }
+                }).then(response => {
+                    if (response.data.isSuccess) {
+                        window.open(response.data.result)
+                        window.close()
+                    }
+                })
             }
         })
+
     }
 
     // 메시지 전송
-    const sendMessage = async () => {
-        !senderNumber ? Swal.fire({
+    const validMessage = async () => {
+        !senderNumber ? await Swal.fire({
             title            : "발신번호를 선택하세요",
-            icon             : 'error',
+            icon             : "warning",
             showConfirmButton: false,
             timer            : 1000
-        }) : !messageContext ? Swal.fire({
+        }) : !messageContext ? await Swal.fire({
             title            : "메시지 내용을 입력하세요",
-            icon             : 'error',
+            icon             : "warning",
             showConfirmButton: false,
             timer            : 1000
-        }) : selectContactList.length === 0 ? Swal.fire({
+        }) : selectContactList.length === 0 ? await Swal.fire({
             title            : "수신번호를 선택하세요",
-            icon             : 'error',
+            icon             : "warning",
             showConfirmButton: false,
             timer            : 1000
-        }) : await axios.post('/message/send/sms', {
-            "message"  : {
-                "from"          : senderNumber,
-                "subject"       : messageTitle,
-                "content"       : messageContext,
-                "images"        : selectImage,
-                "messageType"   : messageType,
-                "cronExpression": cron,
-                "cronText"      : cronText,
-            },
-            "receivers": selectContactList.map(contact => contact.phoneNumber)
-        }).then((response) => {
-            if (response.data.isSuccess) {
-                console.log("시간: ", response)
-                Swal.fire({
-                    title            : '메시지를 전송했습니다',
-                    icon             : 'success',
-                    showConfirmButton: false,
-                    timer            : 1000
-                })
-                window.location.replace("/admin/result/sms/:type/:keyword/:page")
-            } else {
-                Swal.fire({
-                    title            : response.data.message,
-                    icon             : 'error',
-                    showConfirmButton: false,
-                    timer            : 1000
-                })
-            }
-        }).catch((error) => {
-            Swal.fire({
-                title            : "메시지 전송에 실패했습니다",
-                icon             : 'error',
-                showConfirmButton: false,
-                timer            : 1000
-            })
-        })
+        }) : validPoint()
     }
 
+    const sendMessage = async () => {
+        Swal.fire({
+            title            : "결제를 진행하시겠습니까?",
+            text             : `메시지 당근 ${selectContactList.length * messageCost[messageType]}개가 차감됩니다.`,
+            icon             : "question",
+            showDenyButton   : true,
+            confirmButtonText: "네",
+            denyButtonText   : "아니요",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await axios.post("/message/send/sms", {
+                    "message"  : {
+                        "from"          : senderNumber,
+                        "subject"       : messageTitle,
+                        "content"       : isBlock ? messageContext + messageBlock : messageContext,
+                        "images"        : selectImage,
+                        "messageType"   : messageType,
+                        "cronExpression": cron,
+                        "cronText"      : cronText,
+                    },
+                    "receivers": selectContactList.map(contact => contact.phoneNumber)
+                }).then(async (response) => {
+                    if (response.data.isSuccess) {
+                        await Swal.fire({
+                            title            : "메시지를 전송했습니다",
+                            text             : response.data.result,
+                            icon             : "success",
+                            showConfirmButton: true,
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.replace("/admin/result/sms/:type/:keyword/:page")
+                            }
+                        })
 
-    // 미리보기 출력 텍스트
-    useEffect(() => {
-            if (isBlock && isTitle) {
-                setMessage(messageWithBlockerNumberAndTitle)
-            } else if (isBlock) {
-                setMessage(messageWithBlockNumber)
-            } else if (isTitle) {
-                setMessage(messageWithTitle)
-            } else {
-                setMessage(messageContext)
+                    } else {
+                        Swal.fire({
+                            title            : response.data.message,
+                            icon             : "error",
+                            showConfirmButton: false,
+                            timer            : 1000
+                        })
+                    }
+                }).catch((error) => {
+                    Swal.fire({
+                        title            : "메시지 전송에 실패했습니다",
+                        icon             : "error",
+                        showConfirmButton: false,
+                        timer            : 1000
+                    })
+                })
             }
-        }
-        , [messageTitle, isBlock, messageContext])
+        })
+    }
 
     const onChangeTitleHandler = (v) => {
         if (isTitle) {
@@ -383,12 +438,23 @@ const SendSms = () => {
     return (
         <>
             {/* 발송 설정 모달 */}
-            <SmsMessageRule isShowingMessageRule={isShowingMessageRule} hide={toggleMessageRule}/>
+            <SmsMessageRule
+                isShowingMessageRule={isShowingMessageRule}
+                hide={toggleMessageRule}
+                smsKTRate={smsKTRate}
+                smsSKTRate={smsSKTRate}
+                smsLGRate={smsLGRate}
+                setSmsKTRate={getSmsKTRate}
+                setSmsSKTRate={getSmsSKTRate}
+                setSmsLGRate={getSmsLGRate}
+            />
             <SmsTemplateModal
                 isShowingTemplate={isShowingTemplate}
                 hide={toggleTemplate}
-                selectTemplate={selectTemplate}
-                setSelectTemplate={getSelectTemplate}
+                selectTemplateTitle={selectTemplateTitle}
+                setSelectTemplateTitle={getSelectTemplateTitle}
+                selectTemplateContent={selectTemplateContent}
+                setSelectTemplateContent={getSelectTemplateContent}
             />
             <SmsImageUpload
                 isShowingImageUpload={isShowingImageUpload}
@@ -420,7 +486,7 @@ const SendSms = () => {
                             <CardHeader className="border-0">
                                 <Row>
                                     <Col>
-                                        <h3 className="mb-0" style={{paddingTop: 10}}>SMS 발송 &nbsp;&nbsp;
+                                        <h3 className="mb-0" style={{paddingTop: 10}}>메시지 발송 &nbsp;&nbsp;
                                         </h3>
                                     </Col>
                                 </Row>
@@ -428,92 +494,110 @@ const SendSms = () => {
 
                             <CardBody className="py-3">
                                 <Row>
-                                    <Col sm="10">
-                                        <div className="d-flex justify-content-between"
-                                             style={{paddingBottom: 20, flexDirection: "row"}} align="center">
-                                            <Button color="secondary" size="lg" type="button"
-                                                    style={{width: 150, height: 60, fontSize: 16}}
-                                                    onClick={(e) => toggleImageUpload()}>
+                                    <Col lg={2} sm={4} className="mb-4">
+                                        <Button color="secondary" size="lg" type="button" block
+                                                style={{height: 60}}
+                                                onClick={(e) => toggleImageUpload()}>
 
                                                 <span className="btn-inner--icon">
                                                   <i className="ni ni-album-2"/>
                                                 </span>
-                                                <span className="btn-inner--text">사진</span>
-                                            </Button>
-
-                                            {/*발신자 드롭다운*/}
-                                            <UncontrolledDropdown>
-                                                <DropdownToggle
-                                                    size="lg"
-                                                    caret
-                                                    color="secondary"
-                                                    type="button"
-                                                    style={{width: 150, height: 60, fontSize: 16}}
-                                                >
+                                            <span className="btn-inner--text">사진</span>
+                                        </Button>
+                                    </Col>
+                                    <Col lg={2} sm={4} className="mb-4">
+                                        <UncontrolledDropdown>
+                                            <DropdownToggle
+                                                size="lg"
+                                                caret
+                                                color="secondary"
+                                                type="button"
+                                                style={{height: 60}}
+                                            >
                                                       <span className="btn-inner--icon">
                                                         <i className="fas fa-phone"/>
                                                       </span>
-                                                    <span className="btn-inner--text">발신자</span>
-                                                </DropdownToggle>
+                                                <span className="btn-inner--text">발신자</span>
+                                            </DropdownToggle>
 
-                                                <DropdownMenu aria-labelledby="dropdownMenuButton">
-                                                    {senderNumberList.map(sn => (
-                                                        <DropdownItem onClick={(e) => {
-                                                            setSenderMemo(sn.memo)
-                                                            setSenderNumber(sn.phoneNumber)
-                                                            setBlockNumber(sn.blockNumber)
-                                                        }}>
-                                                            {"[" + sn.memo + "] " + makeHyphen(sn.phoneNumber)}
-                                                        </DropdownItem>
-                                                    ))}
-                                                </DropdownMenu>
-                                            </UncontrolledDropdown>
-
-                                            <Button color="secondary" size="lg" type="button"
-                                                    style={{width: 150, height: 60, fontSize: 16}} onClick={(e) => {
-                                                blockNumber == null ? Swal.fire({
-                                                        title            : '발신번호를 선택하세요',
-                                                        icon             : 'warning',
-                                                        showConfirmButton: false,
-                                                        timer            : 1000
-                                                    }) :
-                                                    isBlock == true ? setIsBlock(false) : setIsBlock(true)
-                                            }}>
+                                            <DropdownMenu aria-labelledby="dropdownMenuButton">
+                                                {senderNumberList.map(sn => (
+                                                    <DropdownItem onClick={(e) => {
+                                                        setSenderMemo(sn.memo)
+                                                        setSenderNumber(sn.phoneNumber)
+                                                        setBlockNumber(sn.blockNumber)
+                                                        setMessageBlock("\n무료수신거부: " + sn.blockNumber)
+                                                    }}>
+                                                        {sn.memo + " (" + makeHyphen(sn.phoneNumber) + ")"}
+                                                    </DropdownItem>
+                                                ))}
+                                            </DropdownMenu>
+                                        </UncontrolledDropdown>
+                                    </Col>
+                                    <Col lg={2} sm={4} className="mb-4">
+                                        <Button color="secondary" size="lg" type="button" block
+                                                style={{height: 60}} onClick={(e) => {
+                                            blockNumber == null ? Swal.fire({
+                                                    title            : "발신번호를 선택하세요",
+                                                    icon             : "warning",
+                                                    showConfirmButton: false,
+                                                    timer            : 1000
+                                                }) :
+                                                isBlock == true ? setIsBlock(false) : setIsBlock(true)
+                                        }}>
                                                 <span className="btn-inner--icon">
                                                   <i className="ni ni-tag"/>
                                                 </span>
-                                                <span className="btn-inner--text">수신거부</span>
-                                            </Button>
-                                            <Button color="secondary" size="lg" type="button"
-                                                    style={{width: 150, height: 60, fontSize: 16}}
-                                                    onClick={(e) => toggleTemplate()}>
+                                            <span className="btn-inner--text">수신거부</span>
+                                        </Button>
+                                    </Col>
+                                    <Col lg={2} sm={4} className="mb-4">
+                                        <Button color="secondary" size="lg" type="button" block
+                                                style={{height: 60}}
+                                                onClick={(e) => toggleTemplate()}>
                                                 <span className="btn-inner--icon">
                                                   <i className="ni ni-caps-small"/>
                                                 </span>
-                                                <span className="btn-inner--text">템플릿</span>
-                                            </Button>
-                                            <Button color="secondary" size="lg" type="button"
-                                                    style={{width: 150, height: 60, fontSize: 16}}
-                                                    onClick={(e) => toggleMessageRule()}>
+                                            <span className="btn-inner--text">템플릿</span>
+                                        </Button>
+                                    </Col>
+                                    <Col lg={2} sm={4} className="mb-4">
+                                        <Button color="secondary" size="lg" type="button" block
+                                                style={{height: 60}}
+                                                onClick={(e) => toggleMessageRule()}>
                                                 <span className="btn-inner--icon">
                                                   <i className="ni ni-time-alarm"/>
                                                 </span>
-                                                <span className="btn-inner--text">발송설정</span>
-                                            </Button>
-                                            <Button color="secondary" size="lg" type="button"
-                                                    style={{width: 150, height: 60, fontSize: 16}}
-                                                    onClick={(e) => toggleReceiver()}>
+                                            <span className="btn-inner--text">발송설정</span>
+                                        </Button>
+                                    </Col>
+                                    <Col lg={2} sm={4} className="mb-4">
+                                        <Button color="secondary" size="lg" type="button" block
+                                                style={{height: 60}}
+                                                onClick={(e) => toggleReceiver()}>
                                                 <span className="btn-inner--icon">
                                                   <i className="ni ni-circle-08"/>
                                                 </span>
-                                                <span className="btn-inner--text">수신자</span>
-                                            </Button>
-                                        </div>
+                                            <span className="btn-inner--text">수신자</span>
+                                        </Button>
                                     </Col>
 
 
                                     <Col sm="6">
-                                        <CardBody style={{boxShadow: '1px 2px 9px #8c8c8c'}}>
+                                        <CardBody style={{boxShadow: "1px 2px 9px #8c8c8c"}}>
+                                            <FormGroup>
+                                                <label className="form-control-label">
+                                                    발송 비용
+                                                </label>
+                                                <Container>
+                                                    <Row>
+                                                        <Badge className="badge-md m-1" color="primary">
+                                                            메시지 당근 {selectContactList.length * messageCost[messageType]}개
+                                                        </Badge>
+                                                    </Row>
+                                                </Container>
+                                            </FormGroup>
+
                                             <FormGroup>
                                                 <label className="form-control-label">
                                                     발신자
@@ -543,6 +627,14 @@ const SendSms = () => {
                                                                 ))}
                                                             </p>
                                                         ))}
+                                                        <p>
+                                                            {selectContactList.map((contact) => (
+                                                                (contact.groupId === 0) ? (
+                                                                    <Badge className="badge-md m-1"
+                                                                           color="primary">{contact.memo} ({makeHyphen(contact.phoneNumber)})</Badge>
+                                                                ) : null
+                                                            ))}
+                                                        </p>
                                                     </Row>
                                                 </Container>
                                             </FormGroup>
@@ -614,10 +706,40 @@ const SendSms = () => {
                                                     </Row>
                                                 </Container>
                                             </FormGroup>
+
+                                            <FormGroup>
+                                                <label className="form-control-label">
+                                                    발송 비율 정보
+                                                </label>
+                                                <Container>
+                                                    <Row>
+                                                        <Pie
+                                                            data={{
+                                                                labels  : ["KT", "SKT", "LG"],
+                                                                datasets: [
+                                                                    {
+                                                                        data           : [smsKTRate, smsSKTRate, smsLGRate],
+                                                                        backgroundColor: [
+                                                                            'rgba(255, 99, 132, 0.5)',
+                                                                            'rgba(54, 162, 235, 0.5)',
+                                                                            'rgba(255, 206, 86, 0.5)',
+                                                                        ],
+                                                                        borderWidth    : 1,
+                                                                    },
+                                                                ],
+                                                            }}
+                                                            options={{
+                                                                title: {
+                                                                    display: true,
+                                                                    text   : "발송 비율 정보"
+                                                                }
+                                                            }}
+                                                        ></Pie>
+                                                    </Row>
+                                                </Container>
+                                            </FormGroup>
                                         </CardBody>
                                     </Col>
-
-
                                     {/* 메시지 미리보기  */}
                                     <Col sm="6" style={{paddingLeft: 80}}>
                                         <div style={{
@@ -632,7 +754,7 @@ const SendSms = () => {
                                                     textAlign : "center",
                                                     fontSize  : 10,
                                                     fontWeight: "bold",
-                                                    color     : '#b1b1b4'
+                                                    color     : "#b1b1b4"
                                                 }}>{`문자 메시지\n(오늘) ${IphoneTime()} `}</div>
                                                 <ChatBubble
                                                     message={messageInput}
@@ -640,14 +762,14 @@ const SendSms = () => {
                                                         {
                                                             text      : {
                                                                 fontSize: 12,
-                                                                color   : 'black'
+                                                                color   : "black"
                                                             },
                                                             chatbubble: {
                                                                 borderRadius   : 20,
                                                                 paddingLeft    : 14,
                                                                 margin         : 10,
                                                                 maxWidth       : 250,
-                                                                backgroundColor: '#e5e5e6',
+                                                                backgroundColor: "#e5e5e6",
                                                             }
                                                         }
                                                     }
@@ -663,7 +785,7 @@ const SendSms = () => {
                             <CardFooter className="border-0">
                                 <Button className="text-lg ml-3 btn-icon btn-3" size="xxl" color="primary" type="button"
                                         style={{float: "right"}}
-                                        onClick={(e) => validPoint()}>
+                                        onClick={(e) => validMessage()}>
                                     <span className="btn-inner--icon">
                                         <i className="ni ni-send text-white"/>
                                     </span>
