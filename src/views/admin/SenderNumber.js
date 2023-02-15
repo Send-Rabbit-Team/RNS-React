@@ -9,7 +9,7 @@ import {
     Container,
     Row,
     Button,
-    Modal, Input, FormGroup, InputGroup, InputGroupText, InputGroupAddon
+    Modal, Input, FormGroup, InputGroup, InputGroupText, InputGroupAddon, Col
 } from "reactstrap";
 import Header from "components/Headers/Header.js";
 import React, {useState} from "react";
@@ -37,7 +37,10 @@ const SenderNumber = () => {
     const [senderNumberList, setSenderNumberList] = useState([])
 
     // 발신자 전화번호 추가 모달
-    const [isModal, setIsModal] = useState(false);
+    const [isRegModal, setIsRegModal] = useState(false);
+
+    // 차단번호 모달
+    const [isBlockModal, setIsBlockModal] = useState(false);
 
     // 인증번호 입력 창
     const [isForm, setIsForm] = useState(false);
@@ -70,6 +73,26 @@ const SenderNumber = () => {
                 console.log(error)
             })
     })
+
+    // 차단번호 받기
+    const [blockNumberList, setBlockNumberList] = useState([]);
+    const getBlockNumber = async (senderNumber) => {
+        await axios.get('/blocks', {
+            params: {
+                "senderNumber": senderNumber
+            }
+        })
+            .then((response) => {
+                if (response.data.isSuccess) {
+                    setBlockNumberList(response.data.result.receiveNumbers)
+                } else {
+                    console.log(response.data.message)
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
 
     // 인증번호 받기
     const authPhone = async () => {
@@ -227,7 +250,7 @@ const SenderNumber = () => {
                                 showConfirmButton: false,
                                 timer            : 1000
                             })
-                            window.alert(response.data.message)
+                            console.log(response.data.message)
                         }
                     })
                     .catch(async (error) => {
@@ -238,6 +261,7 @@ const SenderNumber = () => {
                             showConfirmButton: false,
                             timer            : 1000
                         })
+                        console.log(error)
                     })
             }
         })
@@ -248,7 +272,7 @@ const SenderNumber = () => {
             {/* modal */}
             <Modal
                 className="modal-dialog-centered"
-                isOpen={isModal}
+                isOpen={isRegModal}
             >
 
                 {/*modal header*/}
@@ -261,7 +285,7 @@ const SenderNumber = () => {
                         className="close"
                         data-dismiss="modal"
                         type="button"
-                        onClick={() => setIsModal(false)}
+                        onClick={() => setIsRegModal(false)}
                     >
                         <span aria-hidden={true}>×</span>
                     </button>
@@ -342,6 +366,59 @@ const SenderNumber = () => {
                     </Button>
                 </div>
             </Modal>
+
+            <Modal
+                className="modal-dialog-centered"
+                isOpen={isBlockModal}
+            >
+
+                {/*modal header*/}
+                <div className="modal-header">
+                    <h3 className="modal-title" id="modal-title-default">
+                        차단 번호 목록
+                    </h3>
+                    <button
+                        aria-label="Close"
+                        className="close"
+                        data-dismiss="modal"
+                        type="button"
+                        onClick={() => setIsBlockModal(false)}
+                    >
+                        <span aria-hidden={true}>×</span>
+                    </button>
+                </div>
+
+                {/*modal body*/}
+                <div className="modal-body">
+                    {/*table*/}
+                    <Table className="align-items-center table-flush" responsive>
+                        <thead className="thead-light">
+                        <tr>
+                            <th scope="col" className="text-center">No</th>
+                            <th scope="col" className="text-center">차단 번호</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {blockNumberList.map((blockNumber, index) => (
+                            <tr>
+                                <th scope="row" className="text-center" key={index}>
+                                    {index + 1}
+                                </th>
+                                <td className="text-center">{blockNumber}</td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </Table>
+                </div>
+
+                {/*modal footer*/}
+                <div className="modal-footer">
+                    <Button color="primary" type="button" onClick={(e) => setIsBlockModal(false)}>
+                        닫기
+                    </Button>
+                </div>
+            </Modal>
+
             <Header/>
             {/* Page content */}
             <Container className="mt--7" fluid>
@@ -352,7 +429,7 @@ const SenderNumber = () => {
                             <CardHeader className="border-0">
                                 <h3 className="mb-0">발신자 전화번호 목록 &nbsp;&nbsp;
                                     <a href="#"><i className="fas fa-plus-circle" onClick={(e) => {
-                                        setIsModal(true)
+                                        setIsRegModal(true)
                                     }}/></a>
                                 </h3>
                             </CardHeader>
@@ -363,6 +440,7 @@ const SenderNumber = () => {
                                     <th className="text-center" scope="col">메모</th>
                                     <th className="text-center" scope="col">전화번호</th>
                                     <th className="text-center" scope="col">차단번호</th>
+                                    <th className="text-center" scope="col">차단한 연락처</th>
                                     <th className="text-center" scope="col">삭제</th>
                                 </tr>
                                 </thead>
@@ -375,6 +453,15 @@ const SenderNumber = () => {
                                         <td className="text-center">{senderNumber.memo}</td>
                                         <td className="text-center">{senderNumber.phoneNumber != null ? makeHyphen(senderNumber.phoneNumber) : null}</td>
                                         <td className="text-center">{senderNumber.blockNumber != null ? makeHyphen(senderNumber.blockNumber) : null}</td>
+                                        <td className="text-center">
+                                            <a href="#">
+                                                <i className="fas fa-eye"
+                                                   onClick={(e) => {
+                                                       setIsBlockModal(true);
+                                                       getBlockNumber(senderNumber.phoneNumber);
+                                                   }}/>
+                                            </a>
+                                        </td>
                                         <td className="text-center">
                                             <a href="#">
                                                 <i className="fas fa-trash" onClick={(e) => {
