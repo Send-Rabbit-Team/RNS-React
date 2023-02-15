@@ -14,6 +14,7 @@ import {
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const KakaoTemplate = () => {
     const params = useParams();
@@ -21,13 +22,13 @@ const KakaoTemplate = () => {
 
     const [pageData, setPageData] = useState({
         totalPage: 0,
-        page: 1,
-        size: 0,
-        start: 0,
-        end: 0,
-        prev: false,
-        next: false,
-        pageList: []
+        page     : 1,
+        size     : 0,
+        start    : 0,
+        end      : 0,
+        prev     : false,
+        next     : false,
+        pageList : []
     })
 
     const [templateList, setTemplateList] = useState([]);
@@ -49,38 +50,64 @@ const KakaoTemplate = () => {
                 if (response.data.isSuccess) {
                     setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
                     setTemplateList(response.data.result.dtoList)
+                } else {
+                    console.log(response.data.message)
                 }
             })
             .catch((error) => {
-                window.alert(error.response.data.message)
+                console.log(error)
             })
     })
 
     // 탬플릿 생성하기
     const registerTemplate = async () => {
-        newTitle == "" ?  window.alert("알림톡 제목을 입력하세요") :
-            newContent == "" ? window.alert("알림톡 내용을 입력하세요") :
-                newButtonType == "" ? window.alert("알림톡 버튼 종류를 선택하세요") :
-                    await axios.post("/kakao/template/register", {
-                        "title" : newTitle,
-                        "subTitle" : newSubTitle,
-                        "content" : newContent,
-                        "description" : newDescription,
-                        "buttonTitle" : newButtonTitle,
-                        "buttonUrl" : newButtonUrl,
-                        "buttonType" : newButtonType
+        newTitle == "" ? await Swal.fire({
+                title            : "알림톡 제목을 입력하세요",
+                icon             : "warning",
+                showConfirmButton: false,
+                timer            : 1000
+            }) :
+            newContent == "" ? await Swal.fire({
+                    title            : "알림톡 내용을 입력하세요",
+                    icon             : "warning",
+                    showConfirmButton: false,
+                    timer            : 1000
+                }) :
+                await axios.post("/kakao/template/register", {
+                    "title"      : newTitle,
+                    "subTitle"   : newSubTitle,
+                    "content"    : newContent,
+                    "description": newDescription,
+                    "buttonTitle": newButtonTitle,
+                    "buttonUrl"  : newButtonUrl,
+                    "buttonType" : newButtonType
+                })
+                    .then(async (response) => {
+                        if (response.data.isSuccess) {
+                            await Swal.fire({
+                                title            : "알림톡 탬플릿을 생성했습니다",
+                                icon             : "success",
+                                showConfirmButton: false,
+                                timer            : 1000
+                            })
+                            window.location.replace("/admin/template/kakao/1")
+                        } else {
+                            await Swal.fire({
+                                title            : response.data.message,
+                                icon             : "error",
+                                showConfirmButton: false,
+                                timer            : 1000
+                            })
+                        }
                     })
-                        .then((response) => {
-                            if (response.data.isSuccess) {
-                                window.alert(response.data.message)
-                                window.location.replace("/admin/template/kakao/1")
-                            } else {
-                                window.alert(response.data.message)
-                            }
+                    .catch(async (error) => {
+                        await Swal.fire({
+                            title            : "알림톡 탬플릿 생성에 실패했습니다",
+                            icon             : "error",
+                            showConfirmButton: false,
+                            timer            : 1000
                         })
-                        .catch((error) => {
-                            window.alert(error.response.data.message)
-                        })
+                    })
     }
 
     // 탬플릿 수정하기
@@ -89,49 +116,107 @@ const KakaoTemplate = () => {
             if (t.templateId === templateId) {
                 patchTemplateReq = {
                     "templateId" : templateId,
-                    "title" : t.title,
-                    "subTitle" : t.subTitle,
-                    "content" : t.content,
-                    "description" : t.description,
-                    "buttonTitle" : t.buttonTitle,
-                    "buttonUrl" : t.buttonUrl,
+                    "title"      : t.title,
+                    "subTitle"   : t.subTitle,
+                    "content"    : t.content,
+                    "description": t.description,
+                    "buttonTitle": t.buttonTitle,
+                    "buttonUrl"  : t.buttonUrl,
                     "buttonType" : t.buttonType
                 }
             }
         })
-        patchTemplateReq.title == "" ?  window.alert("알림톡 제목을 입력하세요") :
-            patchTemplateReq.content == "" ?  window.alert("알림톡 내용을 입력하세요") :
-                patchTemplateReq.buttonType == "" ? window.alert("알림톡 버튼 종류를 선택하세요") :
+        patchTemplateReq.title == "" ? await Swal.fire({
+                title            : "알림톡 제목을 입력하세요",
+                icon             : "warning",
+                showConfirmButton: false,
+                timer            : 1000
+            }) :
+            patchTemplateReq.content == "" ? await Swal.fire({
+                title            : "알림톡 내용을 입력하세요",
+                icon             : "warning",
+                showConfirmButton: false,
+                timer            : 1000
+            }) : Swal.fire({
+                title            : "알림톡 탬플릿을 수정하시겠습니까?",
+                icon             : "question",
+                showDenyButton   : true,
+                confirmButtonText: "네",
+                denyButtonText   : "아니요",
+            }).then(async (result) => {
+                if (result.isConfirmed) {
                     await axios.patch("/kakao/template/edit", patchTemplateReq)
-                        .then((response) => {
+                        .then(async (response) => {
                             if (response.data.isSuccess) {
-                                window.alert(response.data.message)
-                                window.location.reload()
+                                await Swal.fire({
+                                    title            : "알림톡 탬플릿을 수정했습니다",
+                                    icon             : "success",
+                                    showConfirmButton: false,
+                                    timer            : 1000
+                                })
+                                window.location.replace("/admin/template/kakao/1")
                             } else {
-                                window.alert(response.data.message)
+                                await Swal.fire({
+                                    title            : response.data.message,
+                                    icon             : "error",
+                                    showConfirmButton: false,
+                                    timer            : 1000
+                                })
                             }
                         })
-                        .catch((error) => {
-                            window.alert(error.response.data.message)
+                        .catch(async (error) => {
+                            await Swal.fire({
+                                title            : "알림톡 탬플릿 수정에 실패했습니다",
+                                icon             : "error",
+                                showConfirmButton: false,
+                                timer            : 1000
+                            })
                         })
+                }
+            })
+
     }
 
     // 탬플릿 삭제하기
     const deleteTemplate = async (templateId) => {
-        if (window.confirm("정말 삭제하시겠습니까?")) {
-            await axios.patch(`/kakao/template/delete/${templateId}`)
-                .then((response) => {
-                    if (response.data.isSuccess) {
-                        window.alert(response.data.message)
-                        window.location.replace("/admin/template/kakao/1")
-                    } else {
-                        window.alert(response.data.message)
-                    }
-                })
-                .catch((error) => {
-                    window.alert(error.response.data.message)
-                })
-        }
+        Swal.fire({
+            title            : "탬플릿을 삭제하시겠습니까?",
+            text             : "탬플릿 삭제시 복구가 불가능합니다",
+            icon             : "question",
+            showDenyButton   : true,
+            confirmButtonText: "네",
+            denyButtonText   : "아니요",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await axios.patch(`/kakao/template/delete/${templateId}`)
+                    .then(async (response) => {
+                        if (response.data.isSuccess) {
+                            await Swal.fire({
+                                title            : "알림톡 탬플릿을 삭제했습니다",
+                                icon             : "success",
+                                showConfirmButton: false,
+                                timer            : 1000
+                            })
+                            window.location.replace("/admin/template/kakao/1")
+                        } else {
+                            await Swal.fire({
+                                title            : response.data.message,
+                                icon             : "error",
+                                showConfirmButton: false,
+                                timer            : 1000
+                            })
+                        }
+                    })
+                    .catch(async (error) => {
+                        await Swal.fire({
+                            title            : "알림톡 탬플릿 삭제에 실패했습니다",
+                            icon             : "error",
+                            showConfirmButton: false,
+                            timer            : 1000
+                        })
+                    })
+            }
+        })
     }
 
 
@@ -149,9 +234,12 @@ const KakaoTemplate = () => {
                             <CardBody>
                                 <button
                                     className="close mb-3"
-                                    onClick={(e) => {setNewTitle(""); setNewContent("")}}
+                                    onClick={(e) => {
+                                        setNewTitle("");
+                                        setNewContent("")
+                                    }}
                                 >
-                                    <span aria-hidden={true} style={{fontSize:"25px"}}>×</span>
+                                    <span aria-hidden={true} style={{fontSize: "25px"}}>×</span>
                                 </button>
                                 <InputGroup>
                                     <Input
@@ -159,7 +247,9 @@ const KakaoTemplate = () => {
                                         className="mb-2"
                                         placeholder="알림톡 제목"
                                         type="text"
-                                        onChange={(e) => {setNewTitle(e.target.value)}}
+                                        onChange={(e) => {
+                                            setNewTitle(e.target.value)
+                                        }}
                                     />
                                 </InputGroup>
                                 <InputGroup>
@@ -168,7 +258,9 @@ const KakaoTemplate = () => {
                                         className="mb-2"
                                         placeholder="알림톡 소제목"
                                         type="text"
-                                        onChange={(e) => {setNewSubTitle(e.target.value)}}
+                                        onChange={(e) => {
+                                            setNewSubTitle(e.target.value)
+                                        }}
                                     />
                                 </InputGroup>
 
@@ -178,14 +270,18 @@ const KakaoTemplate = () => {
                                     placeholder="알림톡 내용"
                                     rows="7"
                                     type="textarea"
-                                    onChange={(e) => {setNewContent(e.target.value)}}
+                                    onChange={(e) => {
+                                        setNewContent(e.target.value)
+                                    }}
                                 />
                                 <Input
                                     value={newDescription}
                                     placeholder="알림톡 설명"
                                     rows="7"
                                     type="textarea"
-                                    onChange={(e) => {setNewDescription(e.target.value)}}
+                                    onChange={(e) => {
+                                        setNewDescription(e.target.value)
+                                    }}
                                 />
                             </CardBody>
                             <CardFooter>
@@ -195,7 +291,9 @@ const KakaoTemplate = () => {
                                         className="mb-2"
                                         placeholder="알림톡 버튼 이름"
                                         type="text"
-                                        onChange={(e) => {setNewButtonTitle(e.target.value)}}
+                                        onChange={(e) => {
+                                            setNewButtonTitle(e.target.value)
+                                        }}
                                     />
                                 </InputGroup>
                                 <InputGroup>
@@ -204,7 +302,9 @@ const KakaoTemplate = () => {
                                         className="mb-2"
                                         placeholder="알림톡 버튼 링크"
                                         type="text"
-                                        onChange={(e) => {setNewButtonUrl(e.target.value)}}
+                                        onChange={(e) => {
+                                            setNewButtonUrl(e.target.value)
+                                        }}
                                     />
                                 </InputGroup>
                                 <InputGroup>
@@ -212,7 +312,9 @@ const KakaoTemplate = () => {
                                         value={newButtonType}
                                         className="mb-3"
                                         type="select"
-                                        onChange={(e) => {setNewButtonType(e.target.value)}}>
+                                        onChange={(e) => {
+                                            setNewButtonType(e.target.value)
+                                        }}>
                                         <option>알림톡 버튼 종류</option>
                                         <option value="DS">배송 조회</option>
                                         <option value="WL">웹 링크</option>
@@ -250,9 +352,11 @@ const KakaoTemplate = () => {
                                         <CardBody>
                                             <button
                                                 className="close mb-3"
-                                                onClick={(e) => {deleteTemplate(template.templateId)}}
+                                                onClick={(e) => {
+                                                    deleteTemplate(template.templateId)
+                                                }}
                                             >
-                                                <span aria-hidden={true} style={{fontSize:"25px"}}>×</span>
+                                                <span aria-hidden={true} style={{fontSize: "25px"}}>×</span>
                                             </button>
                                             <Input
                                                 value={template.title}
@@ -262,7 +366,10 @@ const KakaoTemplate = () => {
                                                 onChange={(e) => {
                                                     setTemplateList(
                                                         templateList.map((t) =>
-                                                            t.templateId === template.templateId ? { ...t, title: e.target.value } : t
+                                                            t.templateId === template.templateId ? {
+                                                                ...t,
+                                                                title: e.target.value
+                                                            } : t
                                                         )
                                                     );
                                                 }}
@@ -275,7 +382,10 @@ const KakaoTemplate = () => {
                                                 onChange={(e) => {
                                                     setTemplateList(
                                                         templateList.map((t) =>
-                                                            t.templateId === template.templateId ? { ...t, subTitle: e.target.value } : t
+                                                            t.templateId === template.templateId ? {
+                                                                ...t,
+                                                                subTitle: e.target.value
+                                                            } : t
                                                         )
                                                     );
                                                 }}
@@ -289,7 +399,10 @@ const KakaoTemplate = () => {
                                                 onChange={(e) => {
                                                     setTemplateList(
                                                         templateList.map((t) =>
-                                                            t.templateId === template.templateId ? { ...t, content: e.target.value } : t
+                                                            t.templateId === template.templateId ? {
+                                                                ...t,
+                                                                content: e.target.value
+                                                            } : t
                                                         )
                                                     );
                                                 }}
@@ -302,7 +415,10 @@ const KakaoTemplate = () => {
                                                 onChange={(e) => {
                                                     setTemplateList(
                                                         templateList.map((t) =>
-                                                            t.templateId === template.templateId ? { ...t, description: e.target.value } : t
+                                                            t.templateId === template.templateId ? {
+                                                                ...t,
+                                                                description: e.target.value
+                                                            } : t
                                                         )
                                                     );
                                                 }}
@@ -317,7 +433,10 @@ const KakaoTemplate = () => {
                                                 onChange={(e) => {
                                                     setTemplateList(
                                                         templateList.map((t) =>
-                                                            t.templateId === template.templateId ? { ...t, buttonTitle: e.target.value } : t
+                                                            t.templateId === template.templateId ? {
+                                                                ...t,
+                                                                buttonTitle: e.target.value
+                                                            } : t
                                                         )
                                                     );
                                                 }}
@@ -330,7 +449,10 @@ const KakaoTemplate = () => {
                                                 onChange={(e) => {
                                                     setTemplateList(
                                                         templateList.map((t) =>
-                                                            t.templateId === template.templateId ? { ...t, buttonUrl: e.target.value } : t
+                                                            t.templateId === template.templateId ? {
+                                                                ...t,
+                                                                buttonUrl: e.target.value
+                                                            } : t
                                                         )
                                                     );
                                                 }}
@@ -342,7 +464,10 @@ const KakaoTemplate = () => {
                                                 onChange={(e) => {
                                                     setTemplateList(
                                                         templateList.map((t) =>
-                                                            t.templateId === template.templateId ? { ...t, buttonType: e.target.value } : t
+                                                            t.templateId === template.templateId ? {
+                                                                ...t,
+                                                                buttonType: e.target.value
+                                                            } : t
                                                         )
                                                     );
                                                 }}
@@ -358,7 +483,9 @@ const KakaoTemplate = () => {
                                             <Button
                                                 block
                                                 color="primary"
-                                                onClick={(e) => {editTemplate(template.templateId)}}
+                                                onClick={(e) => {
+                                                    editTemplate(template.templateId)
+                                                }}
                                             >
                                                 수정
                                             </Button>
@@ -380,10 +507,10 @@ const KakaoTemplate = () => {
                                 {/*prev*/}
                                 <PaginationItem className={pageData.prev ? "active" : "disabled"}>
                                     <PaginationLink
-                                        href={"/admin/template/kakao/" + (pageData.start-1).toString()}
+                                        href={"/admin/template/kakao/" + (pageData.start - 1).toString()}
                                         tabIndex="-1"
                                     >
-                                        <i className="fas fa-angle-left" />
+                                        <i className="fas fa-angle-left"/>
                                         <span className="sr-only">Previous</span>
                                     </PaginationLink>
                                 </PaginationItem>
@@ -402,9 +529,9 @@ const KakaoTemplate = () => {
                                 {/*next*/}
                                 <PaginationItem className={pageData.next ? "active" : "disabled"}>
                                     <PaginationLink
-                                        href={"/admin/template/kakao/" + (pageData.end+1).toString()}
+                                        href={"/admin/template/kakao/" + (pageData.end + 1).toString()}
                                     >
-                                        <i className="fas fa-angle-right" />
+                                        <i className="fas fa-angle-right"/>
                                         <span className="sr-only">Next</span>
                                     </PaginationLink>
                                 </PaginationItem>

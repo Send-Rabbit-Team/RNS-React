@@ -14,6 +14,7 @@ import Header from "components/Headers/Header.js";
 import React, {useState} from "react";
 import {useParams} from 'react-router-dom';
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const KakaoMessageReserve = () => {
 
@@ -54,12 +55,12 @@ const KakaoMessageReserve = () => {
 
     // 알림톡 버튼 종류
     const buttonType = {
-        "DS" : "배송 조회",
-        "WL" : "웹 링크",
-        "AL" : "앱 링크",
-        "BK" : "봇 링크",
-        "MD" : "메시지 전달",
-        "AC" : "채널 추가"
+        "DS": "배송 조회",
+        "WL": "웹 링크",
+        "AL": "앱 링크",
+        "BK": "봇 링크",
+        "MD": "메시지 전달",
+        "AC": "채널 추가"
     }
 
     // 예약 메시지 조회
@@ -95,18 +96,44 @@ const KakaoMessageReserve = () => {
 
     // 예약 메시지 취소
     const cancelReservedMessage = async (messageId) => {
-        await axios.patch(`/kakao/message/reserve/cancel/${messageId}`)
-            .then((response) => {
-                if (response.data.isSuccess) {
-                    window.alert("메시지 예약이 취소됐습니다.")
-                    window.location.reload()
-                } else {
-                    console.log(response.data.message)
-                }
-            })
-            .catch((error) => {
-                console.log(error)
-            })
+        Swal.fire({
+            title            : "알림톡 예약을 취소하시겠습니까?",
+            text             : "알림톡 예약 취소시 복구가 불가능합니다",
+            icon             : "question",
+            showDenyButton   : true,
+            confirmButtonText: "네",
+            denyButtonText   : "아니요",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await axios.patch(`/kakao/message/reserve/cancel/${messageId}`)
+                    .then(async (response) => {
+                        if (response.data.isSuccess) {
+                            await Swal.fire({
+                                title            : "알림톡 예약이 취소되었습니다",
+                                icon             : "success",
+                                showConfirmButton: false,
+                                timer            : 1000
+                            })
+                            window.location.reload()
+                        } else {
+                            await Swal.fire({
+                                title            : response.data.message,
+                                icon             : "error",
+                                showConfirmButton: false,
+                                timer            : 1000
+                            })
+                        }
+                    })
+                    .catch(async (error) => {
+                        await Swal.fire({
+                            title            : "알림톡 예약 취소에 실패했습니다",
+                            icon             : "erorr",
+                            showConfirmButton: false,
+                            timer            : 1000
+                        })
+                    })
+            }
+        })
     }
 
     return (
@@ -119,7 +146,7 @@ const KakaoMessageReserve = () => {
             >
                 <div className="modal-header">
                     <h3 className="modal-title" id="modal-title-default">
-                         예약 발송 수신자 목록
+                        예약 발송 수신자 목록
                     </h3>
                     <button
                         aria-label="Close"
@@ -187,12 +214,13 @@ const KakaoMessageReserve = () => {
                             <h5 className="card-subtitle mb-2 text-muted">{message.subTitle}</h5>
                             <br/>
                             <p className="card-text">
-                                {message.content != null ? message.content.split('\n').map( line => (
+                                {message.content != null ? message.content.split('\n').map(line => (
                                     <span>{line}<br/></span>
                                 )) : null}
                             </p>
                             <p className="card-text"><small className="text-muted">{message.description}</small></p>
-                            <Button block style={{backgroundColor : "whitesmoke"}} href={message.buttonUrl}>{message.buttonTitle}</Button>
+                            <Button block style={{backgroundColor: "whitesmoke"}}
+                                    href={message.buttonUrl}>{message.buttonTitle}</Button>
                         </CardBody>
                     </Card>
                 </div>
@@ -238,7 +266,7 @@ const KakaoMessageReserve = () => {
                                         ) : (
                                             <td className="text-center text-warning">{message.reserveStatus}</td>
                                         )}
-                                        <td style={{textOverflow:"ellipsis", overflow:"hidden", maxWidth:"250px"}}>
+                                        <td style={{textOverflow: "ellipsis", overflow: "hidden", maxWidth: "250px"}}>
                                             <a className="text-dark" href="#" onClick={(e) => {
                                                 setIsContentModal(true)
                                                 setMessage(message)
@@ -247,16 +275,18 @@ const KakaoMessageReserve = () => {
                                             </a>
                                         </td>
                                         <td className="text-center">{buttonType[message.buttonType]}</td>
-                                        <td className="text-center"><a href="#"><i className="fas fa-eye" onClick={(e) => {
-                                            setIsReceiverModal(true);
-                                            getMessageResultInfo(message.messageId);
-                                        }}/></a></td>
+                                        <td className="text-center"><a href="#"><i className="fas fa-eye"
+                                                                                   onClick={(e) => {
+                                                                                       setIsReceiverModal(true);
+                                                                                       getMessageResultInfo(message.messageId);
+                                                                                   }}/></a></td>
                                         <td className="text-center">
-                                        {message.reserveStatus === "PROCESSING" ? (
-                                            <a href="#">
-                                                <i className="fas fa-history" onClick={(e) => cancelReservedMessage(message.messageId)}/>
-                                            </a>
-                                        ) : null}
+                                            {message.reserveStatus === "PROCESSING" ? (
+                                                <a href="#">
+                                                    <i className="fas fa-history"
+                                                       onClick={(e) => cancelReservedMessage(message.messageId)}/>
+                                                </a>
+                                            ) : null}
                                         </td>
 
                                     </tr>

@@ -16,7 +16,8 @@ const SmsImageUpload = (props) => {
                     const base64 = reader.result;
                     if (base64) {
                         var base64Sub = base64.toString()
-                        setImgBase64(imgBase64 => [...imgBase64, base64Sub]);
+                        if (!imgBase64.includes(base64Sub))
+                            setImgBase64(imgBase64 => [...imgBase64, base64Sub]);
                     }
                 }
             }

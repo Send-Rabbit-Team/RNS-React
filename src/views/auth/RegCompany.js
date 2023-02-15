@@ -1,7 +1,16 @@
 import React, {useState} from "react";
-import { Modal, Button, Col, Form, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Row, Label} from "reactstrap";
+import {
+    Modal,
+    Button,
+    Form,
+    FormGroup,
+    Input,
+    InputGroup,
+    InputGroupAddon,
+    InputGroupText,
+} from "reactstrap";
 import axios from "axios";
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2"
 
 const RegCompany = (props) => {
     const regUrl = props.gmail == null ? "/register" : "/google/register"
@@ -20,140 +29,215 @@ const RegCompany = (props) => {
     const [companyBsnumCheck, setCompanyBsnumCheck] = useState(false);
     const [companyModalOpen, setCompanyModalOpen] = useState(false)
 
+    // 휴대폰 번호 입력
     const authPhone = async () => {
-        companyPhone == null ? window.alert("인증할 휴대폰 번호를 입력하세요") :
-            await axios.post("/sms/send", {"to" : companyPhone})
-                .then((response) => {
-                    console.log(response)
+        companyPhone == null ?
+            await Swal.fire({
+                title            : "인증할 휴대폰 번호를 입력하세요",
+                icon             : "warning",
+                showConfirmButton: false,
+                timer            : 1000
+            }) :
+            await axios.post("/sms/send", {"to": companyPhone})
+                .then(async (response) => {
                     if (response.data.isSuccess) {
                         setCompanyModalOpen(true)
                     } else {
-                        window.alert(response.data.message)
+                        await Swal.fire({
+                            title            : response.data.message,
+                            icon             : "warning",
+                            showConfirmButton: false,
+                            timer            : 1000
+                        })
                     }
+                }).catch(async (error) => {
+                    await Swal.fire({
+                        title            : error.response.data.message,
+                        icon             : "warning",
+                        showConfirmButton: false,
+                        timer            : 1000
+                    })
                 })
     }
 
+    // 휴대폰 번호 인증
     const authAccessNum = async () => {
-        companyPhoneAccess == null ? window.alert("인증 번호를 입력하세요") :
+        companyPhoneAccess == null ?
+            await Swal.fire({
+                title            : "인증 번호를 입력하세요",
+                icon             : "warning",
+                showConfirmButton: false,
+                timer            : 1000
+            }) :
             await axios.post("/sms/valid", {
                 "phoneNumber": companyPhone,
-                "authToken" : companyPhoneAccess
-            }).then((response) => {
+                "authToken"  : companyPhoneAccess
+            }).then(async (response) => {
                 if (response.data.isSuccess) {
                     setCompanyModalOpen(false)
                     setCompanyPhoneCheck(true)
-                    window.alert(response.data.message)
-
+                    await Swal.fire({
+                        title            : "휴대폰 번호 인증에 성공했습니다",
+                        icon             : "success",
+                        showConfirmButton: false,
+                        timer            : 1000
+                    })
                 } else {
                     setCompanyModalOpen(false)
                     setCompanyPhoneCheck(false)
-                    window.alert(response.data.message)
+                    await Swal.fire({
+                        title            : response.data.message,
+                        icon             : "error",
+                        showConfirmButton: false,
+                        timer            : 1000
+                    })
                 }
+            }).catch(async (error) => {
+                await Swal.fire({
+                    title            : "휴대폰 번호 인증에 실패했습니다",
+                    icon             : "error",
+                    showConfirmButton: false,
+                    timer            : 1000
+                })
             })
     }
 
+    // 사업자 번호 인증
     const authBsnum = async () => {
-        companyBsnum == null ? window.alert("인증할 사업자 번호를 입력하세요") :
+        companyBsnum === "" ?
+            await Swal.fire({
+                title            : "인증할 사업자 번호를 입력하세요",
+                icon             : "warning",
+                showConfirmButton: false,
+                timer            : 1000
+            }) :
             await axios.post("http://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=4l9JfE06zoxwhuNDuBS2OpeuqOKzRqUxyn80TaaEu0ICL1%2FLVpffn7sMULbtz2ada%2FmbIi9gLZeep3rp9I%2BAVw%3D%3D",
-                {"b_no" : [companyBsnum.toString()]})
-                .then((response) => {
+                {"b_no": [companyBsnum.toString()]})
+                .then(async (response) => {
                     if (response.data["match_cnt"] == 1) {
                         setCompanyBsnumCheck(true)
-                        window.alert("사업자 번호 인증에 성공했습니다")
+                        await Swal.fire({
+                            title            : "사업자 번호 인증에 성공했습니다",
+                            icon             : "success",
+                            showConfirmButton: false,
+                            timer            : 1000
+                        })
                     } else {
                         setCompanyBsnumCheck(false)
-                        window.alert("사업자 번호 인증에 실패했습니다")
+                        await Swal.fire({
+                            title            : response.data.message,
+                            icon             : "error",
+                            showConfirmButton: false,
+                            timer            : 1000
+                        })
                     }
                 })
-                .catch((error) => {
+                .catch(async (error) => {
                     setCompanyBsnumCheck(false)
-                    window.alert("사업자 번호 인증에 실패했습니다")
+                    await Swal.fire({
+                        title            : "사업자 번호 인증에 실패했습니다",
+                        icon             : "error",
+                        showConfirmButton: false,
+                        timer            : 1000
+                    })
                 })
     }
 
+    // 회원가입
     const registerCompany = async () => {
         const companyRegisterReq = {
-            "email" : props.gmail == null ? companyEmail : props.gmail,
-            "password" : companyPassword1,
-            "checkPassword" : companyPassword2,
-            "name" : companyManager,
-            "phoneNumber" : companyPhone,
-            "companyName" : companyName,
-            "bsNum" : companyBsnum,
-            "memberType" : "COMPANY",
-            "loginType" : props.gmail == null ? "DEFAULT" : "GOOGLE",
-            "kakaoBizId" : companyKakaoBizId
+            "email"        : props.gmail == null ? companyEmail : props.gmail,
+            "password"     : companyPassword1,
+            "checkPassword": companyPassword2,
+            "name"         : companyManager,
+            "phoneNumber"  : companyPhone,
+            "companyName"  : companyName,
+            "bsNum"        : companyBsnum,
+            "memberType"   : "COMPANY",
+            "loginType"    : props.gmail == null ? "DEFAULT" : "GOOGLE",
+            "kakaoBizId"   : companyKakaoBizId
         }
         props.gmail == null && companyEmail == null ? await Swal.fire({
-            title: '이메일을 입력하세요',
-            icon: 'warning',
-            showConfirmButton: false,
-            timer: 1500
-          }) :
-            props.gmail == null && companyPassword1 == null ? await Swal.fire({
-                title: '비밀번호를 입력하세요',
-                icon: 'warning',
+                title            : "이메일을 입력하세요",
+                icon             : "warning",
                 showConfirmButton: false,
-                timer: 1500
-              }) :
-                props.gmail == null && companyPassword1 != companyPassword2 ? await Swal.fire({
-                    title: '비밀번호가 일치하지 않습니다',
-                    icon: 'warning',
+                timer            : 1000
+            }) :
+            props.gmail == null && companyPassword1 == null ? await Swal.fire({
+                    title            : "비밀번호를 입력하세요",
+                    icon             : "warning",
                     showConfirmButton: false,
-                    timer: 1500
-                  }) :
-                    companyManager == null ? await Swal.fire({
-                        title: '이름을 입력하세요',
-                        icon: 'warning',
+                    timer            : 1000
+                }) :
+                props.gmail == null && companyPassword1 != companyPassword2 ? await Swal.fire({
+                        title            : "비밀번호가 일치하지 않습니다",
+                        icon             : "warning",
                         showConfirmButton: false,
-                        timer: 1500
-                      }) :
-                        companyPhone == null ? await Swal.fire({
-                            title: '휴대폰 번호를 입력하세요',
-                            icon: 'warning',
+                        timer            : 1000
+                    }) :
+                    companyManager == null ? await Swal.fire({
+                            title            : "이름을 입력하세요",
+                            icon             : "warning",
                             showConfirmButton: false,
-                            timer: 1500
-                          }) :
-                            !companyPhoneCheck ? await Swal.fire({
-                                title: '휴대폰 번호를 인증하세요',
-                                icon: 'warning',
+                            timer            : 1000
+                        }) :
+                        companyPhone == null ? await Swal.fire({
+                                title            : "휴대폰 번호를 입력하세요",
+                                icon             : "warning",
                                 showConfirmButton: false,
-                                timer: 1500
-                              }) :
-                                companyName == null ? await Swal.fire({
-                                    title: '회사이름을 입력하세요',
-                                    icon: 'warning',
+                                timer            : 1000
+                            }) :
+                            !companyPhoneCheck ? await Swal.fire({
+                                    title            : "휴대폰 번호를 인증하세요",
+                                    icon             : "warning",
                                     showConfirmButton: false,
-                                    timer: 1500
-                                  }) :
-                                    companyBsnum == null ? await Swal.fire({
-                                        title: '사업자번호를 입력하세요',
-                                        icon: 'warning',
+                                    timer            : 1000
+                                }) :
+                                companyName == null ? await Swal.fire({
+                                        title            : "회사이름을 입력하세요",
+                                        icon             : "warning",
                                         showConfirmButton: false,
-                                        timer: 1500
-                                      }) :
-                                        !companyBsnumCheck ? await Swal.fire({
-                                            title: '사업자번호를 인증하세요',
-                                            icon: 'warning',
+                                        timer            : 1000
+                                    }) :
+                                    companyBsnum == null ? await Swal.fire({
+                                            title            : "사업자번호를 입력하세요",
+                                            icon             : "warning",
                                             showConfirmButton: false,
-                                            timer: 1500
-                                          }) :
-                                        await axios.post(regUrl, companyRegisterReq)
-                                            .then(async(response) => {
-                                                if (response.data.isSuccess == true) {
+                                            timer            : 1000
+                                        }) :
+                                        !companyBsnumCheck ? await Swal.fire({
+                                                title            : "사업자번호를 인증하세요",
+                                                icon             : "warning",
+                                                showConfirmButton: false,
+                                                timer            : 1000
+                                            }) :
+                                            await axios.post(regUrl, companyRegisterReq)
+                                                .then(async (response) => {
+                                                    if (response.data.isSuccess == true) {
+                                                        await Swal.fire({
+                                                            title            : "회원가입에 성공했습니다",
+                                                            icon             : "success",
+                                                            showConfirmButton: false,
+                                                            timer            : 1000
+                                                        })
+                                                        window.location.replace("/auth/login")
+                                                    } else {
+                                                        await Swal.fire({
+                                                            title            : response.data.message,
+                                                            icon             : "error",
+                                                            showConfirmButton: false,
+                                                            timer            : 1000
+                                                        })
+                                                    }
+                                                }).catch(async (error) => {
                                                     await Swal.fire({
-                                                        title: '회원가입에 성공했습니다',
-                                                        icon: 'success',
+                                                        title            : "기업 회원가입에 실패했습니다",
+                                                        text             : "관리자에게 문의하세요",
+                                                        icon             : "error",
                                                         showConfirmButton: false,
-                                                        timer: 1500
-                                                      })
-                                                    window.location.replace("/auth/login")
-                                                } else {
-                                                    window.alert(response.data.message)
-                                                }
-                                            }).catch((error) => {
-                                                window.alert(error.response.data.message)
-                                            })
+                                                        timer            : 1000
+                                                    })
+                                                })
     }
     return (
         <>
@@ -176,7 +260,9 @@ const RegCompany = (props) => {
                     </button>
                 </div>
                 <div className="modal-body">
-                    <Input placeholder="인증 번호를 입력하세요" type="number" onChange={(e) => {setCompanyPhoneAccess(e.target.value)}}/>
+                    <Input placeholder="인증 번호를 입력하세요" type="number" onChange={(e) => {
+                        setCompanyPhoneAccess(e.target.value)
+                    }}/>
                 </div>
                 <div className="modal-footer">
                     <Button
@@ -185,10 +271,10 @@ const RegCompany = (props) => {
                         type="button"
                         onClick={() => setCompanyModalOpen(false)}
                     >
-                        Close
+                        닫기
                     </Button>
                     <Button color="primary" type="button" onClick={authAccessNum}>
-                        Save changes
+                        인증하기
                     </Button>
                 </div>
             </Modal>
@@ -199,7 +285,7 @@ const RegCompany = (props) => {
                     <InputGroup className="input-group-alternative mb-3">
                         <InputGroupAddon addonType="prepend">
                             <InputGroupText>
-                                <i className="ni ni-email-83" />
+                                <i className="ni ni-email-83"/>
                             </InputGroupText>
                         </InputGroupAddon>
                         <Input
@@ -208,7 +294,9 @@ const RegCompany = (props) => {
                             placeholder="Email"
                             type="email"
                             autoComplete="new-email"
-                            onChange={(e)=>{setCompanyEmail(e.target.value)}}
+                            onChange={(e) => {
+                                setCompanyEmail(e.target.value)
+                            }}
                         />
                     </InputGroup>
                 </FormGroup>
@@ -220,14 +308,14 @@ const RegCompany = (props) => {
                             <InputGroup className="input-group-alternative">
                                 <InputGroupAddon addonType="prepend">
                                     <InputGroupText>
-                                        <i className="ni ni-lock-circle-open" />
+                                        <i className="ni ni-lock-circle-open"/>
                                     </InputGroupText>
                                 </InputGroupAddon>
                                 <Input
                                     placeholder="Password"
                                     type="password"
                                     autoComplete="new-password"
-                                    onChange={(e)=>{
+                                    onChange={(e) => {
                                         setCompanyPassword1(e.target.value)
                                     }}
                                 />
@@ -239,20 +327,20 @@ const RegCompany = (props) => {
                             <InputGroup className="input-group-alternative">
                                 <InputGroupAddon addonType="prepend">
                                     <InputGroupText>
-                                        <i className="ni ni-lock-circle-open" />
+                                        <i className="ni ni-lock-circle-open"/>
                                     </InputGroupText>
                                 </InputGroupAddon>
                                 <Input
                                     placeholder="Password Check"
                                     type="password"
-                                    onChange={(e)=>{
+                                    onChange={(e) => {
                                         setCompanyPassword2(e.target.value)
                                     }}
                                 />
                             </InputGroup>
                         </FormGroup>
 
-                    </> }
+                    </>}
 
 
                 {/*company manager name*/}
@@ -260,13 +348,15 @@ const RegCompany = (props) => {
                     <InputGroup className="input-group-alternative mb-3">
                         <InputGroupAddon addonType="prepend">
                             <InputGroupText>
-                                <i className="fas fa-user" />
+                                <i className="fas fa-user"/>
                             </InputGroupText>
                         </InputGroupAddon>
                         <Input
                             placeholder="Name"
                             type="text"
-                            onChange={(e)=>{setCompanyManager(e.target.value)}}
+                            onChange={(e) => {
+                                setCompanyManager(e.target.value)
+                            }}
                         />
                     </InputGroup>
                 </FormGroup>
@@ -282,7 +372,9 @@ const RegCompany = (props) => {
                         <Input
                             placeholder="Phone"
                             type="tel"
-                            onChange={(e)=>{setCompanyPhone(e.target.value)}}
+                            onChange={(e) => {
+                                setCompanyPhone(e.target.value)
+                            }}
                         />
                         <Button color="primary" outline type="button" onClick={authPhone}>
                             인증
@@ -296,13 +388,15 @@ const RegCompany = (props) => {
                     <InputGroup className="input-group-alternative mb-3">
                         <InputGroupAddon addonType="prepend">
                             <InputGroupText>
-                                <i className="far fa-building" />
+                                <i className="far fa-building"/>
                             </InputGroupText>
                         </InputGroupAddon>
                         <Input
                             placeholder="Company Name"
                             type="text"
-                            onChange={(e)=>{setCompanyName(e.target.value)}}
+                            onChange={(e) => {
+                                setCompanyName(e.target.value)
+                            }}
                         />
                     </InputGroup>
                 </FormGroup>
@@ -312,13 +406,15 @@ const RegCompany = (props) => {
                     <InputGroup className="input-group-alternative mb-3">
                         <InputGroupAddon addonType="prepend">
                             <InputGroupText>
-                                <i className="fas fa-briefcase" />
+                                <i className="fas fa-briefcase"/>
                             </InputGroupText>
                         </InputGroupAddon>
                         <Input
                             placeholder="Company Business Number"
                             type="number"
-                            onChange={(e)=>{setCompanyBsnum(e.target.value)}}
+                            onChange={(e) => {
+                                setCompanyBsnum(e.target.value)
+                            }}
                         />
                         <Button color="primary" outline type="button" onClick={authBsnum}>
                             인증
@@ -330,13 +426,15 @@ const RegCompany = (props) => {
                     <InputGroup className="input-group-alternative mb-3">
                         <InputGroupAddon addonType="prepend">
                             <InputGroupText>
-                                <i className="fas fa-comment" />
+                                <i className="fas fa-comment"/>
                             </InputGroupText>
                         </InputGroupAddon>
                         <Input
                             placeholder="Kakao Business ID"
                             type="text"
-                            onChange={(e)=>{setCompanyKakaoBizId(e.target.value)}}
+                            onChange={(e) => {
+                                setCompanyKakaoBizId(e.target.value)
+                            }}
                         />
                     </InputGroup>
                 </FormGroup>

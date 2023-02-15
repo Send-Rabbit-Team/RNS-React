@@ -23,37 +23,22 @@ import { PropTypes } from "prop-types";
 
 // reactstrap components
 import {
-  Button,
-  Card,
-  CardHeader,
-  CardBody,
-  CardTitle,
   Collapse,
   DropdownMenu,
   DropdownItem,
   UncontrolledDropdown,
   DropdownToggle,
-  FormGroup,
-  Form,
-  Input,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroup,
   Media,
   NavbarBrand,
   Navbar,
   NavItem,
   NavLink,
   Nav,
-  Progress,
-  Table,
   Container,
   Row,
-  Col
+  Col,
 } from "reactstrap";
-import default_image from "../../assets/img/theme/rabbit-user2.png";
 
-var ps;
 
 const Sidebar = (props) => {
   const profile_image = localStorage.getItem("profile_image")
@@ -73,11 +58,11 @@ const Sidebar = (props) => {
     setCollapseOpen(false);
   };
   // creates the links that appear in the left menu / Sidebar
-  const createLinks = (routes) => {
+  const createLinks = (routes, category) => {
     return routes.map((prop, key) => {
-      console.log('프롭: ',prop.sidebar)
+      // console.log('프롭: ',prop.sidebar)
 
-        return prop.sidebar?
+        return prop.sidebar && prop.category === category?
           <NavItem key={key}>
             <NavLink
               to={prop.layout + prop.path}
@@ -147,30 +132,20 @@ const Sidebar = (props) => {
               </Media>
             </DropdownToggle>
             <DropdownMenu className="dropdown-menu-arrow" right>
+
               <DropdownItem className="noti-title" header tag="div">
-                <h6 className="text-overflow m-0">Welcome!</h6>
+                <h6 className="text-overflow m-0">Welcome</h6>
               </DropdownItem>
               <DropdownItem to="/admin/profile" tag={Link}>
                 <i className="ni ni-single-02" />
-                <span>My profile</span>
-              </DropdownItem>
-              <DropdownItem to="/admin/user-profile" tag={Link}>
-                <i className="ni ni-settings-gear-65" />
-                <span>Settings</span>
-              </DropdownItem>
-              <DropdownItem to="/admin/user-profile" tag={Link}>
-                <i className="ni ni-calendar-grid-58" />
-                <span>Activity</span>
-              </DropdownItem>
-              <DropdownItem to="/admin/user-profile" tag={Link}>
-                <i className="ni ni-support-16" />
-                <span>Support</span>
+                <span>프로필</span>
               </DropdownItem>
               <DropdownItem divider />
               <DropdownItem to="/auth/login" tag={Link}>
-                <i className="ni ni-user-run" />
-                <span>Logout</span>
+                <i className="fas fa-sign-out-alt" />
+                <span>로그아웃</span>
               </DropdownItem>
+
             </DropdownMenu>
           </UncontrolledDropdown>
         </Nav>
@@ -206,8 +181,18 @@ const Sidebar = (props) => {
           </div>
 
           {/* Navigation */}
-          <Nav navbar>{createLinks(routes)}</Nav>
 
+          {/* Divider */}
+
+          {/* Heading */}
+          <h6 className="navbar-heading text-muted">발송 하기</h6>
+          <Nav navbar>{createLinks(routes, "send")}</Nav>
+          <hr className="my-2" />
+          <h6 className="navbar-heading text-muted">발송 관리</h6>
+          <Nav navbar>{createLinks(routes, "setting")}</Nav>
+          <hr className="my-2" />
+          <h6 className="navbar-heading text-muted">발송 결과</h6>
+          <Nav navbar>{createLinks(routes, "result")}</Nav>
 
         </Collapse>
       </Container>

@@ -1,5 +1,17 @@
 import React, {useState} from "react";
-import { Modal, Button, Col, Form, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Row, Label} from "reactstrap";
+import {
+    Modal,
+    Button,
+    Col,
+    Form,
+    FormGroup,
+    Input,
+    InputGroup,
+    InputGroupAddon,
+    InputGroupText,
+    Row,
+    Label
+} from "reactstrap";
 import axios from "axios";
 import Swal from 'sweetalert2'
 
@@ -16,117 +28,153 @@ const RegMember = (props) => {
     const [memberPhoneCheck, setMemberPhoneCheck] = useState(false);
     const [memberModalOpen, setMemberModalOpen] = useState(false)
 
+    // 휴대폰 번호 입력
     const authPhone = async () => {
         memberPhone == null ? await Swal.fire({
-            title: '휴대폰번호를 입력하세요',
-            icon: 'warning',
-            showConfirmButton: false,
-            timer: 1000
-          }) :
-            await axios.post("/sms/send", {"to" : memberPhone})
-                .then((response) => {
-                    console.log(response)
+                title            : '휴대폰번호를 입력하세요',
+                icon             : 'warning',
+                showConfirmButton: false,
+                timer            : 1000
+            }) :
+            await axios.post("/sms/send", {"to": memberPhone})
+                .then(async (response) => {
                     if (response.data.isSuccess) {
                         setMemberModalOpen(true)
                     } else {
-                        window.alert(response.data.message)
+                        await Swal.fire({
+                            title            : response.data.message,
+                            icon             : 'warning',
+                            showConfirmButton: false,
+                            timer            : 1000
+                        })
                     }
+                }).catch(async (error) => {
+                    await Swal.fire({
+                        title            : error.response.data.message,
+                        icon             : 'warning',
+                        showConfirmButton: false,
+                        timer            : 1000
+                    })
                 })
     }
 
+    // 휴대폰 번호 인증
     const authAccessNum = async () => {
         memberPhoneAccess == null ? await Swal.fire({
-            title: '인증번호를 입력하세요',
-            icon: 'warning',
-            showConfirmButton: false,
-            timer: 1000
-          })  :
+                title            : '인증번호를 입력하세요',
+                icon             : 'warning',
+                showConfirmButton: false,
+                timer            : 1000
+            }) :
             await axios.post("/sms/valid", {
                 "phoneNumber": memberPhone,
-                "authToken" : memberPhoneAccess
-            }).then((response) => {
+                "authToken"  : memberPhoneAccess
+            }).then(async (response) => {
                 if (response.data.isSuccess) {
                     setMemberModalOpen(false)
                     setMemberPhoneCheck(true)
-                    window.alert(response.data.message)
+                    await Swal.fire({
+                        title            : '휴대폰 번호 인증에 성공했습니다',
+                        icon             : 'success',
+                        showConfirmButton: false,
+                        timer            : 1000
+                    })
                 } else {
                     setMemberModalOpen(false)
                     setMemberPhoneCheck(false)
-                    window.alert(response.data.message)
+                    await Swal.fire({
+                        title            : '휴대폰 번호 인증에 실패했습니다',
+                        icon             : 'warning',
+                        showConfirmButton: false,
+                        timer            : 1000
+                    })
                 }
+            }).catch(async (error) => {
+                await Swal.fire({
+                    title            : '휴대폰 번호 인증에 실패했습니다',
+                    icon             : 'warning',
+                    showConfirmButton: false,
+                    timer            : 1000
+                })
             })
     }
 
+    // 회원가입
     const registerMember = async () => {
         const memberRegisterReq = {
-            "email" : props.gmail == null ? memberEmail : props.gmail,
-            "password" : memberPassword1,
-            "checkPassword" : memberPassword2,
-            "name" : memberName,
-            "phoneNumber" : memberPhone,
-            "companyName" : null,
-            "bsNum" : null,
-            "memberType" : "PERSON",
-            "loginType" : props.gmail == null ? "DEFAULT" : "GOOGLE"
+            "email"        : props.gmail == null ? memberEmail : props.gmail,
+            "password"     : memberPassword1,
+            "checkPassword": memberPassword2,
+            "name"         : memberName,
+            "phoneNumber"  : memberPhone,
+            "companyName"  : null,
+            "bsNum"        : null,
+            "memberType"   : "PERSON",
+            "loginType"    : props.gmail == null ? "DEFAULT" : "GOOGLE"
         }
         props.gmail == null && memberEmail == null ? await Swal.fire({
-            title: '이메일을 입력하세요',
-            icon: 'warning',
-            showConfirmButton: false,
-            timer: 1500
-          }) :
-            props.gmail == null && memberPassword1 == null ? await Swal.fire({
-                title: '비밀번호를 입력하세요',
-                icon: 'warning',
+                title            : '이메일을 입력하세요',
+                icon             : 'warning',
                 showConfirmButton: false,
-                timer: 1500
-              }) :
-                props.gmail == null && memberPassword1 != memberPassword2 ? await Swal.fire({
-                    title: '비밀번호가 일치하지 않습니다',
-                    icon: 'warning',
+                timer            : 1000
+            }) :
+            props.gmail == null && memberPassword1 == null ? await Swal.fire({
+                    title            : '비밀번호를 입력하세요',
+                    icon             : 'warning',
                     showConfirmButton: false,
-                    timer: 1500
-                  }) :
-                    memberName == null ? await Swal.fire({
-                        title: '이름을 입력하세요',
-                        icon: 'warning',
+                    timer            : 1000
+                }) :
+                props.gmail == null && memberPassword1 != memberPassword2 ? await Swal.fire({
+                        title            : '비밀번호가 일치하지 않습니다',
+                        icon             : 'warning',
                         showConfirmButton: false,
-                        timer: 1500
-                      }) :
-                        memberPhone == null ? await Swal.fire({
-                            title: '휴대폰 번호를 입력하세요',
-                            icon: 'warning',
+                        timer            : 1000
+                    }) :
+                    memberName == null ? await Swal.fire({
+                            title            : '이름을 입력하세요',
+                            icon             : 'warning',
                             showConfirmButton: false,
-                            timer: 1500
-                          }) :
-                            !memberPhoneCheck ? await Swal.fire({
-                                title: '휴대폰 번호를 인증하세요',
-                                icon: 'warning',
+                            timer            : 1000
+                        }) :
+                        memberPhone == null ? await Swal.fire({
+                                title            : '휴대폰 번호를 입력하세요',
+                                icon             : 'warning',
                                 showConfirmButton: false,
-                                timer: 1500
-                              }) :
+                                timer            : 1000
+                            }) :
+                            !memberPhoneCheck ? await Swal.fire({
+                                    title            : '휴대폰 번호를 인증하세요',
+                                    icon             : 'warning',
+                                    showConfirmButton: false,
+                                    timer            : 1000
+                                }) :
                                 await axios.post(regUrl, memberRegisterReq)
-                                    .then(async(response) => {
+                                    .then(async (response) => {
                                         if (response.data.isSuccess == true) {
                                             await Swal.fire({
-                                                title: '회원가입에 성공했습니다',
-                                                icon: 'success',
+                                                title            : '회원가입에 성공했습니다',
+                                                icon             : 'success',
                                                 showConfirmButton: false,
-                                                timer: 1500
-                                              })
+                                                timer            : 1000
+                                            })
                                             window.location.replace("/auth/login")
                                         } else {
                                             await Swal.fire({
-                                                title: '회원가입에 실패했습니다',
-                                                icon: 'error',
+                                                title            : response.data.message,
+                                                icon             : 'error',
                                                 showConfirmButton: false,
-                                                timer: 1500
-                                              })
+                                                timer            : 1000
+                                            })
                                         }
-                                    }).catch((error) => {
-                                        window.alert(error.response.data.message)
+                                    }).catch(async (error) => {
+                                        await Swal.fire({
+                                            title            : error.response.data.message,
+                                            icon             : 'error',
+                                            showConfirmButton: false,
+                                            timer            : 1000
+                                        })
                                     })
-}
+    }
     return (
         <>
             <Modal
@@ -148,7 +196,9 @@ const RegMember = (props) => {
                     </button>
                 </div>
                 <div className="modal-body">
-                    <Input placeholder="인증 번호를 입력하세요" type="number" onChange={(e) => {setMemberPhoneAccess(e.target.value)}}/>
+                    <Input placeholder="인증 번호를 입력하세요" type="number" onChange={(e) => {
+                        setMemberPhoneAccess(e.target.value)
+                    }}/>
                 </div>
                 <div className="modal-footer">
                     <Button
@@ -157,10 +207,10 @@ const RegMember = (props) => {
                         type="button"
                         onClick={() => setMemberModalOpen(false)}
                     >
-                        Close
+                        닫기
                     </Button>
                     <Button color="primary" type="button" onClick={authAccessNum}>
-                        Save changes
+                        인증하기
                     </Button>
                 </div>
             </Modal>
@@ -171,7 +221,7 @@ const RegMember = (props) => {
                     <InputGroup className="input-group-alternative mb-3">
                         <InputGroupAddon addonType="prepend">
                             <InputGroupText>
-                                <i className="ni ni-email-83" />
+                                <i className="ni ni-email-83"/>
                             </InputGroupText>
                         </InputGroupAddon>
                         <Input
@@ -180,7 +230,9 @@ const RegMember = (props) => {
                             placeholder="Email"
                             type="email"
                             autoComplete="new-email"
-                            onChange={(e)=>{setMemberEmail(e.target.value)}}
+                            onChange={(e) => {
+                                setMemberEmail(e.target.value)
+                            }}
                         />
                     </InputGroup>
                 </FormGroup>
@@ -192,14 +244,14 @@ const RegMember = (props) => {
                             <InputGroup className="input-group-alternative">
                                 <InputGroupAddon addonType="prepend">
                                     <InputGroupText>
-                                        <i className="ni ni-lock-circle-open" />
+                                        <i className="ni ni-lock-circle-open"/>
                                     </InputGroupText>
                                 </InputGroupAddon>
                                 <Input
                                     placeholder="Password"
                                     type="password"
                                     autoComplete="new-password"
-                                    onChange={(e)=>{
+                                    onChange={(e) => {
                                         setMemberPassword1(e.target.value)
                                     }}
                                 />
@@ -211,33 +263,35 @@ const RegMember = (props) => {
                             <InputGroup className="input-group-alternative">
                                 <InputGroupAddon addonType="prepend">
                                     <InputGroupText>
-                                        <i className="ni ni-lock-circle-open" />
+                                        <i className="ni ni-lock-circle-open"/>
                                     </InputGroupText>
                                 </InputGroupAddon>
                                 <Input
                                     placeholder="Password Check"
                                     type="password"
-                                    onChange={(e)=>{
+                                    onChange={(e) => {
                                         setMemberPassword2(e.target.value)
                                     }}
                                 />
                             </InputGroup>
                         </FormGroup>
 
-                    </> }
+                    </>}
 
                 {/*member name*/}
                 <FormGroup>
                     <InputGroup className="input-group-alternative mb-3">
                         <InputGroupAddon addonType="prepend">
                             <InputGroupText>
-                                <i className="fas fa-user" />
+                                <i className="fas fa-user"/>
                             </InputGroupText>
                         </InputGroupAddon>
                         <Input
                             placeholder="Name"
                             type="text"
-                            onChange={(e)=>{setMemberName(e.target.value)}}
+                            onChange={(e) => {
+                                setMemberName(e.target.value)
+                            }}
                         />
                     </InputGroup>
                 </FormGroup>
@@ -253,7 +307,9 @@ const RegMember = (props) => {
                         <Input
                             placeholder="Phone"
                             type="tel"
-                            onChange={(e)=>{setMemberPhone(e.target.value)}}
+                            onChange={(e) => {
+                                setMemberPhone(e.target.value)
+                            }}
                         />
                         <Button color="primary" outline type="button" onClick={authPhone}>
                             인증

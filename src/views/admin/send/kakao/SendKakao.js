@@ -14,14 +14,14 @@ import {
 import Header from "components/Headers/Header.js";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import 'react-chat-elements/dist/main.css'
+import "react-chat-elements/dist/main.css"
 import Receiver from "../Receiver";
 import KakaoTemplateModal from "./KakaoTemplateModal";
 import KakaoImageUpload from "./KakaoImageUpload";
 import {Image} from "react-bootstrap";
 import MessageSchedule from "../MessageSchedule";
-import iphonekakao from '../../../../assets/img/brand/iphonekakao.png';
-import {ChatBubble, Message} from 'react-chat-ui';
+import iphonekakao from "../../../../assets/img/brand/iphonekakao.png";
+import {ChatBubble, Message} from "react-chat-ui";
 import KakaoMessageRule from "./KakaoMessageRule";
 import Swal from "sweetalert2";
 
@@ -152,7 +152,7 @@ const SendKakao = () => {
     const [messageDescription, setMessageDescription] = useState("")
     const [buttonTitle, setButtonTitle] = useState("")
     const [buttonUrl, setButtonUrl] = useState("")
-    const [buttonType, setButtonType] = useState("")
+    const [buttonType, setButtonType] = useState(null)
 
     const [message, setMessage] = useState("");
 
@@ -176,8 +176,8 @@ const SendKakao = () => {
         fontSize       : 14,
         fontWeight     : 500,
         lineWeight     : 1.5,
-        backgroundColor: '#f5f5f5',
-        position       : 'relative'
+        backgroundColor: "#f5f5f5",
+        position       : "relative"
     }
 
     const ImageCss = {
@@ -217,7 +217,7 @@ const SendKakao = () => {
                 }
             })
             .catch((error) => {
-                console.log(error.response.data.message)
+                console.log(error)
             })
     })
 
@@ -231,22 +231,16 @@ const SendKakao = () => {
             if (response.data.isSuccess) {
                 sendMessage()
             } else {
-                await Swal.fire({
-                    title            : `당근 ${selectContactList.length - kakaoPoint}개가 부족하여 결제 창으로 이동합니다.`,
-                    icon             : 'warning',
-                    showConfirmButton: false,
-                    timer            : 1000
-                })
                 chargePoint()
             }
         }).catch(async (error) => {
             await Swal.fire({
                 title            : error.response.data.message,
-                icon             : 'error',
+                icon             : "error",
                 showConfirmButton: false,
                 timer            : 1000
             })
-            chargePoint()
+            console.log(error)
         })
     }
 
@@ -264,69 +258,105 @@ const SendKakao = () => {
     })
 
     const chargePoint = async () => {
-        await axios.get("/point/charge", {
-            params: {
-                smsPoint  : 0,
-                kakaoPoint: selectContactList.length - kakaoPoint
-            }
-        }).then(response => {
-            if (response.data.isSuccess) {
-                window.open(response.data.result)
-                window.close()
+        Swal.fire({
+            title            : "카카오 페이로 결제하시겠습니까?",
+            text             : `당근 ${selectContactList.length - kakaoPoint}개가 부족합니다`,
+            icon             : "question",
+            showDenyButton   : true,
+            confirmButtonText: "네",
+            denyButtonText   : "아니요",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await axios.get("/point/charge", {
+                    params: {
+                        smsPoint  : 0,
+                        kakaoPoint: selectContactList.length - kakaoPoint
+                    }
+                }).then(response => {
+                    if (response.data.isSuccess) {
+                        window.open(response.data.result)
+                    }
+                })
             }
         })
+
     }
 
-    // 메시지 전송
-    const sendMessage = async () => {
+    const validMessage = async () => {
         messageTitle == "" ? Swal.fire({
             title            : "알림톡 제목을 입력하세요",
-            icon             : 'error',
+            icon             : "error",
             showConfirmButton: false,
             timer            : 1000
         }) : messageContext == "" ? Swal.fire({
             title            : "알림톡 내용을 입력하세요",
-            icon             : 'error',
+            icon             : "error",
             showConfirmButton: false,
             timer            : 1000
         }) : selectContactList.length == 0 ? Swal.fire({
             title            : "수신번호를 선택하세요",
-            icon             : 'error',
+            icon             : "error",
             showConfirmButton: false,
             timer            : 1000
-        }) : await axios.post('/message/send/kakao', {
-            "kakaoMessageDto": {
-                "from"          : companyKakaoBizId,
-                "title"         : messageTitle,
-                "subtitle"      : messageSubtitle,
-                "content"       : messageContext,
-                "description"   : messageDescription,
-                "image"         : selectImage,
-                "buttonTitle"   : buttonTitle,
-                "buttonType"    : buttonType,
-                "buttonUrl"     : buttonUrl,
-                "cronExpression": cron,
-                "cronText"      : cronText,
-            },
-            "receivers"      : selectContactList.map(contact => contact.phoneNumber)
-        }).then(async (response) => {
-            if (response.data.isSuccess) {
-                console.log("시간: ", response)
-                await Swal.fire({
-                    title            : '메시지를 전송했습니다',
-                    icon             : 'success',
-                    showConfirmButton: false,
-                    timer            : 1000
-                })
-                window.location.replace("/admin/result/kakao/:type/:keyword/:page")
+        }) : validPoint()
+    }
 
-            } else {
-                window.alert(response.data.message)
+    // 메시지 전송
+    const sendMessage = async () => {
+        Swal.fire({
+            title            : "결제를 진행하시겠습니까?",
+            text             : `알림톡 당근 ${selectContactList.length}개가 차감됩니다.`,
+            icon             : "question",
+            showDenyButton   : true,
+            confirmButtonText: "네",
+            denyButtonText   : "아니요",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await axios.post("/message/send/kakao", {
+                    "kakaoMessageDto": {
+                        "from"          : companyKakaoBizId,
+                        "title"         : messageTitle,
+                        "subtitle"      : messageSubtitle,
+                        "content"       : messageContext,
+                        "description"   : messageDescription,
+                        "image"         : selectImage,
+                        "buttonTitle"   : buttonTitle,
+                        "buttonType"    : buttonType,
+                        "buttonUrl"     : buttonUrl,
+                        "cronExpression": cron,
+                        "cronText"      : cronText,
+                    },
+                    "receivers"      : selectContactList.map(contact => contact.phoneNumber)
+                }).then(async (response) => {
+                    if (response.data.isSuccess) {
+                        await Swal.fire({
+                            title            : "메시지를 전송했습니다",
+                            text             : response.data.result,
+                            icon             : "success",
+                            showConfirmButton: false,
+                            timer            : 1000
+                        })
+                        window.location.replace("/admin/result/kakao/:type/:keyword/:page")
+
+                    } else {
+                        await Swal.fire({
+                            title            : response.data.message,
+                            icon             : "error",
+                            showConfirmButton: true,
+                            timer            : 1000
+                        })
+                    }
+                })
+                    .catch(async (error) => {
+                        await Swal.fire({
+                            title            : "메시지 전송에 실패했습니다",
+                            icon             : "error",
+                            showConfirmButton: true,
+                            timer            : 1000
+                        })
+                    })
             }
         })
-            .catch((error) => {
-                window.alert(error.response.data.message)
-            })
     }
 
 
@@ -374,9 +404,9 @@ const SendKakao = () => {
 
     const redirect = async () => {
         await Swal.fire({
-            title            : '기업 회원만 이용 가능합니다',
-            text             : '기업 아이디로 로그인 하세요',
-            icon             : 'error',
+            title            : "기업 회원만 이용 가능합니다",
+            text             : "기업 아이디로 로그인 하세요",
+            icon             : "error",
             showConfirmButton: false,
             timer            : 3000
         })
@@ -438,69 +468,63 @@ const SendKakao = () => {
 
                                 <CardBody className="py-3">
                                     <Row>
-                                        <div className="d-flex justify-content-between"
-                                             style={{paddingBottom: 20, flexDirection: "row"}} align="center">
 
-                                            <Col sm="3">
-                                                <Button color="secondary" size="lg" type="button"
-                                                        style={{width: 150, height: 60, fontSize: 16}}
-                                                        onClick={(e) => toggleImageUpload()}>
+                                        <Col sm={3} className="mb-4">
+                                            <Button color="secondary" size="lg" type="button" block
+                                                    onClick={(e) => toggleImageUpload()}>
                           <span className="btn-inner--icon">
                             <i className="ni ni-album-2"/>
                           </span>
-                                                    <span className="btn-inner--text">사진</span>
-                                                </Button>
-                                            </Col>
+                                                <span className="btn-inner--text">사진</span>
+                                            </Button>
+                                        </Col>
 
-                                            <Col sm="3">
-                                                <Button color="secondary" size="lg" type="button"
-                                                        style={{width: 150, height: 60, fontSize: 16}}
-                                                        onClick={(e) => toggleTemplate()}>
+                                        <Col sm={3} className="mb-4">
+                                            <Button color="secondary" size="lg" type="button" block
+                                                    onClick={(e) => toggleTemplate()}>
                         <span className="btn-inner--icon">
                             <i className="ni ni-caps-small"/>
                           </span>
-                                                    <span className="btn-inner--text">템플릿</span>
-                                                </Button>
-                                            </Col>
+                                                <span className="btn-inner--text">템플릿</span>
+                                            </Button>
+                                        </Col>
 
-                                            <Col sm="3">
-                                                <Button color="secondary" size="lg" type="button"
-                                                        style={{width: 150, height: 60, fontSize: 16}}
-                                                        onClick={(e) => toggleMessageRule()}>
+                                        <Col sm={3} className="mb-4">
+                                            <Button color="secondary" size="lg" type="button" block
+                                                    onClick={(e) => toggleMessageRule()}>
                         <span className="btn-inner--icon">
                             <i className="ni ni-time-alarm"/>
                           </span>
-                                                    <span className="btn-inner--text">발송설정</span>
-                                                </Button>
-                                            </Col>
+                                                <span className="btn-inner--text">발송설정</span>
+                                            </Button>
+                                        </Col>
 
-                                            <Col sm="3">
-                                                <Button color="secondary" size="lg" type="button"
-                                                        style={{width: 150, height: 60, fontSize: 16}}
-                                                        onClick={(e) => toggleReceiver()}>
+                                        <Col sm={3} className="mb-4">
+                                            <Button color="secondary" size="lg" type="button" block
+                                                    onClick={(e) => toggleReceiver()}>
                         <span className="btn-inner--icon">
                             <i className="ni ni-circle-08"/>
                           </span>
-                                                    <span className="btn-inner--text">수신자</span>
-                                                </Button>
-                                            </Col>
+                                                <span className="btn-inner--text">수신자</span>
+                                            </Button>
+                                        </Col>
 
-                                        </div>
                                     </Row>
 
 
                                     <Row>
                                         <Col sm="6">
-                                            <CardBody style={{boxShadow: '1px 2px 9px #8c8c8c'}}>
+                                            <CardBody style={{boxShadow: "1px 2px 9px #8c8c8c"}}>
 
                                                 <FormGroup>
                                                     <label className="form-control-label">
-                                                        발송가능 개수
+                                                        발송 비용
                                                     </label>
                                                     <Container>
                                                         <Row>
-                                                            <Badge className="badge-md m-1"
-                                                                   color="primary">{kakaoPoint}건</Badge>
+                                                            <Badge className="badge-md m-1" color="primary">
+                                                                알림톡 당근 {selectContactList.length * 10}개
+                                                            </Badge>
                                                         </Row>
                                                     </Container>
                                                 </FormGroup>
@@ -530,11 +554,19 @@ const SendKakao = () => {
                                                                     {selectContactList.map((contact) => (
                                                                         (contact.groupId === contactGroup.id) ? (
                                                                             <Badge className="badge-md m-1"
-                                                                                   color="primary">{makeHyphen(contact.phoneNumber)}</Badge>
+                                                                                   color="primary">{contact.memo} ({makeHyphen(contact.phoneNumber)})</Badge>
                                                                         ) : null
                                                                     ))}
                                                                 </p>
                                                             ))}
+                                                            <p>
+                                                                {selectContactList.map((contact) => (
+                                                                    (contact.groupId === 0) ? (
+                                                                        <Badge className="badge-md m-1"
+                                                                               color="primary">{contact.memo} ({makeHyphen(contact.phoneNumber)})</Badge>
+                                                                    ) : null
+                                                                ))}
+                                                            </p>
                                                         </Row>
                                                     </Container>
                                                 </FormGroup>
@@ -693,22 +725,22 @@ const SendKakao = () => {
                                                     width     : 350,
                                                     margin    : 30
                                                 }}>
-                                                    {/* <div style={{textAlign:"center", fontSize:10,fontWeight:"bold", color:'#b1b1b4'}}>{`문자 메시지\n(오늘) ${IphoneTime()} `}</div> */}
+                                                    {/* <div style={{textAlign:"center", fontSize:10,fontWeight:"bold", color:"#b1b1b4"}}>{`문자 메시지\n(오늘) ${IphoneTime()} `}</div> */}
                                                     <ChatBubble
                                                         message={messageInput}
                                                         bubbleStyles={
                                                             {
                                                                 text      : {
                                                                     fontSize: 12,
-                                                                    color   : 'black'
+                                                                    color   : "black"
                                                                 },
                                                                 chatbubble: {
-                                                                    borderTop      : '40px solid #F7E600',
+                                                                    borderTop      : "40px solid #F7E600",
                                                                     borderRadius   : 20,
                                                                     paddingLeft    : 14,
                                                                     margin         : 10,
                                                                     width          : 300,
-                                                                    backgroundColor: 'white',
+                                                                    backgroundColor: "white",
                                                                 }
                                                             }
                                                         }
@@ -723,7 +755,7 @@ const SendKakao = () => {
                                 <CardFooter className="border-0">
                                     <Button className="text-lg ml-3 btn-icon btn-3" size="xxl" color="primary"
                                             type="button" style={{float: "right"}}
-                                            onClick={(e) => validPoint()}>
+                                            onClick={(e) => validMessage()}>
                   <span className="btn-inner--icon">
                     <i className="ni ni-send text-white"/>
                   </span>

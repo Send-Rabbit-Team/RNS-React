@@ -20,6 +20,7 @@ import React, {useEffect, useState} from "react";
 import {useParams} from 'react-router-dom';
 import axios from "axios";
 import {Doughnut, Pie} from "react-chartjs-2";
+import Swal from "sweetalert2";
 
 const MessageResult = () => {
 
@@ -72,12 +73,12 @@ const MessageResult = () => {
 
     // 알림톡 버튼 종류
     const buttonType = {
-        "DS" : "배송 조회",
-        "WL" : "웹 링크",
-        "AL" : "앱 링크",
-        "BK" : "봇 링크",
-        "MD" : "메시지 전달",
-        "AC" : "채널 추가"
+        "DS": "배송 조회",
+        "WL": "웹 링크",
+        "AL": "앱 링크",
+        "BK": "봇 링크",
+        "MD": "메시지 전달",
+        "AC": "채널 추가"
     }
 
     // 연락처 format 수정 메소드
@@ -108,9 +109,9 @@ const MessageResult = () => {
 
     // 알림톡 버튼 종류에 따른 알림톡 결과 조회
     const getFilterMessageResult = async (messageType) => {
-        await axios.get(`/kakao/message/result/filter/${nowPage}`,{
-            params : {
-                "type" : nowKeyword
+        await axios.get(`/kakao/message/result/filter/${nowPage}`, {
+            params: {
+                "type": nowKeyword
             }
         })
             .then((response) => {
@@ -128,10 +129,10 @@ const MessageResult = () => {
 
     // 알림톡 검색에 따른 알림톡 결과 조회
     const getSearchMessageResult = async () => {
-        await axios.get(`/kakao/message/result/search/${nowPage}`,{
-            params : {
-                "type" : nowType,
-                "keyword" : nowKeyword
+        await axios.get(`/kakao/message/result/search/${nowPage}`, {
+            params: {
+                "type"   : nowType,
+                "keyword": nowKeyword
             }
         })
             .then((response) => {
@@ -203,10 +204,10 @@ const MessageResult = () => {
 
     // 브로커 차트 데이터
     const brokerChart = {
-        labels: brokerChartLabels,
+        labels  : brokerChartLabels,
         datasets: [
             {
-                data: brokerChartData,
+                data           : brokerChartData,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.5)',
                     'rgba(54, 162, 235, 0.5)',
@@ -215,23 +216,23 @@ const MessageResult = () => {
                     'rgba(153, 102, 255, 0.5)',
                     'rgba(255, 159, 64, 0.5)',
                 ],
-                borderWidth: 1,
+                borderWidth    : 1,
             },
         ],
     };
 
     // 메시지 상태 차트 데이터
     const messageStatusChart = {
-        labels: messageStatusChartLabels,
+        labels  : messageStatusChartLabels,
         datasets: [
             {
-                data: messageStatusChartData,
+                data           : messageStatusChartData,
                 backgroundColor: [
                     'rgba(75, 192, 192, 0.5)',
                     'rgba(54, 162, 235, 0.5)',
                     'rgba(255, 99, 132, 0.5)'
                 ],
-                borderWidth: 1,
+                borderWidth    : 1,
             },
         ],
     };
@@ -270,9 +271,9 @@ const MessageResult = () => {
                             <Doughnut
                                 data={brokerChart}
                                 options={{
-                                    title:{
+                                    title: {
                                         display: true,
-                                        text: "중계사 정보"
+                                        text   : "중계사 정보"
                                     }
                                 }}
                             ></Doughnut>
@@ -281,7 +282,7 @@ const MessageResult = () => {
                             <Pie
                                 data={messageStatusChart}
                                 options={{
-                                    title : {
+                                    title: {
                                         display: true,
                                         text   : "메시지 상태"
                                     }
@@ -314,7 +315,7 @@ const MessageResult = () => {
                                 <td className="text-center">{messageResultInfo.kakaoBrokerName}</td>
                                 {messageResultInfo.messageStatus === "SUCCESS" ? (
                                     <td className="text-center text-success">{messageResultInfo.messageStatus}</td>
-                                ): messageResultInfo.messageStatus === "FAIL" ? (
+                                ) : messageResultInfo.messageStatus === "FAIL" ? (
                                     <td className="text-center text-warning">{messageResultInfo.messageStatus}</td>
                                 ) : (
                                     <td className="text-center text-primary">{messageResultInfo.messageStatus}</td>
@@ -358,12 +359,13 @@ const MessageResult = () => {
                             <h5 className="card-subtitle mb-2 text-muted">{message.subTitle}</h5>
                             <br/>
                             <p className="card-text">
-                                {message.content != null ? message.content.split('\n').map( line => (
+                                {message.content != null ? message.content.split('\n').map(line => (
                                     <span>{line}<br/></span>
                                 )) : null}
                             </p>
                             <p className="card-text"><small className="text-muted">{message.description}</small></p>
-                            <Button block style={{backgroundColor : "whitesmoke"}} href={message.buttonUrl}>{message.buttonTitle}</Button>
+                            <Button block style={{backgroundColor: "whitesmoke"}}
+                                    href={message.buttonUrl}>{message.buttonTitle}</Button>
                         </CardBody>
                     </Card>
                 </div>
@@ -397,6 +399,7 @@ const MessageResult = () => {
                                                 </Input>
                                             </InputGroupAddon>
                                             <Input
+                                                className="pl-3"
                                                 type="text"
                                                 onChange={(e) => setSearchInput(e.target.value)}
                                             />
@@ -404,9 +407,19 @@ const MessageResult = () => {
                                                 <Button
                                                     color="primary"
                                                     type="button"
-                                                    onClick={(e) => {
-                                                        searchType === "" ? window.alert("검색 유형을 선택하세요") :
-                                                            searchInput === "" ? window.alert("검색 내용을 입력하세요") :
+                                                    onClick={async (e) => {
+                                                        searchType === "" ? await Swal.fire({
+                                                                title            : "검색 유형을 선택하세요",
+                                                                icon             : "warning",
+                                                                showConfirmButton: false,
+                                                                timer            : 1000
+                                                            }) :
+                                                            searchInput === "" ? await Swal.fire({
+                                                                    title            : "검색 내용을 입력하세요",
+                                                                    icon             : "warning",
+                                                                    showConfirmButton: false,
+                                                                    timer            : 1000
+                                                                }) :
                                                                 window.location.replace(`/admin/result/kakao/${searchType}/${searchInput}/1`)
                                                     }}
                                                 >검색
@@ -489,20 +502,20 @@ const MessageResult = () => {
                                             {(nowPage - 1) * pageData.size + index + 1}
                                         </th>
                                         <td className="text-center">{makeDate(messageResult.createAt)}</td>
-                                        <td><a href="views/admin/result/KakaoMessageResult#" className="text-dark" onClick={(e) => {
+                                        <td><a href="#" className="text-dark" onClick={(e) => {
                                             setIsContentModal(true);
                                             setMessage(messageResult)
                                         }}>{messageResult.title + " " + messageResult.subTitle}</a></td>
                                         <td className="text-center">{buttonType[messageResult.buttonType]}</td>
-                                        <td className="text-center"><a href="views/admin/result/KakaoMessageResult#"><i className="fas fa-eye" onClick={(e) => {
-                                            setIsInfoModal(true);
-                                            getMessageResultInfo(messageResult.messageId);
-                                        }}/></a></td>
+                                        <td className="text-center"><a href="#"><i className="fas fa-eye"
+                                                                                   onClick={(e) => {
+                                                                                       setIsInfoModal(true);
+                                                                                       getMessageResultInfo(messageResult.messageId);
+                                                                                   }}/></a></td>
                                     </tr>
                                 ))}
                                 </tbody>
                             </Table>
-
 
 
                             {/*pagination*/}
