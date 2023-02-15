@@ -9,11 +9,16 @@ import React, {useState, useEffect} from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-const SmsMessageRule = (props) => {
-
-    const [smsKTRate, setSmsKTRate] = useState(33);
-    const [smsSKTRate, setSmsSKTRate] = useState(33);
-    const [smsLGRate, setSmsLGRate] = useState(34);
+const SmsMessageRule = ({
+                            smsKTRate,
+                            smsLGRate,
+                            smsSKTRate,
+                            setSmsKTRate,
+                            setSmsLGRate,
+                            setSmsSKTRate,
+                            hide,
+                            isShowingMessageRule
+                        }) => {
 
     const applySendRule = async (KT, SKT, LG) => {
         await axios.patch(`/msg/rule/edit`, {
@@ -39,7 +44,7 @@ const SmsMessageRule = (props) => {
                     showConfirmButton: false,
                     timer            : 1000,
                 })
-                props.hide()
+                hide()
             } else {
                 await Swal.fire({
                     title            : response.data.message,
@@ -64,9 +69,10 @@ const SmsMessageRule = (props) => {
     useEffect(async () => {
         await axios.get(`/msg/rule/getAll`)
             .then((response) => {
-                console.log(response)
                 if (response.data.isSuccess) {
+                    console.log(response.data.result.messageRules)
                     response.data.result.messageRules.map(messageRule => {
+                        console.log(response.data.result.messageRules)
                         if (messageRule.brokerId == 1) {
                             setSmsKTRate(messageRule.brokerRate);
                         } else if (messageRule.brokerId == 2) {
@@ -85,7 +91,7 @@ const SmsMessageRule = (props) => {
     }, [])
 
     return (
-        props.isShowingMessageRule ?
+        isShowingMessageRule ?
             <Modal
                 className="modal-dialog-centered"
                 isOpen={true}
@@ -100,7 +106,7 @@ const SmsMessageRule = (props) => {
                         className="close"
                         data-dismiss="modal"
                         type="button"
-                        onClick={(e) => props.hide()}
+                        onClick={(e) => hide()}
                     ></button>
                     <span aria-hidden={true}>×</span>
                 </div>
@@ -117,9 +123,6 @@ const SmsMessageRule = (props) => {
                                     <p style={{margin: 9, paddingRight: 20, paddingTop: 5, fontSize: 17}}>KT</p>
                                     <Input
                                         style={{marginLeft: "auto", width: "55%"}}
-                                        id="KT"
-                                        name="KT"
-                                        placeholder={smsKTRate}
                                         value={smsKTRate}
                                         type="number"
                                         onChange={(e) => setSmsKTRate(e.target.value)}
@@ -133,9 +136,6 @@ const SmsMessageRule = (props) => {
                                     <p style={{margin: 9, paddingRight: 20, paddingTop: 5, fontSize: 17}}>SKT</p>
                                     <Input
                                         style={{marginLeft: "auto", width: "55%"}}
-                                        id="SKT"
-                                        name="SKT"
-                                        placeholder={smsSKTRate}
                                         value={smsSKTRate}
                                         type="number"
                                         onChange={(e) => setSmsSKTRate(e.target.value)}
@@ -149,9 +149,6 @@ const SmsMessageRule = (props) => {
                                     <p style={{margin: 9, paddingRight: 20, paddingTop: 5, fontSize: 17}}>LG U+</p>
                                     <Input
                                         style={{marginLeft: "auto", width: "55%"}}
-                                        id="LGU+"
-                                        name="LGU+"
-                                        placeholder={smsLGRate}
                                         type="number"
                                         value={smsLGRate}
                                         onChange={(e) => setSmsLGRate(e.target.value)}
@@ -163,7 +160,7 @@ const SmsMessageRule = (props) => {
                     </Form>
                 </div>
 
-                {smsLGRate + smsKTRate + smsSKTRate === 100 ? (
+                {parseInt(smsLGRate) + parseInt(smsKTRate) + parseInt(smsSKTRate) === 100 ? (
                     <div className="modal-footer">
                         <Button color="primary" type="button"
                                 onClick={(e) => {
