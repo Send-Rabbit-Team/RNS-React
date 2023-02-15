@@ -14,14 +14,6 @@ import Profile from "./views/admin/Profile";
 
 var routes = [
   {
-    path: "/onboarding",
-    name: "온보딩",
-    icon: "ni ni-send text-blue",
-    component: Register,
-    layout: "/main",
-    sidebar:false
-  },
-  {
     path: "/register",
     name: "회원가입",
     icon: "ni ni-send text-blue",
