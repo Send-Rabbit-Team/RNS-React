@@ -47,7 +47,7 @@ const MessageSchedule = (props) => {
         if (checked === "month") {
             if (monthChecked === 1) {
                 props.setCron("0 " + monthMin + " " + monthHour + " " + monthDay + " 1/" + monthPeriod + " ?")
-                props.setCronText("매월 " + monthDay + "일 " + monthHour + "시 " + monthMin + " 분 " + monthPeriod + "개월 마다")
+                props.setCronText("매월 " + monthDay + "일 " + monthHour + "시 " + monthMin + "분 " + monthPeriod + "개월 마다")
             }
             if (monthChecked === 2) {
                 props.setCron("0 " + monthMin + " " + monthHour + " ? 1/" + monthPeriod + " " + monthWeek + "#" + monthNum)
