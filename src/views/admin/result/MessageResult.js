@@ -12,15 +12,16 @@ import {
     DropdownToggle,
     DropdownMenu,
     DropdownItem,
-    Col, Popover,
-    InputGroupAddon, Input, InputGroup, UncontrolledPopover, PopoverBody
+    Col,
+    InputGroupAddon, Input, InputGroup
 } from "reactstrap";
 import Header from "components/Headers/Header.js";
 import React, {useEffect, useState} from "react";
 import {useParams} from 'react-router-dom';
 import axios from "axios";
-import {Doughnut, Pie} from "react-chartjs-2";
+import {Doughnut, Pie, Bar} from "react-chartjs-2";
 import Swal from "sweetalert2";
+import {Image} from "react-bootstrap";
 
 const MessageResult = () => {
 
@@ -88,6 +89,7 @@ const MessageResult = () => {
                 if (response.data.isSuccess) {
                     setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
                     setMessageResultList(response.data.result.dtoList)
+                    console.log(response.data.result.dtoList)
                 } else {
                     console.log(response.data.message)
                 }
@@ -108,6 +110,7 @@ const MessageResult = () => {
                 if (response.data.isSuccess) {
                     setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
                     setMessageResultList(response.data.result.dtoList)
+                    console.log(response.data.result.dtoList)
                 } else {
                     console.log(response.data.message)
                 }
@@ -129,7 +132,7 @@ const MessageResult = () => {
                 if (response.data.isSuccess) {
                     setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
                     setMessageResultList(response.data.result.dtoList)
-
+                    console.log(response.data.result.dtoList)
                 } else {
                     console.log(response.data.message)
                 }
@@ -139,7 +142,27 @@ const MessageResult = () => {
             })
     }
 
+    // 메시지 이미지 조회
+    const [messageImages, setMessageImages] = useState([]);
+    const getMessageImage = async (messageId) => {
+        await axios.get("/message/images", {
+            params : {
+                "messageId" : messageId
+            }
+        }).then((response) => {
+            if (response.data.isSuccess) {
+                setMessageImages(response.data.result.images)
+            } else {
+                setMessageImages([])
+            }
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+
     // 메시지 상세 결과 조회
+    const [payPoint, setPayPoint] = useState(0);
+    const [refundPoint, setRefundPoint] = useState(0);
     const getMessageResultInfo = async (messageId) => {
         await axios.get(`/message/result/info/${messageId}`)
             .then((response) => {
@@ -147,6 +170,8 @@ const MessageResult = () => {
                     setMessageResultInfoList(response.data.result.messageResultRes)
                     setBrokerData(response.data.result.broker)
                     setMessageStatusData(response.data.result.messageStatus)
+                    setPayPoint(response.data.result.payPoint)
+                    setRefundPoint(response.data.result.refundPoint)
                 } else {
                     console.log(response.data.message)
                 }
@@ -266,6 +291,34 @@ const MessageResult = () => {
                                 }}
                             ></Pie>
                         </Col>
+                        {/*<Col lg={6}>*/}
+                        {/*    <Bar*/}
+                        {/*        data={{*/}
+                        {/*            labels  : ["결제 당근", "환불 당근", "총 사용 당근"],*/}
+                        {/*            datasets: [*/}
+                        {/*                {*/}
+                        {/*                    data           : [*/}
+                        {/*                        payPoint,*/}
+                        {/*                        refundPoint,*/}
+                        {/*                        payPoint + refundPoint*/}
+                        {/*                    ],*/}
+                        {/*                    backgroundColor: [*/}
+                        {/*                        'rgba(255, 99, 132, 0.5)',*/}
+                        {/*                        'rgba(153, 102, 255, 0.5)',*/}
+                        {/*                        'rgba(255, 159, 64, 0.5)',*/}
+                        {/*                    ],*/}
+                        {/*                    borderWidth    : 1,*/}
+                        {/*                },*/}
+                        {/*            ],*/}
+                        {/*        }}*/}
+                        {/*        options={{*/}
+                        {/*            title: {*/}
+                        {/*                display: true,*/}
+                        {/*                text   : "메시지 당근"*/}
+                        {/*            }*/}
+                        {/*        }}*/}
+                        {/*    ></Bar>*/}
+                        {/*</Col>*/}
                     </Row>
 
                     {/*table*/}
@@ -278,7 +331,7 @@ const MessageResult = () => {
                             <th scope="col" className="text-center">그룹</th>
                             <th scope="col" className="text-center">중계사</th>
                             <th scope="col" className="text-center">상태</th>
-                            <th scope="col" className="text-center">실패 사유</th>
+                            <th scope="col" className="text-center">설명</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -301,8 +354,7 @@ const MessageResult = () => {
                                     <td className="text-center text-yellow">{messageResultInfo.messageStatus}</td>
                                 ) : null
                                 }
-                                {/*<td className="text-center">{messageResultInfo.description}</td>*/}
-                                <td className="text-center">중계사 오류 kt -> skt -> lg 2메시지 당근 환불</td>
+                                <td className="text-center">{messageResultInfo.description}</td>
                             </tr>
                         ))}
                         </tbody>
@@ -336,6 +388,16 @@ const MessageResult = () => {
                     {message.content != null ? message.content.split('\n').map(line => (
                         <span>{line}<br/></span>
                     )) : null}
+                    {messageImages.length !== 0 ? (
+                        <Row className="mt-3">
+                            {messageImages.map((item, index) => (
+                                <div className="col-sm-3" key={index}>
+                                    <Image className="d-block w-100 m-1"
+                                           src={item}/>
+                                </div>
+                            ))}
+                        </Row>
+                    ) : null}
                 </div>
             </Modal>
 
@@ -442,7 +504,6 @@ const MessageResult = () => {
                                             </DropdownMenu>
                                         </UncontrolledDropdown>
                                     </th>
-                                    <th scope="col" className="text-center">사용 당근</th>
                                     <th scope="col" className="text-center">발송 결과</th>
                                 </tr>
                                 </thead>
@@ -458,6 +519,7 @@ const MessageResult = () => {
                                             <a className="text-dark" href="#" onClick={(e) => {
                                                 setIsContentModal(true)
                                                 setMessage(messageResult)
+                                                getMessageImage(messageResult.messageId)
                                             }}>
                                                 <b>{messageResult.title}</b>
                                                 &nbsp;
@@ -465,7 +527,6 @@ const MessageResult = () => {
                                             </a>
                                         </td>
                                         <td className="text-center">{messageResult.messageType}</td>
-                                        <td className="text-center">0개</td>
                                         <td className="text-center">
                                             <a href="#">
                                                 <i className="fas fa-eye"
