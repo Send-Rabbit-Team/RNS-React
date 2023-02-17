@@ -1,14 +1,10 @@
 import React from "react";
-import {useLocation, Route, Switch, Redirect} from "react-router-dom";
+import {useLocation, Route} from "react-router-dom";
 import {Container, Row, Col, Card, CardBody, CardTitle} from "reactstrap";
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
-import routes from "routes.js";
 import TextAnimation from "react-text-animations";
-import sms from "../assets/img/brand/bulk-sms.png"
 import animation_sms from "../assets/img/brand/sms-animation.gif"
 import {Button} from "reactstrap";
-import rabbitImg from "../assets/img/theme/rabbit-user.jpg";
-import iphone from "../assets/img/brand/iphone.jpg";
 import axios from "axios";
 import Swal from "sweetalert2";
 
@@ -18,7 +14,6 @@ const Onboarding = (props) => {
     const mainContent = React.useRef(null);
     const location = useLocation();
 
-    const rabbitImg = require("../assets/img/theme/rabbit-user.jpg")
 
     React.useEffect(() => {
         document.body.classList.add("bg-default");

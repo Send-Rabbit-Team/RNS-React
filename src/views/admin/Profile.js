@@ -40,7 +40,7 @@ const Profile = () => {
             .catch((error) => {
                 console.log(error)
             })
-    }, [pointInfo])
+    }, [])
 
     useEffect(async () => {
         await axios.get("/point/get")

@@ -54,7 +54,7 @@ const MessageResult = () => {
         } else {
             getSearchMessageResult()
         }
-    }, [nowType])
+    }, [])
 
     // 검색
     const [searchInput, setSearchInput] = useState("")
@@ -98,6 +98,7 @@ const MessageResult = () => {
                 if (response.data.isSuccess) {
                     setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
                     setMessageResultList(response.data.result.dtoList)
+                    console.log(response.data.result.dtoList)
                 } else {
                     console.log(response.data.message)
                 }
@@ -118,6 +119,7 @@ const MessageResult = () => {
                 if (response.data.isSuccess) {
                     setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
                     setMessageResultList(response.data.result.dtoList)
+                    console.log(response.data.result.dtoList)
                 } else {
                     console.log(response.data.message)
                 }
@@ -139,7 +141,7 @@ const MessageResult = () => {
                 if (response.data.isSuccess) {
                     setPageData(pageData => ({...pageData, ...response.data.result, page: nowPage}))
                     setMessageResultList(response.data.result.dtoList)
-
+                    console.log(response.data.result.dtoList)
                 } else {
                     console.log(response.data.message)
                 }
@@ -149,15 +151,8 @@ const MessageResult = () => {
             })
     }
 
-    if (nowType === "all") {
-        getAllMessageResult()
-    } else if (nowType === "filter") {
-        getFilterMessageResult()
-    } else {
-        getSearchMessageResult()
-    }
-
     // 알림톡 상세 결과 조회
+    const [messageStatusData, setMessageStatusData] = useState({});
     const getMessageResultInfo = async (messageId) => {
         await axios.get(`/kakao/message/result/info/${messageId}`)
             .then((response) => {
@@ -188,20 +183,6 @@ const MessageResult = () => {
         setBrokerChartData(data)
     }
 
-    // 메시지 상태 차트 정보 저장
-    const [messageStatusChartLabels, setMessageStatusChartLabels] = useState([]);
-    const [messageStatusChartData, setMessageStatusChartData] = useState([]);
-    const setMessageStatusData = (messageStatus) => {
-        const labels = []
-        const data = []
-        for (const status in messageStatus) {
-            labels.push(status)
-            data.push(messageStatus[status])
-        }
-        setMessageStatusChartLabels(labels)
-        setMessageStatusChartData(data)
-    }
-
     // 브로커 차트 데이터
     const brokerChart = {
         labels  : brokerChartLabels,
@@ -223,14 +204,20 @@ const MessageResult = () => {
 
     // 메시지 상태 차트 데이터
     const messageStatusChart = {
-        labels  : messageStatusChartLabels,
+        labels  : ["발송 성공", "발송 실패", "발송 중", "재발송"],
         datasets: [
             {
-                data           : messageStatusChartData,
+                data           : [
+                    messageStatusData["SUCCESS"],
+                    messageStatusData["FAIL"],
+                    messageStatusData["PENDING"],
+                    messageStatusData["RESEND"]
+                ],
                 backgroundColor: [
                     'rgba(75, 192, 192, 0.5)',
+                    'rgba(255, 99, 132, 0.5)',
                     'rgba(54, 162, 235, 0.5)',
-                    'rgba(255, 99, 132, 0.5)'
+                    'rgba(255, 206, 86, 0.5)',
                 ],
                 borderWidth    : 1,
             },
@@ -301,6 +288,7 @@ const MessageResult = () => {
                             <th scope="col" className="text-center">그룹</th>
                             <th scope="col" className="text-center">중계사</th>
                             <th scope="col" className="text-center">상태</th>
+                            <th scope="col" className="text-center">설명</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -314,13 +302,17 @@ const MessageResult = () => {
                                 <td className="text-center">{messageResultInfo.contactGroup}</td>
                                 <td className="text-center">{messageResultInfo.kakaoBrokerName}</td>
                                 {messageResultInfo.messageStatus === "SUCCESS" ? (
-                                    <td className="text-center text-success">{messageResultInfo.messageStatus}</td>
+                                    <td className="text-center text-success">발송 성공</td>
                                 ) : messageResultInfo.messageStatus === "FAIL" ? (
-                                    <td className="text-center text-warning">{messageResultInfo.messageStatus}</td>
+                                    <td className="text-center text-warning">발송 실패</td>
+                                ) : messageResultInfo.messageStatus === "PENDING" ? (
+                                    <td className="text-center text-primary">발송 중</td>
+                                ) : messageResultInfo.messageStatus === "RESEND" ? (
+                                    <td className="text-center text-yellow">재발송</td>
                                 ) : (
-                                    <td className="text-center text-primary">{messageResultInfo.messageStatus}</td>
-                                )
-                                }
+                                    <td className="text-center">{messageResultInfo.messageStatus}</td>
+                                )}
+                                <td className="text-center">{messageResultInfo.description}</td>
                             </tr>
                         ))}
                         </tbody>

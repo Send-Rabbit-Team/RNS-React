@@ -1,7 +1,6 @@
 import {
     Card,
     CardHeader,
-    CardTitle,
     Row,
     Button,
     Modal,
@@ -42,14 +41,12 @@ const Receiver = ({
     const [nowContactGroupList, setNowContactGroupList] = useState([]);
 
 
-
     // 함수
     const makeHyphen = (number) => {
         return number.slice(0, 3) + "-" +
             number.slice(3, 7) + "-" +
             number.slice(7, 11)
     }
-
 
 
     // 연락처 검색
@@ -63,20 +60,20 @@ const Receiver = ({
     })
 
 
-
     // 검색 유무에 따라 화면에 보여질 목록 선택
     useEffect(() => {
         if (contactGroupFilter)
             setNowContactGroupList(searchContactGroup)
         else
             setNowContactGroupList(contactGroupList)
+    }, [contactGroupList, searchContactGroupInput])
 
+    useEffect(() => {
         if (contactFilter)
             setNowContactList(searchContact)
         else
             setNowContactList(contactList)
-    })
-
+    }, [contactList, searchContactInput])
 
 
     // 연락처 검색 핸들러
@@ -106,7 +103,6 @@ const Receiver = ({
     }
 
 
-
     const isFoundContact = (contact) => selectContactList.some(existContact => {
         if (existContact.id == contact) {
             return true;
@@ -120,7 +116,6 @@ const Receiver = ({
         }
         return false;
     });
-
 
 
     // 연락처 선택 및 해제 핸들러
@@ -155,7 +150,6 @@ const Receiver = ({
     const onDeleteContactGroupHandler = (v) => {
         setSelectContactGroupList(selectContactGroupList.filter((item) => item.id !== v.id));
     }
-
 
 
     // 연락처 불러오기
@@ -327,42 +321,38 @@ const Receiver = ({
                     <div className="col-lg-12">
                         <Card className="shadow m-3">
                             <CardHeader><h4>수신자 목록</h4></CardHeader>
-                            <CardBody className="p-0">
-                                {selectContactGroupList.map(selectGroup => (
-                                    <Card className="m-3">
-                                        <CardBody className="p-1">
-                                            <CardTitle className="m-3">{selectGroup.name}</CardTitle>
-                                            {selectContactList.map(selectContact => (
-                                                selectContact.groupId === selectGroup.id ? (
-                                                    <Button color="primary" type="button" className="m-1"
-                                                            onClick={(e) => onDeleteContactHandler(selectContact)}>
-                                                        <span>{selectContact.memo} ({makeHyphen(selectContact.phoneNumber)})</span>
-                                                        <Badge className="badge-black" color="black"
-                                                               style={{width: 10}}>X</Badge>
-                                                    </Button>
-                                                ) : null
-                                            ))}
-                                        </CardBody>
-                                    </Card>
+                            <CardBody style={{height:200, overflow:"auto"}}>
+                                {selectContactList.map(selectContact => (
+                                    selectContact.groupId === 0 ? (
+                                        <Button color="primary" type="button" className="m-1" size="sm"
+                                                onClick={(e) => onDeleteContactHandler(selectContact)}>
+                                            {selectContact.memo} ({makeHyphen(selectContact.phoneNumber)})
+                                            <Badge className="badge-black" color="black">X</Badge>
+                                        </Button>
+                                    ) : null
                                 ))}
-                                <Card className="m-3">
-                                    <CardBody className="p-1">
-                                        <CardTitle className="m-3">그룹 없음</CardTitle>
-                                        {selectContactList.map(selectContact => (
-                                            selectContact.groupId === 0? (
-                                                <Button color="primary" type="button" className="m-1"
-                                                        onClick={(e) => onDeleteContactHandler(selectContact)}>
-                                                    <span>{selectContact.memo} ({makeHyphen(selectContact.phoneNumber)})</span>
-                                                    <Badge className="badge-black" color="black"
-                                                           style={{width: 10}}>X</Badge>
-                                                </Button>
-                                            ) : null
-                                        ))}
-                                    </CardBody>
-                                </Card>
-
                             </CardBody>
                         </Card>
+
+                        {selectContactGroupList.map(selectGroup => (
+                            <Card className="shadow m-3">
+                                <CardHeader><h4>{selectGroup.name}</h4></CardHeader>
+                                <CardBody style={{height:200, overflow:"auto"}}>
+
+                                    {selectContactList.map(selectContact => (
+                                        selectContact.groupId === selectGroup.id ? (
+
+                                            <Button color="primary" type="button" className="m-1" size="sm"
+                                                    onClick={(e) => onDeleteContactHandler(selectContact)}>
+                                                {selectContact.memo} ({makeHyphen(selectContact.phoneNumber)})
+                                                <Badge className="badge-black" color="black">X</Badge>
+                                            </Button>
+                                        ) : null
+                                    ))}
+                                </CardBody>
+                            </Card>
+                        ))}
+
                     </div>
                 </Row>
 
