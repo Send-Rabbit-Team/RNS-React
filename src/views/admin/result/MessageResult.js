@@ -345,15 +345,16 @@ const MessageResult = () => {
                                 <td className="text-center">{messageResultInfo.contactGroup}</td>
                                 <td className="text-center">{messageResultInfo.brokerName}</td>
                                 {messageResultInfo.messageStatus === "SUCCESS" ? (
-                                    <td className="text-center text-success">{messageResultInfo.messageStatus}</td>
+                                    <td className="text-center text-success">발송 성공</td>
                                 ) : messageResultInfo.messageStatus === "FAIL" ? (
-                                    <td className="text-center text-warning">{messageResultInfo.messageStatus}</td>
+                                    <td className="text-center text-warning">발송 실패</td>
                                 ) : messageResultInfo.messageStatus === "PENDING" ? (
-                                    <td className="text-center text-primary">{messageResultInfo.messageStatus}</td>
+                                    <td className="text-center text-primary">발송 중</td>
                                 ) : messageResultInfo.messageStatus === "RESEND" ? (
-                                    <td className="text-center text-yellow">{messageResultInfo.messageStatus}</td>
-                                ) : null
-                                }
+                                    <td className="text-center text-yellow">재발송</td>
+                                ) : (
+                                    <td className="text-center">{messageResultInfo.messageStatus}</td>
+                                )}
                                 <td className="text-center">{messageResultInfo.description}</td>
                             </tr>
                         ))}
