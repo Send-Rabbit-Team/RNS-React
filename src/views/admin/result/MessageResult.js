@@ -13,7 +13,9 @@ import {
     DropdownMenu,
     DropdownItem,
     Col,
-    InputGroupAddon, Input, InputGroup
+    InputGroupAddon, Input, InputGroup,
+    UncontrolledPopover,
+    PopoverBody
 } from "reactstrap";
 import Header from "components/Headers/Header.js";
 import React, {useEffect, useState} from "react";
@@ -247,11 +249,26 @@ const MessageResult = () => {
                 isOpen={isInfoModal}
                 size="xl"
             >
+                <UncontrolledPopover placement="bottom" target="invoice_popover">
+                    <PopoverBody>
+                        <h5 className="text-uppercase text-muted">사용 당근: &nbsp;
+                            <span className="h2 font-weight-bold">{payPoint + refundPoint}</span>
+                        </h5>
+                        <h5 className="text-uppercase text-muted">환불 당근: &nbsp;
+                            <span className="h2 font-weight-bold">{refundPoint}</span>
+                        </h5>
+                        <hr className="mt-1 mb-1"/>
+                        <h5 className="text-uppercase text-muted">최종 사용: &nbsp;
+                            <span className="h2 font-weight-bold">{payPoint}</span>
+                        </h5>
+                    </PopoverBody>
+                </UncontrolledPopover>
 
                 {/*modal header*/}
                 <div className="modal-header">
                     <h3 className="modal-title" id="modal-title-default">
-                        메시지 발송 결과 상세
+                        메시지 발송 결과 상세 &nbsp;&nbsp;
+                        <a href="#" className="text-lg"><i className="fas fa-comment-dollar" id="invoice_popover"/></a>
                     </h3>
                     <button
                         aria-label="Close"
@@ -291,34 +308,6 @@ const MessageResult = () => {
                                 }}
                             ></Pie>
                         </Col>
-                        {/*<Col lg={6}>*/}
-                        {/*    <Bar*/}
-                        {/*        data={{*/}
-                        {/*            labels  : ["결제 당근", "환불 당근", "총 사용 당근"],*/}
-                        {/*            datasets: [*/}
-                        {/*                {*/}
-                        {/*                    data           : [*/}
-                        {/*                        payPoint,*/}
-                        {/*                        refundPoint,*/}
-                        {/*                        payPoint + refundPoint*/}
-                        {/*                    ],*/}
-                        {/*                    backgroundColor: [*/}
-                        {/*                        'rgba(255, 99, 132, 0.5)',*/}
-                        {/*                        'rgba(153, 102, 255, 0.5)',*/}
-                        {/*                        'rgba(255, 159, 64, 0.5)',*/}
-                        {/*                    ],*/}
-                        {/*                    borderWidth    : 1,*/}
-                        {/*                },*/}
-                        {/*            ],*/}
-                        {/*        }}*/}
-                        {/*        options={{*/}
-                        {/*            title: {*/}
-                        {/*                display: true,*/}
-                        {/*                text   : "메시지 당근"*/}
-                        {/*            }*/}
-                        {/*        }}*/}
-                        {/*    ></Bar>*/}
-                        {/*</Col>*/}
                     </Row>
 
                     {/*table*/}

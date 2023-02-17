@@ -1,4 +1,4 @@
-import {Modal, FormGroup, Button, Input, Row, Col } from "reactstrap"
+import {Modal, FormGroup, Button, Input, Row, Col, InputGroup, InputGroupAddon, InputGroupText } from "reactstrap"
 import React, {useEffect, useState} from "react";
 
 const MessageSchedule = (props) => {
@@ -11,6 +11,9 @@ const MessageSchedule = (props) => {
     const month = [
         'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ]
+
+    const [everyMin, setEveryMin] = useState("10")
+    const [everyHour, setEveryHour] = useState("1")
 
     const [dayMin, setDayMin] = useState("30");
     const [dayHour, setDayHour] = useState("10");
@@ -36,6 +39,14 @@ const MessageSchedule = (props) => {
     const [yearHour, setYearHour] = useState("10");
 
     useEffect(() => {
+        if (checked === "min") {
+            props.setCron("0 0/" + everyMin + " * * * ?")
+            props.setCronText(everyMin + "분 마다")
+        }
+        if (checked === "hour") {
+            props.setCron("0 0 0/" + everyHour + " * * ?")
+            props.setCronText(everyHour + "시간 마다")
+        }
         if (checked === "day") {
             props.setCron("0 " + dayMin + " " + dayHour + " * * ?")
             props.setCronText("매일 " + dayHour + "시 " + dayMin + "분")
@@ -87,6 +98,77 @@ const MessageSchedule = (props) => {
                 </button>
             </div>
             <div className="modal-body">
+
+                {/* -------------------------------- 매분 -------------------------------- */}
+                <div className="custom-control custom-radio mb-3">
+                    <input
+                        defaultChecked={checked === "min" ? true : false}
+                        type="radio"
+                        id="everyRadio5"
+                        name="everyRadio"
+                        className="custom-control-input"
+                        onClick={(e) => setChecked("min")}
+                    />
+                    <label className="custom-control-label" htmlFor="everyRadio5">
+                        매분
+                    </label>
+                </div>
+                {checked === "min" ? (
+                    <div className="ml-5 mr-5 mb-4 mt-4">
+                        <FormGroup>
+                            <InputGroup>
+                                <Input
+                                    min="1"
+                                    max="60"
+                                    defaultValue={everyMin}
+                                    type="number"
+                                    onChange={(e) => {
+                                        setEveryMin(e.target.value)
+                                    }}
+                                ></Input>
+                                <InputGroupAddon addonType="append">
+                                    <InputGroupText>분</InputGroupText>
+                                </InputGroupAddon>
+                            </InputGroup>
+                        </FormGroup>
+                    </div>
+                ) : null}
+
+                {/* -------------------------------- 매시간 -------------------------------- */}
+                <div className="custom-control custom-radio mb-3">
+                    <input
+                        defaultChecked={checked === "hour" ? true : false}
+                        type="radio"
+                        id="everyRadio6"
+                        name="everyRadio"
+                        className="custom-control-input"
+                        onClick={(e) => setChecked("hour")}
+                    />
+                    <label className="custom-control-label" htmlFor="everyRadio6">
+                        매시간
+                    </label>
+                </div>
+                {checked === "hour" ? (
+                    <div className="ml-5 mr-5 mb-4 mt-4">
+                        <FormGroup>
+                            <InputGroup>
+                                <Input
+                                    min="1"
+                                    max="24"
+                                    defaultValue={everyHour}
+                                    type="number"
+                                    onChange={(e) => {
+                                        setEveryHour(e.target.value)
+                                    }}
+                                ></Input>
+                                <InputGroupAddon addonType="append">
+                                    <InputGroupText>시간</InputGroupText>
+                                </InputGroupAddon>
+                            </InputGroup>
+                        </FormGroup>
+                    </div>
+                ) : null}
+
                 {/* -------------------------------- 매일 -------------------------------- */}
                 <div className="custom-control custom-radio mb-3">
                     <input
@@ -201,19 +283,19 @@ const MessageSchedule = (props) => {
                             />
                             <label className="custom-control-label" htmlFor="monthRadio1">
                                 <Row>
-                                    <div className="col-sm">
+                                    <Col>
                                         <FormGroup>
-                                            <Input
-                                                defaultValue={monthDay}
-                                                max="31"
-                                                min="1"
-                                                placeholder="일"
-                                                type="number"
-                                                onChange={(e) => setMonthDay(e.target.value)}
-                                            ></Input>
+                                                <Input
+                                                    defaultValue={monthDay}
+                                                    max="31"
+                                                    min="1"
+                                                    placeholder="일"
+                                                    type="number"
+                                                    onChange={(e) => setMonthDay(e.target.value)}
+                                                ></Input>
                                         </FormGroup>
-                                    </div>
-                                    <div className="col-sm">
+                                    </Col>
+                                    <Col>
                                         <FormGroup>
                                             <Input defaultValue={monthPeriod} type="select" onChange={(e) => setMonthPeriod(e.target.value)}>
                                                 <option value="1">1개월 마다</option>
@@ -222,8 +304,8 @@ const MessageSchedule = (props) => {
                                                 <option value="6">6개월 마다</option>
                                             </Input>
                                         </FormGroup>
-                                    </div>
-                                    <div className="col-sm">
+                                    </Col>
+                                    <Col>
                                         <FormGroup>
                                             <Input
                                                 defaultValue={monthHour + ":" + monthMin + ":00"}
@@ -235,7 +317,7 @@ const MessageSchedule = (props) => {
                                                 }}
                                             ></Input>
                                         </FormGroup>
-                                    </div>
+                                    </Col>
                                 </Row>
                             </label>
                         </div>

@@ -13,7 +13,7 @@ import {
     DropdownMenu,
     DropdownItem,
     Col,
-    InputGroupAddon, Input, InputGroup, CardBody
+    InputGroupAddon, Input, InputGroup, CardBody, PopoverBody, UncontrolledPopover
 } from "reactstrap";
 import Header from "components/Headers/Header.js";
 import React, {useEffect, useState} from "react";
@@ -153,6 +153,8 @@ const MessageResult = () => {
 
     // 알림톡 상세 결과 조회
     const [messageStatusData, setMessageStatusData] = useState({});
+    const [payPoint, setPayPoint] = useState(0);
+    const [refundPoint, setRefundPoint] = useState(0);
     const getMessageResultInfo = async (messageId) => {
         await axios.get(`/kakao/message/result/info/${messageId}`)
             .then((response) => {
@@ -160,6 +162,8 @@ const MessageResult = () => {
                     setMessageResultInfoList(response.data.result.kakaoMessageResultResList)
                     setBrokerData(response.data.result.kakaoBrokerMap)
                     setMessageStatusData(response.data.result.messageStatusMap)
+                    setPayPoint(response.data.result.payPoint)
+                    setRefundPoint(response.data.result.refundPoint)
                 } else {
                     console.log(response.data.message)
                 }
@@ -232,11 +236,26 @@ const MessageResult = () => {
                 isOpen={isInfoModal}
                 size="xl"
             >
+                <UncontrolledPopover placement="bottom" target="invoice_popover">
+                    <PopoverBody>
+                        <h5 className="text-uppercase text-muted">사용 당근: &nbsp;
+                            <span className="h2 font-weight-bold">{payPoint + refundPoint}</span>
+                        </h5>
+                        <h5 className="text-uppercase text-muted">환불 당근: &nbsp;
+                            <span className="h2 font-weight-bold">{refundPoint}</span>
+                        </h5>
+                        <hr className="mt-1 mb-1"/>
+                        <h5 className="text-uppercase text-muted">최종 사용: &nbsp;
+                            <span className="h2 font-weight-bold">{payPoint}</span>
+                        </h5>
+                    </PopoverBody>
+                </UncontrolledPopover>
 
                 {/*modal header*/}
                 <div className="modal-header">
                     <h3 className="modal-title" id="modal-title-default">
-                        알림톡 발송 결과 상세
+                        알림톡 발송 결과 상세 &nbsp;&nbsp;
+                        <a href="#" className="text-lg"><i className="fas fa-comment-dollar" id="invoice_popover"/></a>
                     </h3>
                     <button
                         aria-label="Close"
